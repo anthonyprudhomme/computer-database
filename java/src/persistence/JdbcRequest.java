@@ -47,6 +47,7 @@ public class JdbcRequest {
 	}
 
 	public void getComputerList(){
+		//String query = "SELECT * FROM computer INNER JOIN company ON computer.company_id=company.id";
 		String query = "SELECT * FROM computer";
 		this.doARequest(query, RequestName.LIST_COMPUTERS);
 	}
@@ -57,7 +58,7 @@ public class JdbcRequest {
 	}
 
 	public void getComputerDetails(int id){
-		String query = "SELECT * FROM computer WHERE id="+id;
+		String query = "SELECT * FROM computer INNER JOIN company ON computer.company_id=company.id WHERE computer.id="+id;
 		this.doARequest(query, RequestName.COMPUTER_DETAILS);
 	}
 
@@ -67,14 +68,44 @@ public class JdbcRequest {
 		this.doARequest(query, RequestName.CREATE_COMPUTER, computer);
 	}
 	
+	public void deleteComputer(int id){
+		String query = "DELETE FROM computer WHERE id="+id;
+		this.doARequest(query, RequestName.DELETE_COMPUTER);
+	}
+	
+	public void updateComputer(Computer computer){
+		String updateParams = "";
+		
+		if(computer.getName() != null){
+			updateParams+= " name=\""+computer.getName()+ "\",";	
+		}
+		if(computer.getIntroduced() != null){
+			updateParams+= " introduced=\""+computer.getIntroduced().toString()+ "\",";	
+		}
+		if(computer.getDiscontinued() != null){
+			updateParams+= " discontinued=\""+computer.getDiscontinued().toString()+ "\",";	
+		}
+		if(computer.getCompanyId() != -1){
+			updateParams+= " company_id="+computer.getCompanyId()+ ",";	
+		}
+		if (updateParams != null && updateParams.length() > 0 && updateParams.charAt(updateParams.length() - 1) == ',') {
+			updateParams = updateParams.substring(0, updateParams.length() - 1);
+	    }
+		String query = "UPDATE computer SET"+updateParams+" WHERE id="+computer.getId();
+		System.out.println(query);
+		this.doARequest(query, RequestName.UPDATE_COMPUTER, computer);
+	}
+	
+	
+	
 	private PreparedStatement prepareRequest(PreparedStatement preparedStatement, RequestName requestName, Computer computer) throws SQLException{
 		switch(requestName){
 
 		case COMPUTER_DETAILS:
-		case DELETE_COMPUTER:
-		case UPDATE_COMPUTER:
 		case LIST_COMPANIES:
 		case LIST_COMPUTERS:
+		case DELETE_COMPUTER:
+		case UPDATE_COMPUTER:
 			break;
 		case CREATE_COMPUTER:
 			
@@ -83,9 +114,9 @@ public class JdbcRequest {
 			preparedStatement.setDate(3, computer.getDiscontinued());
 			preparedStatement.setInt(4, computer.getCompanyId());
 			break;
+			
 		default:
 			break;
-			
 			
 		}
 		
@@ -96,17 +127,15 @@ public class JdbcRequest {
 		switch(requestName){
 
 		case COMPUTER_DETAILS:
-		case CREATE_COMPUTER:
-		case DELETE_COMPUTER:
-		case UPDATE_COMPUTER:
 			while (resultSet.next()) {
 				int id = resultSet.getInt("id");
 				String name = resultSet.getString("name");
 				Date introduced = resultSet.getDate("introduced");
 				Date discontinued = resultSet.getDate("discontinued");
-				int companyId = resultSet.getInt("company_id");	
+				int companyId = resultSet.getInt("company_id");
+				String companyName = resultSet.getString("company.name");
 				Computer computer = new Computer(id, name, introduced, discontinued, companyId);
-				System.out.println(computer.toString());
+				System.out.println(computer.toString() + " "+companyName);
 			}
 			break;
 
@@ -123,6 +152,8 @@ public class JdbcRequest {
 			while (resultSet.next()) {
 				int id = resultSet.getInt("id");
 				String name = resultSet.getString("name");
+				//String companyName = resultSet.getString("company.name");
+				//System.out.println(id + ": " + name + " |"+ companyName);
 				System.out.println(id + ": " + name);
 			}
 			break;
