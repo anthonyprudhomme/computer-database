@@ -1,0 +1,12 @@
+package persistence;
+
+public enum RequestName {
+	
+	LIST_COMPUTERS,
+	LIST_COMPANIES,
+	COMPUTER_DETAILS,
+	CREATE_COMPUTER,
+	UPDATE_COMPUTER,
+	DELETE_COMPUTER
+
+}
