@@ -1,7 +1,6 @@
 package ui;
 
 import java.sql.Date;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import model.Computer;
@@ -127,6 +126,7 @@ public class Main {
 			if(optionInput != 7){
 				System.out.println("\n\nPress enter to continue...");
 				scan.nextLine();
+
 			}
 		}
 		scan.close();

@@ -4,11 +4,12 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLType;
 import java.sql.Types;
+import java.util.ArrayList;
 
 import model.Company;
 import model.Computer;
+import model.Page;
 
 public class JdbcRequest {
 	
@@ -146,6 +147,8 @@ public class JdbcRequest {
 
 	private boolean handleResult(ResultSet resultSet, RequestName requestName) throws SQLException{
 		boolean receivedSomething = false;
+		ArrayList<String> lines = new ArrayList<String>();
+		String line = null;
 		switch(requestName){
 
 		case COMPUTER_DETAILS:
@@ -158,7 +161,8 @@ public class JdbcRequest {
 				int companyId = resultSet.getInt("company_id");
 				String companyName = resultSet.getString("company.name");
 				Computer computer = new Computer(id, name, introduced, discontinued, companyId);
-				System.out.println(computer.toString() + " "+companyName);
+				line = computer.toString() + " "+companyName;
+				lines.add(line);
 			}
 			break;
 
@@ -168,7 +172,8 @@ public class JdbcRequest {
 				int id = resultSet.getInt("id");
 				String name = resultSet.getString("name");
 				Company company = new Company(id, name);
-				System.out.println(company.toString());
+				line = company.toString();
+				lines.add(line);
 			}
 			break;
 
@@ -179,7 +184,8 @@ public class JdbcRequest {
 				String name = resultSet.getString("name");
 				//String companyName = resultSet.getString("company.name");
 				//System.out.println(id + ": " + name + " |"+ companyName);
-				System.out.println(id + ": " + name);
+				line = id + ": " + name;
+				lines.add(line);
 			}
 			break;
 			
@@ -195,6 +201,9 @@ public class JdbcRequest {
 			break;
 
 
+		}
+		if(!lines.isEmpty()){
+			new Page(lines);
 		}
 		return receivedSomething;
 	}
