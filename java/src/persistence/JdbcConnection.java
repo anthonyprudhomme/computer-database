@@ -25,16 +25,24 @@ public class JdbcConnection {
 			throw new IllegalStateException("Cannot connect the database!", e);
 		}
 	}
-
-	public static JdbcConnection getInstance() {
-		if(instance == null) {
-			instance = new JdbcConnection();
-		}
-		return instance;
-	}
 	
 	public static Connection getConnection(){
-		return JdbcConnection.getInstance().connection;
+		try {
+			if(instance == null){
+				instance = new JdbcConnection();
+			}else{
+				if(instance.connection.isClosed()){
+					String url ="jdbc:mysql://localhost/computer-database-db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false";
+					String username = "admincdb";
+					String password = "qwerty1234";
+					instance.connection = DriverManager.getConnection(url, username, password);
+				}
+			}
+			
+		} catch (SQLException e) {
+			throw new IllegalStateException("Cannot connect the database!", e);
+		}
+		return instance.connection;
 	}
 
 }

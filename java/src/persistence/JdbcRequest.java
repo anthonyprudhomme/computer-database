@@ -4,21 +4,25 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLType;
+import java.sql.Types;
 
 import model.Company;
 import model.Computer;
 
 public class JdbcRequest {
 	
-	private void doARequest(String query, RequestName requestName, Computer computer){
+	private boolean doARequest(String query, RequestName requestName, Computer computer){
 		ResultSet resultSet = null;
 		PreparedStatement preparedStatement = null;
+		boolean receivedSomething = false;
 		try {
 			preparedStatement = JdbcConnection.getConnection().prepareStatement(query);
 			preparedStatement = this.prepareRequest(preparedStatement, requestName, computer);
 			if (preparedStatement.execute()) {
-				this.handleResult(preparedStatement.getResultSet(), requestName);
+				receivedSomething = this.handleResult(preparedStatement.getResultSet(), requestName);
 			}
+			JdbcConnection.getConnection().close();
 		}
 		catch (SQLException sqlException){
 			System.out.println("SQLException: " + sqlException.getMessage());
@@ -40,10 +44,11 @@ public class JdbcRequest {
 				preparedStatement = null;
 			}
 		}
+		return receivedSomething;
 	}
 
-	private void doARequest(String query, RequestName requestName){
-		this.doARequest(query, requestName, null);
+	private boolean doARequest(String query, RequestName requestName){
+		return this.doARequest(query, requestName, null);
 	}
 
 	public void getComputerList(){
@@ -58,7 +63,7 @@ public class JdbcRequest {
 	}
 
 	public void getComputerDetails(int id){
-		String query = "SELECT * FROM computer INNER JOIN company ON computer.company_id=company.id WHERE computer.id="+id;
+		String query = "SELECT * FROM computer LEFT JOIN company ON computer.company_id=company.id WHERE computer.id="+id;
 		this.doARequest(query, RequestName.COMPUTER_DETAILS);
 	}
 
@@ -88,12 +93,23 @@ public class JdbcRequest {
 		if(computer.getCompanyId() != -1){
 			updateParams+= " company_id="+computer.getCompanyId()+ ",";	
 		}
+		// Removes the last "," to have valid params
 		if (updateParams != null && updateParams.length() > 0 && updateParams.charAt(updateParams.length() - 1) == ',') {
 			updateParams = updateParams.substring(0, updateParams.length() - 1);
 	    }
 		String query = "UPDATE computer SET"+updateParams+" WHERE id="+computer.getId();
 		System.out.println(query);
 		this.doARequest(query, RequestName.UPDATE_COMPUTER, computer);
+	}
+	
+	public boolean checkIdInComputerTable(int id) {
+		String query = "SELECT * FROM computer WHERE id="+id;
+		return this.doARequest(query, RequestName.CHECK_ID_COMPUTER);
+	}
+	
+	public boolean checkIdInCompanyTable(int id) {
+		String query = "SELECT * FROM company WHERE id="+id;
+		return this.doARequest(query, RequestName.CHECK_ID_COMPANY);
 	}
 	
 	
@@ -112,7 +128,12 @@ public class JdbcRequest {
 			preparedStatement.setString(1, computer.getName());		
 			preparedStatement.setDate(2, computer.getIntroduced());
 			preparedStatement.setDate(3, computer.getDiscontinued());
-			preparedStatement.setInt(4, computer.getCompanyId());
+			if(computer.getCompanyId() == -1){
+				preparedStatement.setNull(4, Types.INTEGER);
+			}else{
+				preparedStatement.setInt(4, computer.getCompanyId());
+			}
+			
 			break;
 			
 		default:
@@ -123,11 +144,13 @@ public class JdbcRequest {
 		return preparedStatement;
 	}
 
-	private void handleResult(ResultSet resultSet, RequestName requestName) throws SQLException{
+	private boolean handleResult(ResultSet resultSet, RequestName requestName) throws SQLException{
+		boolean receivedSomething = false;
 		switch(requestName){
 
 		case COMPUTER_DETAILS:
 			while (resultSet.next()) {
+				receivedSomething = true;
 				int id = resultSet.getInt("id");
 				String name = resultSet.getString("name");
 				Date introduced = resultSet.getDate("introduced");
@@ -141,6 +164,7 @@ public class JdbcRequest {
 
 		case LIST_COMPANIES:
 			while (resultSet.next()) {
+				receivedSomething = true;
 				int id = resultSet.getInt("id");
 				String name = resultSet.getString("name");
 				Company company = new Company(id, name);
@@ -150,11 +174,19 @@ public class JdbcRequest {
 
 		case LIST_COMPUTERS:
 			while (resultSet.next()) {
+				receivedSomething = true;
 				int id = resultSet.getInt("id");
 				String name = resultSet.getString("name");
 				//String companyName = resultSet.getString("company.name");
 				//System.out.println(id + ": " + name + " |"+ companyName);
 				System.out.println(id + ": " + name);
+			}
+			break;
+			
+		case CHECK_ID_COMPUTER:
+		case CHECK_ID_COMPANY:
+			while (resultSet.next()) {
+				receivedSomething = true;
 			}
 			break;
 
@@ -164,5 +196,6 @@ public class JdbcRequest {
 
 
 		}
+		return receivedSomething;
 	}
 }
