@@ -7,13 +7,20 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import model.Company;
 import model.Computer;
 import model.Page;
 
 public class JdbcRequest {
 	
+	final private Logger logger = LoggerFactory.getLogger(JdbcRequest.class);
+	private String loggerDatabasePrefix = "Request to SQL database: ";
+	
 	private boolean doARequest(String query, RequestName requestName, Computer computer){
+		logger.info(loggerDatabasePrefix + query);
 		ResultSet resultSet = null;
 		PreparedStatement preparedStatement = null;
 		boolean receivedSomething = false;
@@ -99,7 +106,6 @@ public class JdbcRequest {
 			updateParams = updateParams.substring(0, updateParams.length() - 1);
 	    }
 		String query = "UPDATE computer SET"+updateParams+" WHERE id="+computer.getId();
-		System.out.println(query);
 		this.doARequest(query, RequestName.UPDATE_COMPUTER, computer);
 	}
 	
