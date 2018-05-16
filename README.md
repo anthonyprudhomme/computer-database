@@ -4,5 +4,7 @@
 
 # Content
 
-## Access to databe with JDBC
-## CLI interface
+#### Access to database with JDBC
+#### CLI interface
+#### DAO - Service structure
+#### Maven project
