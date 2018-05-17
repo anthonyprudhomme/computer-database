@@ -11,7 +11,20 @@ import org.excilys.computer_database.persistence.RequestName;
 
 public class ComputerDaoImpl implements ComputerDao{
 
-	JdbcRequest jdbcRequest = new JdbcRequest();
+	private JdbcRequest jdbcRequest = new JdbcRequest();
+	
+	private static ComputerDaoImpl instance = null;
+	
+	private ComputerDaoImpl(){
+		jdbcRequest = new JdbcRequest();
+	}
+	
+	public static ComputerDaoImpl getInstance(){
+		if(instance == null){
+			instance = new ComputerDaoImpl();
+		}
+		return instance;
+	}
 
 	@Override
 	public ArrayList<Computer> getComputers() {

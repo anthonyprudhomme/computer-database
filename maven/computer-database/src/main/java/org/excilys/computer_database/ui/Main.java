@@ -12,9 +12,6 @@ import org.excilys.computer_database.service.CompanyService;
 import org.excilys.computer_database.service.ComputerService;
 
 public class Main {
-	
-	private static CompanyService companyService = new CompanyService();
-	private static ComputerService computerService = new ComputerService();
 
 	public static void main(String[] args){
 		
@@ -37,7 +34,7 @@ public class Main {
 			switch(optionInput){
 			case 1:
 				System.out.println("Computer list");
-				ArrayList<Computer> computers = computerService.getComputers();
+				ArrayList<Computer> computers = ComputerService.getInstance().getComputers();
 				ArrayList<String> linesOfComputers = new ArrayList<String>();
 				for(Computer computer: computers){
 					linesOfComputers.add(computer.getShortToString());
@@ -47,7 +44,7 @@ public class Main {
 
 			case 2:
 				System.out.println("Company list");
-				ArrayList<Company> companies = companyService.getCompanies();
+				ArrayList<Company> companies = CompanyService.getInstance().getCompanies();
 				ArrayList<String> linesOfCompanies = new ArrayList<String>();
 				for(Company company: companies){
 					linesOfCompanies.add(company.toString());
@@ -58,7 +55,7 @@ public class Main {
 			case 3:
 				System.out.println("Details about a computer");
 				int idInput = getAndCheckComputerId("Please enter the id of the computer you want details of:", scan);
-				Computer computerDetails = computerService.getComputerDetails(idInput);
+				Computer computerDetails = ComputerService.getInstance().getComputerDetails(idInput);
 				System.out.println(computerDetails.toString());
 				break;
 
@@ -70,13 +67,13 @@ public class Main {
 				Date introduced = askForDate("Please enter the introduced date of the computer you want to create with the format yyyy-mm-dd. Type \"skip\" to skip", scan, true);
 				Date discontinued = askForDate("Please enter the discontinued date of the computer you want to create with the format yyyy-mm-dd. Type \"skip\" to skip", scan, true);
 				Computer computerToCreate = new Computer(-1,computerNameInput, introduced, discontinued, companyId);
-				computerService.createComputer(computerToCreate);
+				ComputerService.getInstance().createComputer(computerToCreate);
 				break;
 
 			case 5:
 				System.out.println("Update a computer");
 				int idToUpdateInput = getAndCheckComputerId("Please enter the id of the computer you want to update:", scan);
-				Computer computerToUpdate = computerService.getComputerDetails(idToUpdateInput);
+				Computer computerToUpdate = ComputerService.getInstance().getComputerDetails(idToUpdateInput);
 				System.out.println(computerToUpdate.toString());
 				
 				String updatedComputerName = null;
@@ -125,13 +122,13 @@ public class Main {
 					}
 				}
 				Computer updatedComputer = new Computer(idToUpdateInput,updatedComputerName, updatedIntroduced, updatedDiscontinued, updatedCompanyId);
-				computerService.updateComputer(updatedComputer);
+				ComputerService.getInstance().updateComputer(updatedComputer);
 				break;
 
 			case 6:
 				System.out.println("Delete a computer");
 				int idToDelete = getAndCheckComputerId("Please enter the id of the computer you want to delete:", scan);
-				computerService.deleteComputer(idToDelete);
+				ComputerService.getInstance().deleteComputer(idToDelete);
 				break;
 
 			case 7:
@@ -158,7 +155,7 @@ public class Main {
 		while(!isIdValid){
 			userIdInput = askForInt(query, scan, false);
 			try {
-				isIdValid = computerService.checkIdInComputerTable(userIdInput);
+				isIdValid = ComputerService.getInstance().checkIdInComputerTable(userIdInput);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

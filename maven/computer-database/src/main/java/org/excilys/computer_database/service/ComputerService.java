@@ -8,30 +8,40 @@ import org.excilys.computer_database.model.Computer;
 
 public class ComputerService {
 	
-	ComputerDaoImpl computerDaoImpl = new ComputerDaoImpl();
+private static ComputerService instance = null;
+	
+	private ComputerService(){}
+	
+	public static ComputerService getInstance(){
+		if(instance == null){
+			instance = new ComputerService();
+		}
+		return instance;
+	}
+	
 	
 	public ArrayList<Computer> getComputers() {
-		return computerDaoImpl.getComputers();
+		return ComputerDaoImpl.getInstance().getComputers();
 	}
 
 	public Computer getComputerDetails(int id) {
-		return computerDaoImpl.getComputerDetails(id);
+		return ComputerDaoImpl.getInstance().getComputerDetails(id);
 	}
 
 	public void createComputer(Computer computer) {
-		computerDaoImpl.createComputer(computer);
+		ComputerDaoImpl.getInstance().createComputer(computer);
 	}
 
 	public void updateComputer(Computer computer) {
-		computerDaoImpl.updateComputer(computer);
+		ComputerDaoImpl.getInstance().updateComputer(computer);
 	}
 
 	public void deleteComputer(int id) {
-		computerDaoImpl.deleteComputer(id);
+		ComputerDaoImpl.getInstance().deleteComputer(id);
 	}
 	
 	public boolean checkIdInComputerTable(int id) throws SQLException {
-		return computerDaoImpl.checkIdInComputerTable(id);
+		return ComputerDaoImpl.getInstance().checkIdInComputerTable(id);
 	}
 
 }

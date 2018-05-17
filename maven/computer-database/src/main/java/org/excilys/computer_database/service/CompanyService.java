@@ -8,14 +8,23 @@ import org.excilys.computer_database.model.Company;
 
 public class CompanyService {
 	
-	CompanyDaoImpl companyDaoImpl = new CompanyDaoImpl();
+	private static CompanyService instance = null;
+	
+	private CompanyService(){}
+	
+	public static CompanyService getInstance(){
+		if(instance == null){
+			instance = new CompanyService();
+		}
+		return instance;
+	}
 	
 	public ArrayList<Company> getCompanies() {
-		return companyDaoImpl.getCompanies();
+		return CompanyDaoImpl.getInstance().getCompanies();
 	}
 	
 	public boolean checkIdInCompanyTable(int id) throws SQLException {
-		return companyDaoImpl.checkIdInCompanyTable(id);
+		return CompanyDaoImpl.getInstance().checkIdInCompanyTable(id);
 	}
 
 }

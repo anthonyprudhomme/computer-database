@@ -11,8 +11,21 @@ import org.excilys.computer_database.persistence.RequestName;
 
 public class CompanyDaoImpl implements CompanyDao{
 	
-	JdbcRequest jdbcRequest = new JdbcRequest();
-
+	private JdbcRequest jdbcRequest;
+	
+	private static CompanyDaoImpl instance = null;
+	
+	private CompanyDaoImpl(){
+		jdbcRequest = new JdbcRequest();
+	}
+	
+	public static CompanyDaoImpl getInstance(){
+		if(instance == null){
+			instance = new CompanyDaoImpl();
+		}
+		return instance;
+	}
+	
 	@Override
 	public ArrayList<Company> getCompanies() {
 		ArrayList<Company> companies = new ArrayList<Company>();
