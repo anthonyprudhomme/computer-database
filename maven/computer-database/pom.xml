@@ -13,9 +13,10 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4jVersion>1.6.1</slf4jVersion>
+		<junitVersion>3.8.1</junitVersion>
+		<mysqlVersion>8.0.11</mysqlVersion>
+		<mockitoVersion>1.9.5</mockitoVersion>
 	</properties>
-
-
 
 	<dependencies>
 
@@ -24,7 +25,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>${junitVersion}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -48,7 +49,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.11</version>
+			<version>${mysqlVersion}</version>
 		</dependency>
 
 		<!-- =========Mockito========== -->
@@ -57,13 +58,9 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.9.5</version>
+			<version>${mockitoVersion}</version>
 			<scope>test</scope>
 		</dependency>
-
-
-
-
 
 	</dependencies>
 </project>

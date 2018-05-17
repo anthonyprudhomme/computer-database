@@ -1,1 +1,7 @@
 /training/*
+/.project
+/.classpath
+/.settings/*
+/maven/computer-database/.classpath
+/maven/computer-database/.project
+/maven/computer-database/.settings/*

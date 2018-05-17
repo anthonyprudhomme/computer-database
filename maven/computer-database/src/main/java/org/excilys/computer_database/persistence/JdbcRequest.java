@@ -27,9 +27,9 @@ public class JdbcRequest {
 			}
 		}
 		catch (SQLException sqlException){
-			System.out.println("SQLException: " + sqlException.getMessage());
-			System.out.println("SQLState: " + sqlException.getSQLState());
-			System.out.println("VendorError: " + sqlException.getErrorCode());
+			logger.error("SQLException: " + sqlException.getMessage());
+			logger.error("SQLState: " + sqlException.getSQLState());
+			logger.error("VendorError: " + sqlException.getErrorCode());
 		}
 		return resultSet;
 	}
@@ -45,17 +45,27 @@ public class JdbcRequest {
 		case LIST_COMPANIES:
 		case LIST_COMPUTERS:
 		case DELETE_COMPUTER:
+			break;
 		case UPDATE_COMPUTER:
+			preparedStatement.setString(1, computer.getName());		
+			preparedStatement.setDate(2, computer.getIntroduced());
+			preparedStatement.setDate(3, computer.getDiscontinued());
+			if(computer.getCompany().getId() == -1){
+				preparedStatement.setNull(4, Types.INTEGER);
+			}else{
+				preparedStatement.setInt(4, computer.getCompany().getId());
+			}
+			preparedStatement.setInt(5, computer.getId());
 			break;
 			
 		case CREATE_COMPUTER:
 			preparedStatement.setString(1, computer.getName());		
 			preparedStatement.setDate(2, computer.getIntroduced());
 			preparedStatement.setDate(3, computer.getDiscontinued());
-			if(computer.getCompanyId() == -1){
+			if(computer.getCompany().getId() == -1){
 				preparedStatement.setNull(4, Types.INTEGER);
 			}else{
-				preparedStatement.setInt(4, computer.getCompanyId());
+				preparedStatement.setInt(4, computer.getCompany().getId());
 			}
 			break;
 			
@@ -66,6 +76,7 @@ public class JdbcRequest {
 	}
 
 	public void handleException(ResultSet resultSet, SQLException exception){
+		logger.error("Error with request.");
 		if (resultSet != null) {
 			try {
 				resultSet.close();

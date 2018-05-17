@@ -15,8 +15,8 @@ public class Company {
 	}
 	
 	public Company(ResultSet resultSet) throws SQLException {
-		this.id = resultSet.getInt("id");
-		this.name =  resultSet.getString("name");
+		this.id = resultSet.getInt("company.id");
+		this.name =  resultSet.getString("company.name");
 	}
 
 	public int getId(){

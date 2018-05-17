@@ -3,11 +3,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 // Singleton
 public class JdbcConnection {
 
 	private static JdbcConnection instance = null;
 	private Connection connection;
+	final private static Logger logger = LoggerFactory.getLogger(JdbcConnection.class);
 
 	// Called only once
 	private JdbcConnection(){
@@ -27,6 +31,7 @@ public class JdbcConnection {
 	}
 	
 	public static Connection getConnection(){
+		logger.debug("Access to JDBC connection");
 		try {
 			if(instance == null){
 				instance = new JdbcConnection();

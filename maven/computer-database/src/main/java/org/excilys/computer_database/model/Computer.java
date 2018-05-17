@@ -1,8 +1,6 @@
 package org.excilys.computer_database.model;
 
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class Computer {
 	
@@ -10,24 +8,15 @@ public class Computer {
 	private String name;
 	private Date introduced;
 	private Date discontinued;
-	private int companyId;
 	private Company company;
 	
-	public Computer(int id, String name, Date introduced, Date discontinued, int companyId) {
+	public Computer(int id, String name, Date introduced, Date discontinued, int companyId, String companyName) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.introduced = introduced;
 		this.discontinued = discontinued;
-		this.companyId = companyId;
-	}
-	
-	public Computer(ResultSet resultSet) throws SQLException {
-		this.id = resultSet.getInt("id");
-		this.name = resultSet.getString("name");
-		this.introduced = resultSet.getDate("introduced");
-		this.discontinued = resultSet.getDate("discontinued");
-		this.companyId = resultSet.getInt("company_id");
+		this.company = new Company(companyId, companyName);
 	}
 
 	public int getId() {
@@ -46,8 +35,8 @@ public class Computer {
 		return discontinued;
 	}
 
-	public int getCompanyId() {
-		return companyId;
+	public Company getCompany() {
+		return this.company;
 	}
 	
 	public void setId(int id) {
@@ -65,15 +54,15 @@ public class Computer {
 	public void setDiscontinued(Date discontinued) {
 		this.discontinued = discontinued;
 	}
-
-	public void setCompanyId(int companyId) {
-		this.companyId = companyId;
+	
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 
 	@Override
 	public String toString() {
 		return "Computer [id=" + id + ", name=" + name + ", introduced=" + introduced + ", discontinued=" + discontinued
-				+ ", companyId=" + companyId + "]";
+				+ ", company=" + company.toString() + "]";
 	}
 
 	public String getShortToString() {

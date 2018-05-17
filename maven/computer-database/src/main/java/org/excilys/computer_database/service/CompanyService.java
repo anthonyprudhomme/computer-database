@@ -1,15 +1,15 @@
 package org.excilys.computer_database.service;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.excilys.computer_database.dao.CompanyDao;
 import org.excilys.computer_database.dao.CompanyDaoImpl;
 import org.excilys.computer_database.model.Company;
 
 public class CompanyService {
 	
 	private static CompanyService instance = null;
-	
+	private CompanyDao companyDao = CompanyDaoImpl.getInstance();
 	private CompanyService(){}
 	
 	public static CompanyService getInstance(){
@@ -20,11 +20,11 @@ public class CompanyService {
 	}
 	
 	public ArrayList<Company> getCompanies() {
-		return CompanyDaoImpl.getInstance().getCompanies();
+		return companyDao.getCompanies();
 	}
 	
-	public boolean checkIdInCompanyTable(int id) throws SQLException {
-		return CompanyDaoImpl.getInstance().checkIdInCompanyTable(id);
+	public Company getCompany(int id) {
+		return companyDao.getCompany(id);
 	}
 
 }

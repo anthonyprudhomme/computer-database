@@ -1,7 +1,6 @@
 package org.excilys.computer_database.ui;
 
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -10,128 +9,46 @@ import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.model.Page;
 import org.excilys.computer_database.service.CompanyService;
 import org.excilys.computer_database.service.ComputerService;
+import org.excilys.computer_database.validation.ComputerValidationStatus;
+
+import com.mysql.cj.conf.ConnectionUrlParser.Pair;
 
 public class Main {
 
 	public static void main(String[] args){
-		
+
 		Scanner scan = new Scanner(System.in);
-		int optionInput = 0;
-		while(optionInput != 7){
+		MenuOption menuOption = null;
+		while(menuOption != MenuOption.DONE){
 
-			System.out.println("Welcome to the CLI of Computer Database!");
-			System.out.println("Pick one of the following:");
-			System.out.println("1 - List all COMPUTERS in the database.");
-			System.out.println("2 - List all COMPANIES in the database.");
-			System.out.println("3 - View detailed informations about a computer.");
-			System.out.println("4 - CREATE a computer in the database.");
-			System.out.println("5 - UPDATE informations about a computer.");
-			System.out.println("6 - DELETE a computer of the database.");
-			System.out.println("7 - I am done, thank you.");
+			menuOption = displayMenuOptionAndGetSelectedOption(scan);
 
-			optionInput = askForInt("Your choice: ", scan, false);
-
-			switch(optionInput){
-			case 1:
-				System.out.println("Computer list");
-				ArrayList<Computer> computers = ComputerService.getInstance().getComputers();
-				ArrayList<String> linesOfComputers = new ArrayList<String>();
-				for(Computer computer: computers){
-					linesOfComputers.add(computer.getShortToString());
-				}
-				new Page(linesOfComputers, scan);
+			switch(menuOption){
+			case LIST_COMPUTERS:
+				listComputers(scan);
 				break;
 
-			case 2:
-				System.out.println("Company list");
-				ArrayList<Company> companies = CompanyService.getInstance().getCompanies();
-				ArrayList<String> linesOfCompanies = new ArrayList<String>();
-				for(Company company: companies){
-					linesOfCompanies.add(company.toString());
-				}
-				new Page(linesOfCompanies, scan);
+			case LIST_COMPANIES:
+				listCompanies(scan);
 				break;
 
-			case 3:
-				System.out.println("Details about a computer");
-				int idInput = getAndCheckComputerId("Please enter the id of the computer you want details of:", scan);
-				Computer computerDetails = ComputerService.getInstance().getComputerDetails(idInput);
-				System.out.println(computerDetails.toString());
+			case COMPUTER_DETAILS:
+				computerDetails(scan);
 				break;
 
-			case 4:
-				System.out.println("Computer creation");
-				System.out.println("Please enter the name of the computer you want to create:");
-				String computerNameInput = scan.nextLine();
-				int companyId = askForInt("Please enter the id of the company that made the computer you want to add to the database. Type \"skip\" to skip.",scan, true);
-				Date introduced = askForDate("Please enter the introduced date of the computer you want to create with the format yyyy-mm-dd. Type \"skip\" to skip", scan, true);
-				Date discontinued = askForDate("Please enter the discontinued date of the computer you want to create with the format yyyy-mm-dd. Type \"skip\" to skip", scan, true);
-				Computer computerToCreate = new Computer(-1,computerNameInput, introduced, discontinued, companyId);
-				ComputerService.getInstance().createComputer(computerToCreate);
+			case CREATE_COMPUTER:
+				createComputer(scan);
 				break;
 
-			case 5:
-				System.out.println("Update a computer");
-				int idToUpdateInput = getAndCheckComputerId("Please enter the id of the computer you want to update:", scan);
-				Computer computerToUpdate = ComputerService.getInstance().getComputerDetails(idToUpdateInput);
-				System.out.println(computerToUpdate.toString());
-				
-				String updatedComputerName = null;
-				Date updatedIntroduced = null;
-				Date updatedDiscontinued = null;
-				int updatedCompanyId = -1;
-
-				int updateChoice = 0;
-
-				while(updateChoice != 5){
-					System.out.println("What do you want to update ?");
-					System.out.println("Pick one of the following:");
-					System.out.println("1 - Name");
-					System.out.println("2 - Introduced date");
-					System.out.println("3 - Discontinued date");
-					System.out.println("4 - Company id");
-					System.out.println("5 - Nothing I'm done");
-
-					updateChoice = askForInt("Your choice: ", scan, false);
-
-					switch(updateChoice){
-
-					case 1:
-						System.out.print("Please enter the new name of the computer:");
-						updatedComputerName = scan.nextLine();
-						break;
-
-					case 2:
-						updatedIntroduced = askForDate("Please enter the new introduced date of the computer with the format yyyy-mm-dd.", scan, true);
-						break;
-
-					case 3:
-						updatedDiscontinued = askForDate("Please enter the new discontinued date of the computer with the format yyyy-mm-dd.", scan, true);
-						break;
-
-					case 4:
-						updatedCompanyId = askForInt("Please enter the new id of the company that made the computer:",scan, true);
-						break;
-
-					case 5:
-						break;
-
-					default:
-						System.out.println("You didn't enter a valid option");
-						break;
-					}
-				}
-				Computer updatedComputer = new Computer(idToUpdateInput,updatedComputerName, updatedIntroduced, updatedDiscontinued, updatedCompanyId);
-				ComputerService.getInstance().updateComputer(updatedComputer);
+			case UPDATE_COMPUTER:
+				updateComputer(scan);
 				break;
 
-			case 6:
-				System.out.println("Delete a computer");
-				int idToDelete = getAndCheckComputerId("Please enter the id of the computer you want to delete:", scan);
-				ComputerService.getInstance().deleteComputer(idToDelete);
+			case DELETE_COMPUTER:
+				deleteComputer(scan);
 				break;
 
-			case 7:
+			case DONE:
 				System.out.println("Thank you for using Computer Database");
 				break;
 
@@ -139,31 +56,12 @@ public class Main {
 				System.out.println("You didn't select a valid option.");
 				break;
 			}
-			if(optionInput != 7){
+			if(menuOption != MenuOption.DONE){
 				System.out.println("\n\nPress enter to continue...");
 				scan.nextLine();
-
 			}
 		}
 		scan.close();
-
-	}
-
-	private static int getAndCheckComputerId(String query, Scanner scan) {
-		boolean isIdValid = false;
-		int userIdInput = -1;
-		while(!isIdValid){
-			userIdInput = askForInt(query, scan, false);
-			try {
-				isIdValid = ComputerService.getInstance().checkIdInComputerTable(userIdInput);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			if(!isIdValid){
-				System.out.println("The id you typed isn't in the database. Please try an other");
-			}
-		}
-		return userIdInput;
 	}
 
 	public static Date askForDate(String query, Scanner scan, boolean skippable){
@@ -211,6 +109,166 @@ public class Main {
 
 		}
 		return userInt;
+	}
+
+	public static MenuOption displayMenuOptionAndGetSelectedOption(Scanner scan){
+		System.out.println("Welcome to the CLI of Computer Database!");
+		System.out.println("Pick one of the following:");
+		System.out.println("1 - List all COMPUTERS in the database.");
+		System.out.println("2 - List all COMPANIES in the database.");
+		System.out.println("3 - View detailed informations about a computer.");
+		System.out.println("4 - CREATE a computer in the database.");
+		System.out.println("5 - UPDATE informations about a computer.");
+		System.out.println("6 - DELETE a computer of the database.");
+		System.out.println("7 - I am done, thank you.");
+		int userInputChoice = -1;
+		while(userInputChoice < 1 || userInputChoice > MenuOption.values().length){
+			userInputChoice = askForInt("Your choice: ", scan, false);
+		}
+		return MenuOption.values()[userInputChoice-1];
+	}
+
+	public static void listComputers(Scanner scan){
+		System.out.println("Computer list");
+		ArrayList<Computer> computers = ComputerService.getInstance().getComputers();
+		ArrayList<String> linesOfComputers = new ArrayList<String>();
+		for(Computer computer: computers){
+			linesOfComputers.add(computer.getShortToString());
+		}
+		new Page(linesOfComputers, scan);
+	}
+
+	private static void listCompanies(Scanner scan) {
+		System.out.println("Company list");
+		ArrayList<Company> companies = CompanyService.getInstance().getCompanies();
+		ArrayList<String> linesOfCompanies = new ArrayList<String>();
+		for(Company company: companies){
+			linesOfCompanies.add(company.toString());
+		}
+		new Page(linesOfCompanies, scan);
+	}
+
+	private static void computerDetails(Scanner scan) {
+		boolean foundSomething = false;
+		System.out.println("Details about a computer");
+		while(!foundSomething){
+			int idInput = askForInt("Please enter the id of the computer you want details of:", scan, false);
+			Computer computerDetails = ComputerService.getInstance().getComputerDetails(idInput);
+			if(computerDetails != null){
+				foundSomething = true;
+				System.out.println(computerDetails.toString());
+			}else{
+				System.out.println("The id you typed doesn't match any computer in the database.");
+			}
+		}
+	}
+
+	private static void createComputer(Scanner scan){
+		ComputerValidationStatus status = null;
+		System.out.println("Computer creation");
+		System.out.println("Please enter the name of the computer you want to create:");
+		String computerNameInput = scan.nextLine();
+		Date introduced = askForDate("Please enter the introduced date of the computer you want to create with the format yyyy-mm-dd. Type \"skip\" to skip", scan, true);
+		Date discontinued = askForDate("Please enter the discontinued date of the computer you want to create with the format yyyy-mm-dd. Type \"skip\" to skip", scan, true);
+		int companyId = askForInt("Please enter the id of the company that made the computer you want to add to the database. Type \"skip\" to skip.",scan, true);
+		Computer computerToCreate = new Computer(-1,computerNameInput, introduced, discontinued, companyId, null);
+		Pair<ComputerValidationStatus, String> result = ComputerService.getInstance().createComputer(computerToCreate);
+		status = result.left;
+		System.out.println(result.right);
+		while(status != ComputerValidationStatus.OK){
+			switch(status){
+
+			case COMPANY_ID_ERROR:
+				companyId = askForInt("Please enter the id of the company that made the computer you want to add to the database. Type \"skip\" to skip.",scan, true);
+				break;
+
+			case DATE_ERROR:
+				computerToCreate.setIntroduced(askForDate("Please enter the introduced date of the computer you want to create with the format yyyy-mm-dd. Type \"skip\" to skip", scan, true));
+				computerToCreate.setDiscontinued(askForDate("Please enter the discontinued date of the computer you want to create with the format yyyy-mm-dd. Type \"skip\" to skip", scan, true));
+				break;
+
+			default:
+				break;
+
+			}
+			result = ComputerService.getInstance().createComputer(computerToCreate);
+			status = result.left;
+			System.out.println(result.right);
+		}
+	}
+
+	private static void updateComputer(Scanner scan){
+		boolean foundSomething = false;
+		Computer computerToUpdate = null;
+		System.out.println("Update a computer");
+		while(!foundSomething){
+			int idToUpdateInput = askForInt("Please enter the id of the computer you want to update:", scan, false);
+			computerToUpdate = ComputerService.getInstance().getComputerDetails(idToUpdateInput);
+			if(computerToUpdate != null){
+				foundSomething = true;
+			}
+		}
+
+		System.out.println(computerToUpdate.toString());
+		UpdateOption updateOption = null;
+		ComputerValidationStatus status = null;
+
+		while(status != ComputerValidationStatus.OK){
+			while(updateOption != UpdateOption.DONE){
+				System.out.println("\n\nWhat do you want to update ?");
+				System.out.println("Pick one of the following:");
+				System.out.println("1 - Name");
+				System.out.println("2 - Introduced date");
+				System.out.println("3 - Discontinued date");
+				System.out.println("4 - Company id");
+				System.out.println("5 - Nothing I'm done");
+				int userInputChoice = -1;
+				while(userInputChoice < 1 || userInputChoice > UpdateOption.values().length){
+					userInputChoice = askForInt("Your choice: ", scan, false);
+				}
+
+				updateOption = UpdateOption.values()[userInputChoice-1];
+
+				switch(updateOption){
+
+				case NAME:
+					System.out.print("Please enter the new name of the computer:");
+					computerToUpdate.setName(scan.nextLine());
+					break;
+
+				case INTRODUCED:
+					computerToUpdate.setIntroduced(askForDate("Please enter the new introduced date of the computer with the format yyyy-mm-dd.", scan, true));
+					break;
+
+				case DISCONTINUED:
+					computerToUpdate.setDiscontinued(askForDate("Please enter the new discontinued date of the computer with the format yyyy-mm-dd.", scan, true));
+					break;
+
+				case COMPANY_ID:
+					computerToUpdate.getCompany().setId(askForInt("Please enter the new id of the company that made the computer:",scan, true));
+					break;
+
+				case DONE:
+					Pair<ComputerValidationStatus, String> result = ComputerService.getInstance().updateComputer(computerToUpdate);
+					status = result.left;
+					if(status != ComputerValidationStatus.OK){
+						updateOption = null;
+					}
+					System.out.println(result.right);
+					break;
+
+				default:
+					System.out.println("You didn't enter a valid option");
+					break;
+				}
+			}
+		}
+	}
+
+	private static void deleteComputer(Scanner scan){
+		System.out.println("Delete a computer");
+		int idToDelete = askForInt("Please enter the id of the computer you want to delete:", scan, false);
+		ComputerService.getInstance().deleteComputer(idToDelete);
 	}
 
 }

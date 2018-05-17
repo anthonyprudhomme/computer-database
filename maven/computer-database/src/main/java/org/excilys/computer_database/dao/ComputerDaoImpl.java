@@ -4,15 +4,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.excilys.computer_database.mapper.ComputerMapper;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.persistence.JdbcConnection;
 import org.excilys.computer_database.persistence.JdbcRequest;
 import org.excilys.computer_database.persistence.RequestName;
 
 public class ComputerDaoImpl implements ComputerDao{
-
-	private JdbcRequest jdbcRequest = new JdbcRequest();
 	
+	private static final String QUERY_GET_ALL_COMPUTERS = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name FROM computer LEFT JOIN company ON computer.company_id=company.id";
+	private static final String QUERY_COMPUTER_DETAIL = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name FROM computer LEFT JOIN company ON computer.company_id=company.id WHERE computer.id=";
+	private static final String QUERY_CREATE_COMPUTER = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?,?,?,?)";
+	private static final String QUERY_UPDATE_COMPUTER = "UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?";
+	private static final String QUERY_DELETE_COMPUTER = "DELETE FROM computer WHERE id=";
+	
+	private JdbcRequest jdbcRequest = new JdbcRequest();
 	private static ComputerDaoImpl instance = null;
 	
 	private ComputerDaoImpl(){
@@ -29,11 +35,11 @@ public class ComputerDaoImpl implements ComputerDao{
 	@Override
 	public ArrayList<Computer> getComputers() {
 		ArrayList<Computer> computers = new ArrayList<Computer>();
-		String query = "SELECT * FROM computer";
+		String query = QUERY_GET_ALL_COMPUTERS;
 		ResultSet resultSet = jdbcRequest.doARequest(query, RequestName.LIST_COMPUTERS);
 		try {
 			while (resultSet.next()) {
-				computers.add(new Computer(resultSet));
+				computers.add(ComputerMapper.getInstance().mapComputer(resultSet));
 			}
 			resultSet.close();
 			JdbcConnection.getConnection().close();
@@ -46,11 +52,11 @@ public class ComputerDaoImpl implements ComputerDao{
 	@Override
 	public Computer getComputerDetails(int id) {
 		Computer computer = null;
-		String query = "SELECT * FROM computer LEFT JOIN company ON computer.company_id=company.id WHERE computer.id="+id;
+		String query = QUERY_COMPUTER_DETAIL+id;
 		ResultSet resultSet = jdbcRequest.doARequest(query, RequestName.COMPUTER_DETAILS);
 		try {
 			while (resultSet.next()) {
-				computer = new Computer(resultSet);
+				computer = ComputerMapper.getInstance().mapComputer(resultSet);
 			}
 			resultSet.close();
 			JdbcConnection.getConnection().close();
@@ -62,52 +68,22 @@ public class ComputerDaoImpl implements ComputerDao{
 
 	@Override
 	public void createComputer(Computer computer) {
-		String query = "INSERT INTO computer (name, introduced, discontinued, company_id) "
-				+ "VALUES(?,?,?,?)";
+		String query = QUERY_CREATE_COMPUTER;
 		jdbcRequest.doARequest(query, RequestName.CREATE_COMPUTER, computer);
 
 	}
 
 	@Override
 	public void updateComputer(Computer computer) {
-		String updateParams = "";
-
-		if(computer.getName() != null){
-			updateParams+= " name=\""+computer.getName()+ "\",";	
-		}
-		if(computer.getIntroduced() != null){
-			updateParams+= " introduced=\""+computer.getIntroduced().toString()+ "\",";	
-		}
-		if(computer.getDiscontinued() != null){
-			updateParams+= " discontinued=\""+computer.getDiscontinued().toString()+ "\",";	
-		}
-		if(computer.getCompanyId() != -1){
-			updateParams+= " company_id="+computer.getCompanyId()+ ",";	
-		}
-		// Removes the last "," to have valid params
-		if (updateParams != null && updateParams.length() > 0 && updateParams.charAt(updateParams.length() - 1) == ',') {
-			updateParams = updateParams.substring(0, updateParams.length() - 1);
-		}
-		String query = "UPDATE computer SET"+updateParams+" WHERE id="+computer.getId();
+		String query = QUERY_UPDATE_COMPUTER;
 		jdbcRequest.doARequest(query, RequestName.UPDATE_COMPUTER, computer);
 
 	}
 
 	@Override
 	public void deleteComputer(int id) {
-		String query = "DELETE FROM computer WHERE id="+id;
+		String query = QUERY_DELETE_COMPUTER+id;
 		jdbcRequest.doARequest(query, RequestName.DELETE_COMPUTER);
 	}
-
-	public boolean checkIdInComputerTable(int id) throws SQLException {
-		String query = "SELECT * FROM computer WHERE id="+id;
-		ResultSet resultSet = jdbcRequest.doARequest(query, RequestName.CHECK_ID_COMPUTER);		
-		boolean isAvailable = resultSet.isBeforeFirst();
-		resultSet.close();
-		JdbcConnection.getConnection().close();
-		return isAvailable;
-	}
-
-
 
 }

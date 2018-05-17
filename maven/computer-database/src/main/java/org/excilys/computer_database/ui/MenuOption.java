@@ -1,6 +1,6 @@
-package persistence;
+package org.excilys.computer_database.ui;
 
-public enum RequestName {
+public enum MenuOption {
 	
 	LIST_COMPUTERS,
 	LIST_COMPANIES,
@@ -8,7 +8,6 @@ public enum RequestName {
 	CREATE_COMPUTER,
 	UPDATE_COMPUTER,
 	DELETE_COMPUTER,
-	CHECK_ID_COMPUTER,
-	CHECK_ID_COMPANY
+	DONE
 
 }

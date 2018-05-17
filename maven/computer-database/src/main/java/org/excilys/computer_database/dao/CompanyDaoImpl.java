@@ -11,6 +11,9 @@ import org.excilys.computer_database.persistence.RequestName;
 
 public class CompanyDaoImpl implements CompanyDao{
 	
+	private static final String QUERY_GET_ALL_COMPANIES = "SELECT company.id, company.name FROM company";
+	private static final String QUERY_GET_COMPANY = "SELECT company.id, company.name FROM company WHERE id=";
+	
 	private JdbcRequest jdbcRequest;
 	
 	private static CompanyDaoImpl instance = null;
@@ -29,7 +32,7 @@ public class CompanyDaoImpl implements CompanyDao{
 	@Override
 	public ArrayList<Company> getCompanies() {
 		ArrayList<Company> companies = new ArrayList<Company>();
-		String query = "SELECT * FROM company";
+		String query = QUERY_GET_ALL_COMPANIES;
 		ResultSet resultSet = jdbcRequest.doARequest(query, RequestName.LIST_COMPANIES);
 		try {
 			while (resultSet.next()) {
@@ -42,15 +45,22 @@ public class CompanyDaoImpl implements CompanyDao{
 		}
 		return companies;
 	}
-	
+
 	@Override
-	public boolean checkIdInCompanyTable(int id) throws SQLException {
-		String query = "SELECT * FROM company WHERE id="+id;
-		ResultSet resultSet = jdbcRequest.doARequest(query, RequestName.CHECK_ID_COMPANY);	
-		boolean isAvailable = resultSet.isBeforeFirst();
-		resultSet.close();
-		JdbcConnection.getConnection().close();
-		return isAvailable;
+	public Company getCompany(int id) {
+		Company company = null;
+		String query = QUERY_GET_COMPANY+id;
+		ResultSet resultSet = jdbcRequest.doARequest(query, RequestName.COMPANY);
+		try {
+			while (resultSet.next()) {
+				company = new Company(resultSet);
+			}
+			resultSet.close();
+			JdbcConnection.getConnection().close();
+		} catch (SQLException exception) {
+			jdbcRequest.handleException(resultSet, exception);
+		}
+		return company;
 	}
 
 }
