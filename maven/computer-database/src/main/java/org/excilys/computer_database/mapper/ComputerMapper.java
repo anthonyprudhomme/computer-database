@@ -8,25 +8,36 @@ import org.excilys.computer_database.model.Computer;
 
 public class ComputerMapper {
 
-	private static ComputerMapper instance = null;
+  private static ComputerMapper instance = null;
 
-	private ComputerMapper(){}
+  /**
+   * Singleton.
+   */
+  private ComputerMapper() { }
 
-	public static ComputerMapper getInstance(){
-		if(instance == null){
-			instance = new ComputerMapper();
-		}
-		return instance;
-	}
+  /**
+   * @return the computer associated
+   */
+  public static ComputerMapper getInstance() {
+    if (instance == null) {
+      instance = new ComputerMapper();
+    }
+    return instance;
+  }
 
-	public Computer mapComputer(ResultSet resultSet) throws SQLException{
+  /**
+   * @param resultSet the resulSet received from the JDBCRequest
+   * @return the computer associated
+   * @throws SQLException if there was an error when accessing the resulSet
+   */
+  public Computer mapComputer(ResultSet resultSet) throws SQLException {
 
-		int id = resultSet.getInt("computer.id");
-		String name = resultSet.getString("computer.name");
-		Date introduced = resultSet.getDate("computer.introduced");
-		Date discontinued = resultSet.getDate("computer.discontinued");
-		int companyId = resultSet.getInt("company.id");
-		String companyName = resultSet.getString("company.name");
-		return new Computer(id, name, introduced, discontinued, companyId, companyName);
-	}
+    int id = resultSet.getInt("computer.id");
+    String name = resultSet.getString("computer.name");
+    Date introduced = resultSet.getDate("computer.introduced");
+    Date discontinued = resultSet.getDate("computer.discontinued");
+    int companyId = resultSet.getInt("company.id");
+    String companyName = resultSet.getString("company.name");
+    return new Computer(id, name, introduced, discontinued, companyId, companyName);
+  }
 }

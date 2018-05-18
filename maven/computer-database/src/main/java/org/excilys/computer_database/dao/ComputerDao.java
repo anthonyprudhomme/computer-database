@@ -5,9 +5,25 @@ import java.util.ArrayList;
 import org.excilys.computer_database.model.Computer;
 
 public interface ComputerDao {
-	public ArrayList<Computer> getComputers();
-	public Computer getComputerDetails(int id);
-	public void createComputer(Computer computer);
-	public void updateComputer(Computer computer);
-	public void deleteComputer(int id);
+  /**
+   * @return List of computers
+   */
+  ArrayList<Computer> getComputers();
+  /**
+   * @param id Id of the computer
+   * @return Computer with id
+   */
+  Computer getComputerDetails(int id);
+  /**
+   * @param computer Computer to create
+   */
+  void createComputer(Computer computer);
+  /**
+   * @param computer Computer to update
+   */
+  void updateComputer(Computer computer);
+  /**
+   * @param id id of the computer to delete
+   */
+  void deleteComputer(int id);
 }

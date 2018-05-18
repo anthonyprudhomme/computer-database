@@ -4,8 +4,20 @@ import java.util.ArrayList;
 
 import org.excilys.computer_database.model.Company;
 
+/**
+ * @author anthony.
+ *
+ */
+
 
 public interface CompanyDao {
-	public ArrayList<Company> getCompanies();
-	public Company getCompany(int id);
+  /**
+   * @return list of companies
+   */
+  ArrayList<Company> getCompanies();
+  /**
+   * @param id of the company
+   * @return list of companies
+   */
+  Company getCompany(int id);
 }
