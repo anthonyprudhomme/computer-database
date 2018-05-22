@@ -20,7 +20,6 @@ public class Main {
    * @param args not used
    */
   public static void main(String[] args) {
-
     Scanner scan = new Scanner(System.in);
     MenuOption menuOption = null;
     while (menuOption != MenuOption.DONE) {

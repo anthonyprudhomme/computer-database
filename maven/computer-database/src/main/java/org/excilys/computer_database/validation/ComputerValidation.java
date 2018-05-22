@@ -29,7 +29,11 @@ public class ComputerValidation {
    * @return whether the company exists or not
    */
   public boolean validateCompanyId(int id) {
-    return CompanyService.getInstance().getCompany(id) != null;
+    if (id != -1) {
+      return CompanyService.getInstance().getCompany(id) != null;
+    } else {
+      return true;
+    }
   }
 
   /**

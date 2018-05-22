@@ -17,7 +17,8 @@
 		<mysqlVersion>8.0.11</mysqlVersion>
 		<mockitoVersion>1.9.5</mockitoVersion>
 		<hsqlVersion>2.4.0</hsqlVersion>
-		
+		<ibatisVersion>3.0</ibatisVersion>
+
 	</properties>
 
 	<dependencies>
@@ -28,7 +29,7 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junitVersion}</version>
-<!-- 			<scope>test</scope> -->
+			<!-- <scope>test</scope> -->
 		</dependency>
 
 		<!-- ==========SLF4J============ -->
@@ -63,16 +64,21 @@
 			<version>${mockitoVersion}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.hsqldb/hsqldb -->
 		<dependency>
-		    <groupId>org.hsqldb</groupId>
-		    <artifactId>hsqldb</artifactId>
-		    <version>${hsqlVersion}</version>
-		    <scope>test</scope>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>${hsqlVersion}</version>
+			<scope>test</scope>
 		</dependency>
 
-		
+		<!-- https://mvnrepository.com/artifact/org.apache.ibatis/ibatis-core -->
+		<dependency>
+			<groupId>org.apache.ibatis</groupId>
+			<artifactId>ibatis-core</artifactId>
+			<version>${ibatisVersion}</version>
+		</dependency>
 
 	</dependencies>
 </project>
