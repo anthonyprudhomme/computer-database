@@ -21,7 +21,12 @@ public class Page {
   public Page(ArrayList<String> lines, Scanner scan) {
     this.lines = lines;
     this.currentPage = 0;
-    this.numberOfPages = (int) (lines.size() / numberOfLinePerPage) + 1;
+    int remainder = lines.size() % numberOfLinePerPage;
+    if (remainder == 0) {
+      this.numberOfPages = (int) (lines.size() / numberOfLinePerPage);
+    } else {
+      this.numberOfPages = (int) (lines.size() / numberOfLinePerPage) + 1;
+    }
     this.scan = scan;
     this.fillPages();
     this.startPageNavigation();

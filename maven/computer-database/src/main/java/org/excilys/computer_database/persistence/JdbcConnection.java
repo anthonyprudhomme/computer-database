@@ -1,11 +1,8 @@
 package org.excilys.computer_database.persistence;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
+import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +56,11 @@ public class JdbcConnection {
    * Singleton. Used to do the connection to the database.
    */
   private JdbcConnection() {
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+    } catch (ClassNotFoundException exception) {
+      exception.printStackTrace();
+    }
     readPropertyFile();
     if (testMode) {
       setTestConfiguration();
@@ -66,7 +68,6 @@ public class JdbcConnection {
     } else {
       setDefaultConfiguration();
       System.out.println("Connecting database...");
-
       try {
         connection = DriverManager.getConnection(usedUrl, username, password);
         System.out.println("Database connected!");
@@ -80,27 +81,11 @@ public class JdbcConnection {
    * Read the .properties file to get credentials.
    */
   private void readPropertyFile() {
-    final Properties prop = new Properties();
-    InputStream input = null;
-    try {
-      input = new FileInputStream("config.properties");
-      prop.load(input);
-      defaultUrl = prop.getProperty("default.url");
-      username = prop.getProperty("default.username");
-      password = prop.getProperty("default.password");
-      testUrl = prop.getProperty("test.url");
-
-    } catch (final IOException ex) {
-      ex.printStackTrace();
-    } finally {
-      if (input != null) {
-        try {
-          input.close();
-        } catch (final IOException e) {
-          e.printStackTrace();
-        }
-      }
-    }
+      ResourceBundle resourceBundle = ResourceBundle.getBundle("config");
+      defaultUrl = resourceBundle.getString("default.url");
+      username = resourceBundle.getString("default.username");
+      password = resourceBundle.getString("default.password");
+      testUrl = resourceBundle.getString("test.url");
   }
 
   /**
