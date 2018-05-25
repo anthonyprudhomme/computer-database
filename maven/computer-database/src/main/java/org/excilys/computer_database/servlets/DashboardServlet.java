@@ -15,6 +15,8 @@ import org.excilys.computer_database.service.ComputerService;
 @WebServlet("/list-computer")
 public class DashboardServlet extends HttpServlet {
 
+  private static final long serialVersionUID = 1L;
+
   /**
    * Overload of doGet method.
    */

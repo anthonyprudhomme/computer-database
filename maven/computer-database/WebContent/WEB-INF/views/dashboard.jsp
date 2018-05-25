@@ -14,8 +14,8 @@
 <body>
 	<header class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container">
-			<a class="navbar-brand" href=<c:url value="list-computer" />> Application -
-				Computer Database </a>
+			<a class="navbar-brand" href=<c:url value="list-computer" />>
+				Application - Computer Database </a>
 		</div>
 	</header>
 
@@ -36,8 +36,9 @@
 					</form>
 				</div>
 				<div class="pull-right">
-					<a class="btn btn-success" id="addComputer" href=<c:url value="add-computer" />>Add
-						Computer</a> <a class="btn btn-default" id="editComputer" href="#"
+					<a class="btn btn-success" id="addComputer"
+						href=<c:url value="add-computer" />>Add Computer</a> <a
+						class="btn btn-default" id="editComputer" href="#"
 						onclick="$.fn.toggleEditMode();">Edit</a>
 				</div>
 			</div>
@@ -76,10 +77,11 @@
 						<tr>
 							<td class="editMode"><input type="checkbox" name="cb"
 								class="cb" value="0"></td>
-							<td><a href="editComputer.html" onclick="">${computer.name}</a></td>
-							<td>${computer.introduced}</td>
-							<td>${computer.discontinued}</td>
-							<td>${computer.company.name}</td>
+							<td><a href="editComputer.html" onclick=""><c:out
+										value="${computer.name}" /></a></td>
+							<td><c:out value="${computer.introduced}" /></td>
+							<td><c:out value="${computer.discontinued}" /></td>
+							<td><c:out value="${computer.company.name}" /></td>
 
 						</tr>
 					</c:forEach>
@@ -109,6 +111,7 @@
 				<button type="button" class="btn btn-default">50</button>
 				<button type="button" class="btn btn-default">100</button>
 			</div>
+		</div>
 	</footer>
 	<script src="js/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
