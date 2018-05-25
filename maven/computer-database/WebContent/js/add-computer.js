@@ -55,7 +55,6 @@ function setSuccessClass(element, success){
 }
 
 function checkFields(){
-	console.log("checking");
 	nameValid = $('#computerName').val().length != 0;
 	setSuccessClass($('#computerName'), nameValid);
 	checkFormValid();
