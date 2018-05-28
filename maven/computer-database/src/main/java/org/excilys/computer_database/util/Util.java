@@ -18,7 +18,7 @@ public class Util {
    * @return Whether the string is possible to cast or not
    */
   public static boolean isInteger(String s, int radix) {
-    if (s.isEmpty()) {
+    if (s == null || s.isEmpty()) {
       return false;
     }
     for (int i = 0; i < s.length(); i++) {
