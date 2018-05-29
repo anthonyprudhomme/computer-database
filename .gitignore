@@ -5,9 +5,5 @@
 /maven/computer-database/.classpath
 /maven/computer-database/.project
 /maven/computer-database/.settings/*
-/maven/computer-database/
-.project
-.classpath
-.settings/*
 /maven/computer-database/src/main/resources/config.properties
 /maven/computer-database/src/main/resources/testConfig.properties
