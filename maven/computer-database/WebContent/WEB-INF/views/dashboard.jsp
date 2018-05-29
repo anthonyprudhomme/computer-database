@@ -1,4 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="/WEB-INF/tagLibs/linkLib.tld" prefix="linkLib"%>
+<%@ taglib uri="/WEB-INF/tagLibs/pageLib.tld" prefix="pagination"%>
+
+
 <!DOCTYPE html>
 
 <html>
@@ -22,7 +26,7 @@
 	<section id="main">
 		<div class="container">
 			<h1 id="homeTitle">
-				<c:out value="${computers.size()}" />
+				<c:out value="${numberOfComputers}" />
 				Computers found
 			</h1>
 			<div id="actions" class="form-horizontal">
@@ -93,23 +97,16 @@
 
 	<footer class="navbar-fixed-bottom">
 		<div class="container text-center">
-			<ul class="pagination">
-				<li><a href="#" aria-label="Previous"> <span
-						aria-hidden="true">&laquo;</span>
-				</a></li>
-				<li><a href="#">1</a></li>
-				<li><a href="#">2</a></li>
-				<li><a href="#">3</a></li>
-				<li><a href="#">4</a></li>
-				<li><a href="#">5</a></li>
-				<li><a href="#" aria-label="Next"> <span aria-hidden="true">&raquo;</span>
-				</a></li>
-			</ul>
+
+			<c:url var="uri" value="/list-computer" />
+			
+			<pagination:display maxLinks="5" currentPage="${currentPage}"
+				numberOfPages="${numberOfPages}" uri="${uri}" numberOfItemPerPage="${numberOfItemPerPage}" />
 
 			<div class="btn-group btn-group-sm pull-right" role="group">
-				<button type="button" class="btn btn-default">10</button>
-				<button type="button" class="btn btn-default">50</button>
-				<button type="button" class="btn btn-default">100</button>
+				<a type="button" class="btn btn-default" href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="10"/> >10</a>
+				<a type="button" class="btn btn-default" href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="50"/> >50</a>
+				<a type="button" class="btn btn-default" href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="100"/> >100</a>
 			</div>
 		</div>
 	</footer>

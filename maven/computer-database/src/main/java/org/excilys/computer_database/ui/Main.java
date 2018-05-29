@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import org.excilys.computer_database.model.Company;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.model.Page;
 import org.excilys.computer_database.service.CompanyService;
@@ -156,12 +155,8 @@ public class Main {
    */
   public static void listComputers(Scanner scan) {
     System.out.println("Computer list");
-    ArrayList<Computer> computers = ComputerService.getInstance().getComputers();
-    ArrayList<String> linesOfComputers = new ArrayList<String>();
-    for (Computer computer: computers) {
-      linesOfComputers.add(computer.getShortToString());
-    }
-    new Page(linesOfComputers, scan);
+    ArrayList<Object> computers = new ArrayList<Object>(ComputerService.getInstance().getComputers());
+    new Page(computers, scan).startPageNavigation();
   }
 
   /**
@@ -170,12 +165,8 @@ public class Main {
    */
   private static void listCompanies(Scanner scan) {
     System.out.println("Company list");
-    ArrayList<Company> companies = CompanyService.getInstance().getCompanies();
-    ArrayList<String> linesOfCompanies = new ArrayList<String>();
-    for (Company company: companies) {
-      linesOfCompanies.add(company.toString());
-    }
-    new Page(linesOfCompanies, scan);
+    ArrayList<Object> companies = new ArrayList<Object>(CompanyService.getInstance().getCompanies());
+    new Page(companies, scan).startPageNavigation();
   }
 
   /**

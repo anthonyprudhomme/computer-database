@@ -56,16 +56,21 @@ public class JdbcConnection {
    * Singleton. Used to do the connection to the database.
    */
   private JdbcConnection() {
-    try {
-      Class.forName("com.mysql.jdbc.Driver");
-    } catch (ClassNotFoundException exception) {
-      exception.printStackTrace();
-    }
     readPropertyFile();
     if (testMode) {
+      try {
+        Class.forName("org.hsqldb.jdbc.JDBCDriver");
+      } catch (ClassNotFoundException exception) {
+        exception.printStackTrace();
+      }
       setTestConfiguration();
       connection = getTestConnection();
     } else {
+      try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+      } catch (ClassNotFoundException exception) {
+        exception.printStackTrace();
+      }
       setDefaultConfiguration();
       System.out.println("Connecting database...");
       try {

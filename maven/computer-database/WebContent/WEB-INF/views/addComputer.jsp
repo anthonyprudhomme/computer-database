@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Computer Database</title>
+<title>Add Computer</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
 <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -40,7 +40,7 @@
 							</div>
 							<div class="form-group has-success">
 								<label for="introduced">Introduced date (yyyy-mm-dd)</label> <input
-									type="date" class="form-control" id="introduced"
+									type="text" class="form-control" id="introduced"
 									name="introduced" placeholder="Introduced date"
 									value="<c:out value="${param.introduced}"/>">
 								<div class="input-error" style="display: none">The date
@@ -48,7 +48,7 @@
 							</div>
 							<div class="form-group has-success">
 								<label for="discontinued">Discontinued date (yyyy-mm-dd)</label>
-								<input type="date" class="form-control" id="discontinued"
+								<input type="text" class="form-control" id="discontinued"
 									name="discontinued" placeholder="Discontinued date"
 									value="<c:out value="${param.discontinued}"/>">
 								<div class="input-error" style="display: none">The date
