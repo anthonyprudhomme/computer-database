@@ -23,6 +23,7 @@
 		<jsp.version>2.2</jsp.version>
 		<tlib.version>1.1.2</tlib.version>
 		<selenium.version>3.12.0</selenium.version>
+		<hikari.version>3.1.0</hikari.version>
 
 	</properties>
 
@@ -116,8 +117,12 @@
 			<version>${selenium.version}</version>
 		</dependency>
 
-
-
+		<!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>${hikari.version}</version>
+		</dependency>
 
 	</dependencies>
 	<build>
