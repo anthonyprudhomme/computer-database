@@ -18,8 +18,8 @@ import org.excilys.computer_database.validation.ComputerValidationStatus;
 
 import com.mysql.cj.conf.ConnectionUrlParser.Pair;
 
-@WebServlet("/add-computer")
-public class AddComputerServlet extends HttpServlet {
+@WebServlet("/edit-computer")
+public class EditComputerServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
   public static final String COMPUTER_NAME = "computerName";
@@ -27,7 +27,7 @@ public class AddComputerServlet extends HttpServlet {
   public static final String DISCONTINUED = "discontinued";
   public static final String COMPANY_ID = "companyId";
 
-  public static final String ADD_COMPUTER = "/WEB-INF/views/addComputer.jsp";
+  public static final String EDIT_COMPUTER = "/WEB-INF/views/editComputer.jsp";
   public static final String DASHBOARD = "list-computer";
 
   /**
@@ -35,22 +35,27 @@ public class AddComputerServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    int id = Integer.valueOf(request.getParameter("id"));
+    Computer computer = ComputerService.getInstance().getComputerDetails(id);
+    request.setAttribute("computer", computer);
     ArrayList<Company> companies = CompanyService.getInstance().getCompanies();
     request.setAttribute("companies", companies);
-    this.getServletContext().getRequestDispatcher(ADD_COMPUTER).forward(request, response);
+    this.getServletContext().getRequestDispatcher(EDIT_COMPUTER).forward(request, response);
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String computerName = request.getParameter(COMPUTER_NAME);
+    System.out.println("computerName: " + computerName);
     Date introduced = getDateFromInput(request, INTRODUCED);
     Date discontinued = getDateFromInput(request, DISCONTINUED);
 
     int companyId = Integer.valueOf(request.getParameter(COMPANY_ID));
     Company company = CompanyService.getInstance().getCompany(companyId);
-
-    Computer computer = new Computer(-1, computerName, introduced, discontinued, companyId, company.getName());
-    Pair<ComputerValidationStatus, String> result = ComputerService.getInstance().createComputer(computer);
+    int id = Integer.valueOf(request.getParameter("id"));
+    System.out.println("id: " + id);
+    Computer computer = new Computer(id, computerName, introduced, discontinued, companyId, company.getName());
+    Pair<ComputerValidationStatus, String> result = ComputerService.getInstance().updateComputer(computer);
 
     if (result.left == ComputerValidationStatus.OK) {
       ArrayList<Computer> computers = ComputerService.getInstance().getComputers();
@@ -62,7 +67,7 @@ public class AddComputerServlet extends HttpServlet {
       ArrayList<Company> companies = CompanyService.getInstance().getCompanies();
       request.setAttribute("companies", companies);
       request.setAttribute("error", result.right);
-      this.getServletContext().getRequestDispatcher(ADD_COMPUTER).forward(request, response);
+      this.getServletContext().getRequestDispatcher(EDIT_COMPUTER).forward(request, response);
     }
   }
 
@@ -75,7 +80,7 @@ public class AddComputerServlet extends HttpServlet {
   public Date getDateFromInput(HttpServletRequest request, String paramName) {
     Date date = null;
     String userInput = request.getParameter(paramName);
-    if (!userInput.isEmpty()) {
+    if (userInput != null && !userInput.isEmpty()) {
       date = Date.valueOf(request.getParameter(paramName));
     }
     return date;

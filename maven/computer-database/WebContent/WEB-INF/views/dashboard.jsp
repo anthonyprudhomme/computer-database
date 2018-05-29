@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="/WEB-INF/tagLibs/linkLib.tld" prefix="linkLib"%>
 <%@ taglib uri="/WEB-INF/tagLibs/pageLib.tld" prefix="pagination"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 
 <!DOCTYPE html>
@@ -81,8 +82,9 @@
 						<tr>
 							<td class="editMode"><input type="checkbox" name="cb"
 								class="cb" value="0"></td>
-							<td><a href="editComputer.html" onclick=""><c:out
-										value="${computer.name}" /></a></td>
+							<td><a
+								href=<c:url value="edit-computer?id=${computer.id}" />
+								onclick=""><c:out value="${computer.name}" /></a></td>
 							<td><c:out value="${computer.introduced}" /></td>
 							<td><c:out value="${computer.discontinued}" /></td>
 							<td><c:out value="${computer.company.name}" /></td>
@@ -99,14 +101,18 @@
 		<div class="container text-center">
 
 			<c:url var="uri" value="/list-computer" />
-			
+
 			<pagination:display maxLinks="5" currentPage="${currentPage}"
-				numberOfPages="${numberOfPages}" uri="${uri}" numberOfItemPerPage="${numberOfItemPerPage}" />
+				numberOfPages="${numberOfPages}" uri="${uri}"
+				numberOfItemPerPage="${numberOfItemPerPage}" />
 
 			<div class="btn-group btn-group-sm pull-right" role="group">
-				<a type="button" class="btn btn-default" href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="10"/> >10</a>
-				<a type="button" class="btn btn-default" href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="50"/> >50</a>
-				<a type="button" class="btn btn-default" href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="100"/> >100</a>
+				<a type="button" class="btn btn-default"
+					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="10"/>>10</a>
+				<a type="button" class="btn btn-default"
+					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="50"/>>50</a>
+				<a type="button" class="btn btn-default"
+					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="100"/>>100</a>
 			</div>
 		</div>
 	</footer>
