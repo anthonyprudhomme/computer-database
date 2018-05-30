@@ -42,14 +42,13 @@ public class EditComputerServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     Computer computer = Util.getComputerFromRequest(request);
+    System.out.println("Date i: " + computer.getIntroduced().toString());
     Pair<ComputerValidationStatus, String> result = ComputerService.getInstance().updateComputer(computer);
 
     if (result.left == ComputerValidationStatus.OK) {
       ArrayList<Computer> computers = ComputerService.getInstance().getComputers();
       request.setAttribute("computers", computers);
       response.sendRedirect(DASHBOARD);
-
-      //this.getServletContext().getRequestDispatcher(DASHBOARD).forward(request, response);
     } else {
       ArrayList<Company> companies = CompanyService.getInstance().getCompanies();
       request.setAttribute("companies", companies);

@@ -49,8 +49,6 @@ public class AddComputerServlet extends HttpServlet {
       ArrayList<Computer> computers = ComputerService.getInstance().getComputers();
       request.setAttribute("computers", computers);
       response.sendRedirect(DASHBOARD);
-
-      //this.getServletContext().getRequestDispatcher(DASHBOARD).forward(request, response);
     } else {
       ArrayList<Company> companies = CompanyService.getInstance().getCompanies();
       request.setAttribute("companies", companies);
