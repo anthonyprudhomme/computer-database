@@ -1,16 +1,28 @@
-//Bind the event handler to the "submit" JavaScript event
 var nameValid = false;
-var introducedValid = true;
-var discontinuedValid = true;
+var introducedValid = false;
+var discontinuedValid = false;
+
+checkComputerName();
+checkIntroduced();
+checkDiscontinued();
 checkFormValid();
 
+
 $('#computerName').keyup(function(){
+	checkComputerName();
+});
+
+function checkComputerName(){
 	nameValid = $('#computerName').val().length != 0;
 	setSuccessClass($('#computerName'), nameValid);
 	checkFormValid();
-});
+}
 
 $('#introduced').keyup(function(){
+	checkIntroduced();
+});
+
+function checkIntroduced(){
 	if($('#introduced').val().length != 0){
 		introducedValid = isValidDate($('#introduced').val());
 	}else{
@@ -18,17 +30,21 @@ $('#introduced').keyup(function(){
 	}
 	setSuccessClass($('#introduced'), introducedValid);
 	checkFormValid();
-});
+}
 
 $('#discontinued').keyup(function(){
-	if($('#discontinued').val().length != 0){
-		introducedValid = isValidDate($('#discontinued').val());
-	}else{
-		introducedValid = true;
-	}
-	setSuccessClass($('#discontinued'), introducedValid);
-	checkFormValid();
+	checkDiscontinued();
 });
+
+function checkDiscontinued(){
+	if($('#discontinued').val().length != 0){
+		discontinuedValid = isValidDate($('#discontinued').val());
+	}else{
+		discontinuedValid = true;
+	}
+	setSuccessClass($('#discontinued'), discontinuedValid);
+	checkFormValid();
+}
 
 function isValidDate(dateAsString) {
 	var parts = dateAsString.split('-');
@@ -59,4 +75,3 @@ function checkFields(){
 	setSuccessClass($('#computerName'), nameValid);
 	checkFormValid();
 }
-
