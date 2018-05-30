@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 //import org.excilys.computer_database.persistence.JdbcConnection;
 //import org.excilys.computer_database.validation.DatabaseTest;
