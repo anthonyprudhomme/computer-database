@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 //import org.excilys.computer_database.persistence.JdbcConnection;
 //import org.excilys.computer_database.validation.DatabaseTest;
@@ -132,6 +133,7 @@ public class Selenium {
    */
   @Test
   public void checkUpdateComputerWithValidData() {
+    driver.get(BASE_URL);
     goToEditPage();
     String introducedDateToUpdate = "2003-10-10";
     fillFormWithDataAndSubmit(null, introducedDateToUpdate, null);
@@ -143,6 +145,7 @@ public class Selenium {
    */
   @Test
   public void checkUpdateComputerWithInvalidData() {
+    driver.get(BASE_URL);
     goToEditPage();
     String introducedDateToUpdate = "2003-10-10";
     String discontinuedDateToUpdate = "2002-10-10";
@@ -151,6 +154,53 @@ public class Selenium {
     boolean discontinuedIsTheSame = checkDiscontinuedInList(discontinuedDateToUpdate);
     assertFalse(introducedIsTheSame && discontinuedIsTheSame);
   }
+
+  /**
+   * Check if the computer is properly deleted.
+   */
+  @Test
+  public void checkDeleteComputer() {
+    driver.get(BASE_URL);
+    int numberOfComputer = getTotalNumberOfComputers();
+    goToEditMode();
+    selectComputerToDelete();
+    clickDeleteIcon();
+    driver.switchTo().alert().accept();
+    driver.get(BASE_URL);
+    try {
+      Thread.sleep(300);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    int newNumberOfComputer = getTotalNumberOfComputers();
+    System.out.println("numberOfComputer: " + numberOfComputer + " newNumberOfComputer: " + newNumberOfComputer);
+    assertEquals(numberOfComputer, newNumberOfComputer + 1);
+  }
+
+  /**
+   * Go to the edit mode.
+   */
+  private void goToEditMode() {
+    driver.findElement(By.id("editComputer")).click();
+  }
+
+  /**
+   * Check the box of the computer to delete.
+   */
+  private void selectComputerToDelete() {
+    ArrayList<WebElement> rowsOfTable = new ArrayList<>(driver.findElement(By.id("results")).findElements(By.tagName("tr")));
+    ArrayList<WebElement> colsOfFirstRow = new ArrayList<>(rowsOfTable.get(0).findElements(By.tagName("td")));
+    colsOfFirstRow.get(0).findElement(By.tagName("input")).click();
+  }
+
+  /**
+   * Click on the delete icon.
+   */
+  private void clickDeleteIcon() {
+    WebElement element = driver.findElement(By.tagName("thead"));
+    element.findElement(By.tagName("a")).click();
+  }
+
 
   /**
    * Go to the add page.

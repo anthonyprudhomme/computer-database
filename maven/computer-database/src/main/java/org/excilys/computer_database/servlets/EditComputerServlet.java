@@ -42,7 +42,6 @@ public class EditComputerServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     Computer computer = Util.getComputerFromRequest(request);
-    System.out.println("Date i: " + computer.getIntroduced().toString());
     Pair<ComputerValidationStatus, String> result = ComputerService.getInstance().updateComputer(computer);
 
     if (result.left == ComputerValidationStatus.OK) {
