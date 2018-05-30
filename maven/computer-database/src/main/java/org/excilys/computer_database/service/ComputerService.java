@@ -109,4 +109,21 @@ public class ComputerService {
     computerDao.deleteComputer(id);
   }
 
+  /**
+   * Count the number of computers.
+   * @return the number of computers
+   */
+  public int countComputers() {
+    return computerDao.countComputers();
+  }
+/**
+ * Returns the list of computers at the specific page.
+ * @param numberOfItemPerPage The number of items per pages.
+ * @param page The number of the page.
+ * @return the list of computers at the specific page.
+ */
+  public ArrayList<Computer> getComputersAtPage(int numberOfItemPerPage, int page) {
+    return computerDao.getComputersAtPage(numberOfItemPerPage, page);
+  }
+
 }

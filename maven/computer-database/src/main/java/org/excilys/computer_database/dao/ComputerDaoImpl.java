@@ -17,6 +17,8 @@ public class ComputerDaoImpl implements ComputerDao {
   private static final String QUERY_CREATE_COMPUTER = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?,?,?,?)";
   private static final String QUERY_UPDATE_COMPUTER = "UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?";
   private static final String QUERY_DELETE_COMPUTER = "DELETE FROM computer WHERE id=";
+  private static final String QUERY_COUNT_COMPUTER = "SELECT COUNT(computer.id) FROM computer";
+  private static final String QUERY_GET_COMPUTERS_AT_PAGE = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name FROM computer LEFT JOIN company ON computer.company_id=company.id LIMIT ? OFFSET ?";
 
   private JdbcRequest jdbcRequest = new JdbcRequest();
   private static ComputerDaoImpl instance = null;
@@ -39,9 +41,25 @@ public class ComputerDaoImpl implements ComputerDao {
 
   @Override
   public ArrayList<Computer> getComputers() {
-    ArrayList<Computer> computers = new ArrayList<Computer>();
     String query = QUERY_GET_ALL_COMPUTERS;
     ResultSet resultSet = jdbcRequest.doARequest(query, RequestName.LIST_COMPUTERS);
+    return getListOfComputersFromResultSet(resultSet);
+  }
+
+  @Override
+  public ArrayList<Computer> getComputersAtPage(int numberOfItemPerPage, int page) {
+    String query = QUERY_GET_COMPUTERS_AT_PAGE;
+    ResultSet reseultSet = jdbcRequest.itemsAtPageRequest(numberOfItemPerPage, page, query, RequestName.LIST_COMPUTERS_AT_PAGE);
+    return getListOfComputersFromResultSet(reseultSet);
+  }
+
+  /**
+   * Return the list of computers from the resultSet object.
+   * @param resultSet ResultSet object from the request.
+   * @return the list of computers from the resultSet object.
+   */
+  private ArrayList<Computer> getListOfComputersFromResultSet(ResultSet resultSet) {
+    ArrayList<Computer> computers = new ArrayList<Computer>();
     try {
       while (resultSet.next()) {
         computers.add(ComputerMapper.getInstance().mapComputer(resultSet));
@@ -89,6 +107,12 @@ public class ComputerDaoImpl implements ComputerDao {
   public void deleteComputer(int id) {
     String query = QUERY_DELETE_COMPUTER + id;
     jdbcRequest.doARequest(query, RequestName.DELETE_COMPUTER);
+  }
+
+  @Override
+  public int countComputers() {
+    String query = QUERY_COUNT_COMPUTER;
+    return jdbcRequest.countRequest(query, RequestName.COUNT_COMPUTERS);
   }
 
 }
