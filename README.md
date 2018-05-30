@@ -11,4 +11,7 @@
 #### Following checkstyle rules
 #### Web-ui using Servlets, JSPs and JTSL
 #### jQuery secured validation
+#### Hikari CP
+#### Selenium tests
+#### Computer Creation/Deletion/Edition
 

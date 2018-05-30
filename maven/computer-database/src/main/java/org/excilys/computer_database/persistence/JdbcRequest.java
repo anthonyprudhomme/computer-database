@@ -51,7 +51,7 @@ public class JdbcRequest {
 
   /**
    * Prepare the preparedStatement.
-   * @param preparedStatement preparedStatement you wanna prepare
+   * @param preparedStatement preparedStatement you want to prepare
    * @param requestName type of request you are doing
    * @param computer computer parameter
    * @return the preparedStatement
@@ -108,5 +108,59 @@ public class JdbcRequest {
       resultSet = null;
     }
     exception.printStackTrace();
+  }
+
+  /**
+   * Count the number of computers.
+   * @param query query to send to the database
+   * @param requestName Type of request
+   * @return the number of computers
+   */
+  public int countRequest(String query, RequestName requestName) {
+    int count = -1;
+    LOGGER.info(loggerDatabasePrefix + query);
+    ResultSet resultSet = null;
+    PreparedStatement preparedStatement = null;
+    try {
+      preparedStatement = JdbcConnection.getConnection().prepareStatement(query);
+      if (preparedStatement.execute()) {
+        resultSet = preparedStatement.getResultSet();
+        count = resultSet.getInt("total");
+      }
+    } catch (SQLException sqlException) {
+      LOGGER.error("SQLException: " + sqlException.getMessage());
+      LOGGER.error("SQLState: " + sqlException.getSQLState());
+      LOGGER.error("VendorError: " + sqlException.getErrorCode());
+    }
+    return count;
+  }
+
+  /**
+   * Return the result from the query to get the items at a specified page.
+   * @param limit The number of items you want per page
+   * @param page the page number
+   * @param query the query you want to ask to the database
+   * @param requestName The type of request
+   * @return the result from the query to get the items at a specified page.
+   */
+  public ResultSet itemsAtPageRequest(int limit, int page, String query, RequestName requestName) {
+
+    ResultSet resultSet = null;
+    PreparedStatement preparedStatement = null;
+    try {
+      preparedStatement = JdbcConnection.getConnection().prepareStatement(query);
+      preparedStatement.setInt(1, limit);
+      int offset = limit * (page - 1);
+      preparedStatement.setInt(2, offset);
+      LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
+      if (preparedStatement.execute()) {
+        resultSet = preparedStatement.getResultSet();
+      }
+    } catch (SQLException sqlException) {
+      LOGGER.error("SQLException: " + sqlException.getMessage());
+      LOGGER.error("SQLState: " + sqlException.getSQLState());
+      LOGGER.error("VendorError: " + sqlException.getErrorCode());
+    }
+    return resultSet;
   }
 }

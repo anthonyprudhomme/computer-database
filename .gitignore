@@ -6,3 +6,5 @@
 /maven/computer-database/.project
 /maven/computer-database/.settings/*
 /maven/computer-database/config.properties
+maven/computer-database/src/main/resources/testConfig.properties
+maven/computer-database/src/main/resources/config.properties

@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.excilys.computer_database.model.Computer;
-import org.excilys.computer_database.model.Page;
 import org.excilys.computer_database.service.ComputerService;
 import org.excilys.computer_database.util.Util;
 
@@ -29,11 +28,10 @@ public class DashboardServlet extends HttpServlet {
       numberOfItemPerPage = Integer.valueOf(request.getParameter("numberOfItemPerPage"));
     }
     request.setAttribute("numberOfItemPerPage", numberOfItemPerPage);
-    Page page = new Page(new ArrayList<Object>(ComputerService.getInstance().getComputers()), numberOfItemPerPage);
-    int numberOfComputers = page.getNumberOfItems();
+    int numberOfComputers = ComputerService.getInstance().countComputers();
     request.setAttribute("numberOfComputers", numberOfComputers);
 
-    int numberOfPages = page.getNumberOfPages();
+    int numberOfPages = (int) Math.ceil(numberOfComputers / numberOfItemPerPage);
     request.setAttribute("numberOfPages", numberOfPages);
 
     int currentPage = 1;
@@ -42,7 +40,7 @@ public class DashboardServlet extends HttpServlet {
     }
     request.setAttribute("currentPage", currentPage);
 
-    ArrayList<Computer> computersOfPage = page.getComputersForPage(currentPage - 1);
+    ArrayList<Computer> computersOfPage = ComputerService.getInstance().getComputersAtPage(numberOfItemPerPage, currentPage);
     request.setAttribute("computers", computersOfPage);
     this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(request, response);
 

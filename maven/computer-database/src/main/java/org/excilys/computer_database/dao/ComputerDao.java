@@ -10,10 +10,22 @@ public interface ComputerDao {
    */
   ArrayList<Computer> getComputers();
   /**
+   * Return the list of computers for the defined page.
+   * @param numberOfItemPerPage Number of items per page.
+   * @param page Page number
+   * @return the list of computers for the defined page.
+   */
+  ArrayList<Computer> getComputersAtPage(int numberOfItemPerPage, int page);
+  /**
    * @param id Id of the computer
    * @return Computer with id
    */
   Computer getComputerDetails(int id);
+  /**
+   * Count the number of computers.
+   * @return the number of computers
+   */
+  int countComputers();
   /**
    * @param computer Computer to create
    */
