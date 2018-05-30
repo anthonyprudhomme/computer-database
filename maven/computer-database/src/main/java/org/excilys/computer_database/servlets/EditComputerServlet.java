@@ -1,7 +1,6 @@
 package org.excilys.computer_database.servlets;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
@@ -14,6 +13,7 @@ import org.excilys.computer_database.model.Company;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.service.CompanyService;
 import org.excilys.computer_database.service.ComputerService;
+import org.excilys.computer_database.util.Util;
 import org.excilys.computer_database.validation.ComputerValidationStatus;
 
 import com.mysql.cj.conf.ConnectionUrlParser.Pair;
@@ -22,10 +22,6 @@ import com.mysql.cj.conf.ConnectionUrlParser.Pair;
 public class EditComputerServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
-  public static final String COMPUTER_NAME = "computerName";
-  public static final String INTRODUCED = "introduced";
-  public static final String DISCONTINUED = "discontinued";
-  public static final String COMPANY_ID = "companyId";
 
   public static final String EDIT_COMPUTER = "/WEB-INF/views/editComputer.jsp";
   public static final String DASHBOARD = "list-computer";
@@ -45,16 +41,7 @@ public class EditComputerServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String computerName = request.getParameter(COMPUTER_NAME);
-    System.out.println("computerName: " + computerName);
-    Date introduced = getDateFromInput(request, INTRODUCED);
-    Date discontinued = getDateFromInput(request, DISCONTINUED);
-
-    int companyId = Integer.valueOf(request.getParameter(COMPANY_ID));
-    Company company = CompanyService.getInstance().getCompany(companyId);
-    int id = Integer.valueOf(request.getParameter("id"));
-    System.out.println("id: " + id);
-    Computer computer = new Computer(id, computerName, introduced, discontinued, companyId, company.getName());
+    Computer computer = Util.getComputerFromRequest(request);
     Pair<ComputerValidationStatus, String> result = ComputerService.getInstance().updateComputer(computer);
 
     if (result.left == ComputerValidationStatus.OK) {
@@ -69,20 +56,5 @@ public class EditComputerServlet extends HttpServlet {
       request.setAttribute("error", result.right);
       this.getServletContext().getRequestDispatcher(EDIT_COMPUTER).forward(request, response);
     }
-  }
-
-  /**
-   * Return the date from the user input. Returns null if nothing was entered.
-   * @param request HttpServletRequest to get the param
-   * @param paramName name of the param you want to check in the request
-   * @return the date.
-   */
-  public Date getDateFromInput(HttpServletRequest request, String paramName) {
-    Date date = null;
-    String userInput = request.getParameter(paramName);
-    if (userInput != null && !userInput.isEmpty()) {
-      date = Date.valueOf(request.getParameter(paramName));
-    }
-    return date;
   }
 }

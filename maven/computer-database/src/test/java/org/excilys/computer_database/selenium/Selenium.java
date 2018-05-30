@@ -1,23 +1,26 @@
 package org.excilys.computer_database.selenium;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
-import org.excilys.computer_database.persistence.JdbcConnection;
-import org.excilys.computer_database.validation.DatabaseTest;
+//import org.excilys.computer_database.persistence.JdbcConnection;
+//import org.excilys.computer_database.validation.DatabaseTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class Selenium {
 
   private static WebDriver driver;
-  private String baseUrl = "http://localhost:8081/computer-database/list-computer";
+  private static final String BASE_URL = "http://localhost:8080/computer-database/list-computer";
 
   /**
    * Starts the Firefox driver.
@@ -26,10 +29,9 @@ public class Selenium {
    */
   @BeforeClass
   public static void initDriver() throws ClassNotFoundException, SQLException {
-    JdbcConnection.testMode = true;
-    Class.forName("org.hsqldb.jdbc.JDBCDriver");
-    DatabaseTest.initDatabase();
-    //System.setProperty("webdriver.gecko.driver", "geckodriver");
+    //JdbcConnection.testMode = true;
+    //Class.forName("org.hsqldb.jdbc.JDBCDriver");
+    //DatabaseTest.initDatabase();
     driver = new FirefoxDriver();
   }
 
@@ -38,7 +40,7 @@ public class Selenium {
    */
   @AfterClass
   public static void closeDriver() {
-    JdbcConnection.testMode = false;
+    //JdbcConnection.testMode = false;
     driver.close();
   }
 
@@ -49,7 +51,7 @@ public class Selenium {
   public void checkTitle() {
     String expectedTitle = "Computer Database";
     String actualTitle = "";
-    driver.get(baseUrl);
+    driver.get(BASE_URL);
     actualTitle = driver.getTitle();
     assertTrue(actualTitle.equals(expectedTitle));
   }
@@ -59,11 +61,11 @@ public class Selenium {
   @Test
   public void checkNumberOfItemPerPage() {
     String query = "?page=1&numberOfItemPerPage=10";
-    driver.get(baseUrl + query);
+    driver.get(BASE_URL + query);
     int numberOfItems = driver.findElement(By.id("results")).findElements(By.tagName("tr")).size();
     assertEquals(10, numberOfItems);
     query = "?page=1&numberOfItemPerPage=100";
-    driver.get(baseUrl + query);
+    driver.get(BASE_URL + query);
     numberOfItems = driver.findElement(By.id("results")).findElements(By.tagName("tr")).size();
     assertEquals(100, numberOfItems);
   }
@@ -73,7 +75,7 @@ public class Selenium {
    */
   @Test
   public void checkJqueryValidationOnAddComputer() {
-    driver.get(baseUrl);
+    driver.get(BASE_URL);
     driver.findElement(By.id("addComputer")).click();
 
     String elementToTest = driver.findElement(By.id("computerName")).findElement(By.xpath("..")).getAttribute("class");
@@ -98,16 +100,14 @@ public class Selenium {
    */
   @Test
   public void checkAddComputerWithValidData() {
-    driver.get(baseUrl);
-    int numberOfComputer = Integer.valueOf(driver.findElement(By.id("homeTitle")).getText().replaceAll("Computers found", "").trim());
-    driver.findElement(By.id("addComputer")).click();
-    driver.findElement(By.id("computerName")).sendKeys("Selenium tested computer");
-    driver.findElement(By.id("introduced")).sendKeys("2000-10-10");
-    driver.findElement(By.id("discontinued")).sendKeys("2001-10-10");
-
-    driver.findElement(By.id("submitButton")).click();
-    driver.get(baseUrl);
-    int newNumberOfComputer = Integer.valueOf(driver.findElement(By.id("homeTitle")).getText().replaceAll("Computers found", "").trim());
+    driver.get(BASE_URL);
+    int numberOfComputer = getTotalNumberOfComputers();
+    goToAddPage();
+    String name = "Selenium tested computer";
+    String introducedDate = "2000-10-10";
+    String discontinuedDate = "2001-10-10";
+    fillFormWithDataAndSubmit(name, introducedDate, discontinuedDate);
+    int newNumberOfComputer = getTotalNumberOfComputers();
     assertEquals(numberOfComputer + 1, newNumberOfComputer);
   }
 
@@ -116,17 +116,121 @@ public class Selenium {
    */
   @Test
   public void checkAddComputerWithInvalidData() {
-    driver.get(baseUrl);
-    int numberOfComputer = Integer.valueOf(driver.findElement(By.id("homeTitle")).getText().replaceAll("Computers found", "").trim());
-    driver.findElement(By.id("addComputer")).click();
-    driver.findElement(By.id("computerName")).sendKeys("Selenium tested computer");
-    driver.findElement(By.id("introduced")).sendKeys("2001-10-10");
-    driver.findElement(By.id("discontinued")).sendKeys("2000-10-10");
-
-    driver.findElement(By.id("submitButton")).click();
-    driver.get(baseUrl);
-    int newNumberOfComputer = Integer.valueOf(driver.findElement(By.id("homeTitle")).getText().replaceAll("Computers found", "").trim());
+    driver.get(BASE_URL);
+    int numberOfComputer = getTotalNumberOfComputers();
+    goToAddPage();
+    String name = "Selenium tested computer";
+    String introducedDate = "2003-10-10";
+    String discontinuedDate = "2002-10-10";
+    fillFormWithDataAndSubmit(name, introducedDate, discontinuedDate);
+    int newNumberOfComputer = getTotalNumberOfComputers();
     assertEquals(numberOfComputer, newNumberOfComputer);
+  }
+
+  /**
+   * Check if the update is successful with valid data.
+   */
+  @Test
+  public void checkUpdateComputerWithValidData() {
+    goToEditPage();
+    String introducedDateToUpdate = "2003-10-10";
+    fillFormWithDataAndSubmit(null, introducedDateToUpdate, null);
+    assertTrue(checkIntroducedInList(introducedDateToUpdate));
+  }
+
+  /**
+   * Check if the update is not successful with invalid data.
+   */
+  @Test
+  public void checkUpdateComputerWithInvalidData() {
+    goToEditPage();
+    String introducedDateToUpdate = "2003-10-10";
+    String discontinuedDateToUpdate = "2002-10-10";
+    fillFormWithDataAndSubmit(null, introducedDateToUpdate, discontinuedDateToUpdate);
+    boolean introducedIsTheSame = checkIntroducedInList(introducedDateToUpdate);
+    boolean discontinuedIsTheSame = checkDiscontinuedInList(discontinuedDateToUpdate);
+    assertFalse(introducedIsTheSame && discontinuedIsTheSame);
+  }
+
+  /**
+   * Go to the add page.
+   */
+  private void goToAddPage() {
+    driver.get(BASE_URL);
+    driver.findElement(By.id("addComputer")).click();
+  }
+
+  /**
+   * Go to the edit page.
+   */
+  private void goToEditPage() {
+    driver.get(BASE_URL);
+    ArrayList<WebElement> rowsOfTable = new ArrayList<>(driver.findElement(By.id("results")).findElements(By.tagName("tr")));
+    ArrayList<WebElement> colsOfFirstRow = new ArrayList<>(rowsOfTable.get(0).findElements(By.tagName("td")));
+    colsOfFirstRow.get(1).findElement(By.tagName("a")).click();
+  }
+
+  /**
+   * Get the number of computers.
+   * @return the number of computers
+   */
+  private int getTotalNumberOfComputers() {
+    return Integer.valueOf(driver.findElement(By.id("homeTitle")).getText().replaceAll("Computers found", "").trim());
+  }
+
+  /**
+   * Fill the edit or add form with following parameters.
+   * @param name Name of the computer
+   * @param introduced Date when introduced
+   * @param discontinued Date when discontinued
+   */
+  private void fillFormWithDataAndSubmit(String name, String introduced, String discontinued) {
+    if (name != null) {
+      WebElement nameElement = driver.findElement(By.id("computerName"));
+      nameElement.clear();
+      nameElement.sendKeys(name);
+    }
+    if (introduced != null) {
+      WebElement introducedElement = driver.findElement(By.id("introduced"));
+      introducedElement.clear();
+      introducedElement.sendKeys(introduced);
+    }
+    if (discontinued != null) {
+      WebElement discontinuedElement = driver.findElement(By.id("discontinued"));
+      discontinuedElement.clear();
+      discontinuedElement.sendKeys(discontinued);
+    }
+    driver.findElement(By.id("submitButton")).click();
+    driver.get(BASE_URL);
+  }
+
+  /**
+   * Check that the introduced date is the same as the one filled in the form.
+   * @param introduced Date you want to check
+   * @return whether the date is corresponding or not
+   */
+  private boolean checkIntroducedInList(String introduced) {
+    return introduced.equals(getElementAtIndex(2));
+  }
+
+  /**
+   * Check that the discontinued date is the same as the one filled in the form.
+   * @param discontinued Date you want to check
+   * @return whether the date is corresponding or not
+   */
+  private boolean checkDiscontinuedInList(String discontinued) {
+    return discontinued.equals(getElementAtIndex(3));
+  }
+
+  /**
+   * Return the content of the cell at index.
+   * @param index index you want to get the content of
+   * @return the content of the cell
+   */
+  private String getElementAtIndex(int index) {
+    ArrayList<WebElement> rowsOfTable = new ArrayList<>(driver.findElement(By.id("results")).findElements(By.tagName("tr")));
+    ArrayList<WebElement> colsOfFirstRow = new ArrayList<>(rowsOfTable.get(0).findElements(By.tagName("td")));
+    return colsOfFirstRow.get(index).getText();
   }
 
 }
