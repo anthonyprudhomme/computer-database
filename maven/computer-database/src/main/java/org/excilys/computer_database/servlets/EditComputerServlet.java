@@ -18,16 +18,12 @@ import org.excilys.computer_database.validation.ComputerValidationStatus;
 
 import com.mysql.cj.conf.ConnectionUrlParser.Pair;
 
-@WebServlet("/add-computer")
-public class AddComputerServlet extends HttpServlet {
+@WebServlet("/edit-computer")
+public class EditComputerServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
-  public static final String COMPUTER_NAME = "computerName";
-  public static final String INTRODUCED = "introduced";
-  public static final String DISCONTINUED = "discontinued";
-  public static final String COMPANY_ID = "companyId";
 
-  public static final String ADD_COMPUTER = "/WEB-INF/views/addComputer.jsp";
+  public static final String EDIT_COMPUTER = "/WEB-INF/views/editComputer.jsp";
   public static final String DASHBOARD = "list-computer";
 
   /**
@@ -35,15 +31,18 @@ public class AddComputerServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    int id = Integer.valueOf(request.getParameter("id"));
+    Computer computer = ComputerService.getInstance().getComputerDetails(id);
+    request.setAttribute("computer", computer);
     ArrayList<Company> companies = CompanyService.getInstance().getCompanies();
     request.setAttribute("companies", companies);
-    this.getServletContext().getRequestDispatcher(ADD_COMPUTER).forward(request, response);
+    this.getServletContext().getRequestDispatcher(EDIT_COMPUTER).forward(request, response);
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     Computer computer = Util.getComputerFromRequest(request);
-    Pair<ComputerValidationStatus, String> result = ComputerService.getInstance().createComputer(computer);
+    Pair<ComputerValidationStatus, String> result = ComputerService.getInstance().updateComputer(computer);
 
     if (result.left == ComputerValidationStatus.OK) {
       ArrayList<Computer> computers = ComputerService.getInstance().getComputers();
@@ -53,7 +52,7 @@ public class AddComputerServlet extends HttpServlet {
       ArrayList<Company> companies = CompanyService.getInstance().getCompanies();
       request.setAttribute("companies", companies);
       request.setAttribute("error", result.right);
-      this.getServletContext().getRequestDispatcher(ADD_COMPUTER).forward(request, response);
+      this.getServletContext().getRequestDispatcher(EDIT_COMPUTER).forward(request, response);
     }
   }
 }

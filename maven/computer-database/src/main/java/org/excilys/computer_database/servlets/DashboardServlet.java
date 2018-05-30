@@ -18,31 +18,52 @@ public class DashboardServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
 
-  /**
-   * Overload of doGet method.
-   */
+  private static final String PAGE = "page";
+  private static final String NUMBER_OF_PAGES = "numberOfPages";
+  private static final String NUMBER_OF_COMPUTERS = "numberOfComputers";
+  private static final String NUMBER_OF_ITEM_PER_PAGE = "numberOfItemPerPage";
+  private static final String DASHBOARD = "/WEB-INF/views/dashboard.jsp";
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    int numberOfItemPerPage = 10;
-    if (Util.isInteger(request.getParameter("numberOfItemPerPage"))) {
-      numberOfItemPerPage = Integer.valueOf(request.getParameter("numberOfItemPerPage"));
+    setComputers(request);
+    this.getServletContext().getRequestDispatcher(DASHBOARD).forward(request, response);
+
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String[] idsToDelete = request.getParameter("selection").split(",");
+    for (int i = 0; i < idsToDelete.length; i++) {
+      ComputerService.getInstance().deleteComputer(Integer.valueOf(idsToDelete[i]));
     }
-    request.setAttribute("numberOfItemPerPage", numberOfItemPerPage);
+    setComputers(request);
+    this.getServletContext().getRequestDispatcher(DASHBOARD).forward(request, response);
+  }
+
+  /**
+   * Put appropriate computers in the params.
+   * @param request Request object to get the different parameters
+   */
+  private void setComputers(HttpServletRequest request) {
+    int numberOfItemPerPage = 10;
+    if (Util.isInteger(request.getParameter(NUMBER_OF_ITEM_PER_PAGE))) {
+      numberOfItemPerPage = Integer.valueOf(request.getParameter(NUMBER_OF_ITEM_PER_PAGE));
+    }
+    request.setAttribute(NUMBER_OF_ITEM_PER_PAGE, numberOfItemPerPage);
     int numberOfComputers = ComputerService.getInstance().countComputers();
-    request.setAttribute("numberOfComputers", numberOfComputers);
+    request.setAttribute(NUMBER_OF_COMPUTERS, numberOfComputers);
 
     int numberOfPages = (int) Math.ceil(numberOfComputers / numberOfItemPerPage);
-    request.setAttribute("numberOfPages", numberOfPages);
+    request.setAttribute(NUMBER_OF_PAGES, numberOfPages);
 
     int currentPage = 1;
-    if (Util.isInteger(request.getParameter("page"))) {
-      currentPage = Integer.valueOf(request.getParameter("page"));
+    if (Util.isInteger(request.getParameter(PAGE))) {
+      currentPage = Integer.valueOf(request.getParameter(PAGE));
     }
     request.setAttribute("currentPage", currentPage);
 
     ArrayList<Computer> computersOfPage = ComputerService.getInstance().getComputersAtPage(numberOfItemPerPage, currentPage);
     request.setAttribute("computers", computersOfPage);
-    this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(request, response);
-
   }
 }

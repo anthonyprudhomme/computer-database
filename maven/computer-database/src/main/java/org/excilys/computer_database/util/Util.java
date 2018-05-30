@@ -1,6 +1,19 @@
 package org.excilys.computer_database.util;
 
+import java.sql.Date;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.excilys.computer_database.model.Company;
+import org.excilys.computer_database.model.Computer;
+import org.excilys.computer_database.service.CompanyService;
+
 public class Util {
+
+  public static final String COMPUTER_NAME = "computerName";
+  public static final String INTRODUCED = "introduced";
+  public static final String DISCONTINUED = "discontinued";
+  public static final String COMPANY_ID = "companyId";
 
   /**
    * Tells if the String is possible to cast into an integer or not.
@@ -34,6 +47,40 @@ public class Util {
       }
     }
     return true;
+  }
+
+  /**
+   * Return the date from the user input. Returns null if nothing was entered.
+   * @param request HttpServletRequest to get the param
+   * @param paramName name of the param you want to check in the request
+   * @return the date.
+   */
+  public static Date getDateFromInput(HttpServletRequest request, String paramName) {
+    Date date = null;
+    String userInput = request.getParameter(paramName);
+    if (userInput != null && !userInput.isEmpty()) {
+      date = Date.valueOf(request.getParameter(paramName));
+    }
+    return date;
+  }
+  /**
+   * Get a computer from the request.
+   * @param request Sent from user
+   * @return the computer created
+   */
+  public static Computer getComputerFromRequest(HttpServletRequest request) {
+    int id = -1;
+    String idAsString = request.getParameter("id");
+    if (isInteger(idAsString)) {
+      id = Integer.valueOf(idAsString);
+    }
+    String computerName = request.getParameter(COMPUTER_NAME);
+    Date introduced = Util.getDateFromInput(request, INTRODUCED);
+    Date discontinued = Util.getDateFromInput(request, DISCONTINUED);
+
+    int companyId = Integer.valueOf(request.getParameter(COMPANY_ID));
+    Company company = CompanyService.getInstance().getCompany(companyId);
+    return new Computer(id, computerName, introduced, discontinued, companyId, company.getName());
   }
 
 }

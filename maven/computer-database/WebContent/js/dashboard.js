@@ -15,11 +15,6 @@ $(function() {
         } else {
             $("#selectall").prop("checked", false);
         }
-        if ($(".cb:checked").length != 0) {
-            $("#deleteSelected").enable();
-        } else {
-            $("#deleteSelected").disable();
-        }
     });
 
 });
@@ -35,7 +30,6 @@ $(function() {
         }).get().join();
         
         $(this).attr('value',str);
-        
         return this;
     };
 

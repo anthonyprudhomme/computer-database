@@ -10,8 +10,8 @@
 #### Unit testing on database using HSQLDB
 #### Following checkstyle rules
 #### Web-ui using Servlets, JSPs and JTSL
+#### Taglibs for pagination and links
 #### jQuery secured validation
 #### Hikari CP
 #### Selenium tests
 #### Computer Creation/Deletion/Edition
-

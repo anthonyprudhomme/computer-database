@@ -1,5 +1,6 @@
 package org.excilys.computer_database.persistence;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,8 +26,8 @@ public class JdbcRequest {
     LOGGER.info(loggerDatabasePrefix + query);
     ResultSet resultSet = null;
     PreparedStatement preparedStatement = null;
-    try {
-      preparedStatement = JdbcConnection.getConnection().prepareStatement(query);
+    try (Connection connection = JdbcConnection.getConnection()) {
+      preparedStatement = connection.prepareStatement(query);
       preparedStatement = this.prepareRequest(preparedStatement, requestName, computer);
       if (preparedStatement.execute()) {
         return preparedStatement.getResultSet();

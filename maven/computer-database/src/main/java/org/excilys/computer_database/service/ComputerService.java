@@ -1,6 +1,8 @@
 package org.excilys.computer_database.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import org.excilys.computer_database.dao.ComputerDao;
 import org.excilys.computer_database.dao.ComputerDaoImpl;
@@ -53,6 +55,7 @@ public class ComputerService {
    * @return the status of the validation and an associated message
    */
   public Pair<ComputerValidationStatus, String> createComputer(Computer computer) {
+    updateDates(computer);
     ComputerValidationStatus status = null;
     String message = "";
     if (ComputerValidation.getInstance().validateDate(computer)) {
@@ -80,6 +83,7 @@ public class ComputerService {
    * @return the status of the validation and an associated message
    */
   public Pair<ComputerValidationStatus, String> updateComputer(Computer computer) {
+    updateDates(computer);
     ComputerValidationStatus status = null;
     String message = "";
     if (ComputerValidation.getInstance().validateDate(computer)) {
@@ -99,6 +103,30 @@ public class ComputerService {
       LOGGER.error("Date error when trying to update computer: " + computer.toString());
     }
     return new Pair<ComputerValidationStatus, String>(status, message);
+  }
+  /**
+   * Update the date to avoid day difference.
+   * @param computer to update
+   */
+  private void updateDates(Computer computer) {
+    if (computer.getIntroduced() != null) {
+      computer.setIntroduced(updateDate(computer.getIntroduced()));
+    }
+    if (computer.getDiscontinued() != null) {
+      computer.setDiscontinued(updateDate(computer.getDiscontinued()));
+    }
+  }
+
+  /**
+   * Update the date to avoid day difference.
+   * @param date to update
+   * @return the date changed to avoid day difference
+   */
+  private Date updateDate(Date date) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    calendar.add(Calendar.DAY_OF_YEAR, 1);
+    return new Date(calendar.getTimeInMillis());
   }
 
   /**

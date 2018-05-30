@@ -1,96 +1,46 @@
 package org.excilys.computer_database.persistence;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Enumeration;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 // Singleton
 public class JdbcConnection {
 
-  private static JdbcConnection instance = null;
-  private Connection connection;
+  //private static JdbcConnection instance = null;
+  //private Connection connection;
   private static final Logger LOGGER = LoggerFactory.getLogger(JdbcConnection.class);
 
-  private static String defaultUrl;
-  private static String usedUrl;
-  private static String testUrl;
-
-  private static String username;
-  private static String password;
-
   public static boolean testMode = false;
-
-  /**
-   * Set configuration parameters to test mode.
-   */
-  private static void setTestConfiguration() {
-    usedUrl = testUrl;
-  }
-
-  /**
-   * Set configuration parameters to default.
-   */
-  private static void setDefaultConfiguration() {
-    usedUrl = defaultUrl;
-  }
-
-  /**
-   * Create a connection.
-   * @return connection object
-   * @throws SQLException if there is an SQLException
-   */
-  private static Connection getTestConnection() {
-    try {
-      return DriverManager.getConnection(usedUrl);
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
-
+  private static HikariConfig hikariConfig;
+  private static HikariDataSource hikariDataSource;
 
   /**
    * Singleton. Used to do the connection to the database.
    */
   private JdbcConnection() {
-    readPropertyFile();
+    ResourceBundle resourceBundle;
     if (testMode) {
-      try {
-        Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      } catch (ClassNotFoundException exception) {
-        exception.printStackTrace();
-      }
-      setTestConfiguration();
-      connection = getTestConnection();
+      resourceBundle = ResourceBundle.getBundle("testConfig");
     } else {
-      try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-      } catch (ClassNotFoundException exception) {
-        exception.printStackTrace();
-      }
-      setDefaultConfiguration();
-      System.out.println("Connecting database...");
-      try {
-        connection = DriverManager.getConnection(usedUrl, username, password);
-        System.out.println("Database connected!");
-      } catch (SQLException e) {
-        throw new IllegalStateException("Cannot connect the database!", e);
-      }
+      resourceBundle = ResourceBundle.getBundle("config");
     }
-  }
+    Properties properties = convertResourceBundleToProperties(resourceBundle);
 
-  /**
-   * Read the .properties file to get credentials.
-   */
-  private void readPropertyFile() {
-      ResourceBundle resourceBundle = ResourceBundle.getBundle("config");
-      defaultUrl = resourceBundle.getString("default.url");
-      username = resourceBundle.getString("default.username");
-      password = resourceBundle.getString("default.password");
-      testUrl = resourceBundle.getString("test.url");
+    hikariConfig = new HikariConfig(properties);
+
+    hikariConfig.addDataSourceProperty("cachePrepStmts", true);
+    hikariConfig.addDataSourceProperty("prepStmtCacheSize", 256);
+    hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
+    hikariConfig.addDataSourceProperty("useServerPrepStmts", true);
+    hikariDataSource = new HikariDataSource(hikariConfig);
   }
 
   /**
@@ -100,24 +50,31 @@ public class JdbcConnection {
   public static Connection getConnection() {
     LOGGER.debug("Access to JDBC connection");
     try {
-      if (instance == null) {
-        instance = new JdbcConnection();
+      if (hikariDataSource == null) {
+        new JdbcConnection();
+        return hikariDataSource.getConnection();
       } else {
-        if (testMode) {
-          setTestConfiguration();
-          instance.connection = getTestConnection();
-        } else {
-          setDefaultConfiguration();
-          if (instance.connection.isClosed()) {
-            instance.connection = DriverManager.getConnection(usedUrl, username, password);
-          }
-        }
+        return hikariDataSource.getConnection();
       }
-
     } catch (SQLException e) {
       throw new IllegalStateException("Cannot connect the database!", e);
     }
-    return instance.connection;
+  }
+
+  /**
+   * Convert ResourceBundle into a Properties object.
+   *
+   * @param resource a resource bundle to convert.
+   * @return Properties a properties version of the resource bundle.
+   */
+  private Properties convertResourceBundleToProperties(ResourceBundle resource) {
+    Properties properties = new Properties();
+    Enumeration<String> keys = resource.getKeys();
+    while (keys.hasMoreElements()) {
+      String key = keys.nextElement();
+      properties.put(key, resource.getString(key));
+    }
+    return properties;
   }
 
 }
