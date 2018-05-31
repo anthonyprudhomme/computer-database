@@ -14,8 +14,6 @@ import com.zaxxer.hikari.HikariDataSource;
 // Singleton
 public class JdbcConnection {
 
-  //private static JdbcConnection instance = null;
-  //private Connection connection;
   private static final Logger LOGGER = LoggerFactory.getLogger(JdbcConnection.class);
 
   public static boolean testMode = false;
@@ -33,13 +31,7 @@ public class JdbcConnection {
       resourceBundle = ResourceBundle.getBundle("config");
     }
     Properties properties = convertResourceBundleToProperties(resourceBundle);
-
     hikariConfig = new HikariConfig(properties);
-
-    hikariConfig.addDataSourceProperty("cachePrepStmts", true);
-    hikariConfig.addDataSourceProperty("prepStmtCacheSize", 256);
-    hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
-    hikariConfig.addDataSourceProperty("useServerPrepStmts", true);
     hikariDataSource = new HikariDataSource(hikariConfig);
   }
 
@@ -63,7 +55,6 @@ public class JdbcConnection {
 
   /**
    * Convert ResourceBundle into a Properties object.
-   *
    * @param resource a resource bundle to convert.
    * @return Properties a properties version of the resource bundle.
    */

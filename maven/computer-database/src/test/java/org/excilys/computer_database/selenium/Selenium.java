@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 //import org.excilys.computer_database.persistence.JdbcConnection;
 //import org.excilys.computer_database.validation.DatabaseTest;
@@ -165,12 +166,9 @@ public class Selenium {
     selectComputerToDelete();
     clickDeleteIcon();
     driver.switchTo().alert().accept();
+    driver.manage().timeouts().implicitlyWait(1000, TimeUnit.MILLISECONDS);
     driver.get(BASE_URL);
-    try {
-      Thread.sleep(300);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    driver.manage().timeouts().implicitlyWait(1000, TimeUnit.MILLISECONDS);
     int newNumberOfComputer = getTotalNumberOfComputers();
     System.out.println("numberOfComputer: " + numberOfComputer + " newNumberOfComputer: " + newNumberOfComputer);
     assertEquals(numberOfComputer, newNumberOfComputer + 1);

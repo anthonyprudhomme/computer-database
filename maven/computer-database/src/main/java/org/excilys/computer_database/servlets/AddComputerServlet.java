@@ -9,14 +9,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.excilys.computer_database.exceptions.CDBObjectException;
 import org.excilys.computer_database.model.Company;
 import org.excilys.computer_database.model.Computer;
+import org.excilys.computer_database.persistence.JdbcConnection;
 import org.excilys.computer_database.service.CompanyService;
 import org.excilys.computer_database.service.ComputerService;
 import org.excilys.computer_database.util.Util;
-import org.excilys.computer_database.validation.ComputerValidationStatus;
-
-import com.mysql.cj.conf.ConnectionUrlParser.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @WebServlet("/add-computer")
 public class AddComputerServlet extends HttpServlet {
@@ -29,6 +30,8 @@ public class AddComputerServlet extends HttpServlet {
 
   public static final String ADD_COMPUTER = "/WEB-INF/views/addComputer.jsp";
   public static final String DASHBOARD = "list-computer";
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(JdbcConnection.class);
 
   /**
    * Overload of doGet method.
@@ -43,16 +46,16 @@ public class AddComputerServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     Computer computer = Util.getComputerFromRequest(request);
-    Pair<ComputerValidationStatus, String> result = ComputerService.getInstance().createComputer(computer);
-
-    if (result.left == ComputerValidationStatus.OK) {
+    try {
+      ComputerService.getInstance().createComputer(computer);
       ArrayList<Computer> computers = ComputerService.getInstance().getComputers();
       request.setAttribute("computers", computers);
       response.sendRedirect(DASHBOARD);
-    } else {
+    } catch (CDBObjectException exception) {
       ArrayList<Company> companies = CompanyService.getInstance().getCompanies();
       request.setAttribute("companies", companies);
-      request.setAttribute("error", result.right);
+      request.setAttribute("error", exception.getMessage());
+      LOGGER.error("Error when creating a computer - " + exception.getMessage() + " " + computer.toString());
       this.getServletContext().getRequestDispatcher(ADD_COMPUTER).forward(request, response);
     }
   }

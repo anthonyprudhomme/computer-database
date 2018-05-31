@@ -1,5 +1,8 @@
 package org.excilys.computer_database.validation;
 
+import org.excilys.computer_database.exceptions.CDBObjectCompanyIdException;
+import org.excilys.computer_database.exceptions.CDBObjectDateException;
+import org.excilys.computer_database.exceptions.CDBObjectException;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.service.CompanyService;
 
@@ -26,31 +29,37 @@ public class ComputerValidation {
   /**
    * Tells if the company id links to a a company in the database.
    * @param id if of the company
-   * @return whether the company exists or not
+   * @throws CDBObjectCompanyIdException Thrown when the company id is invalid
    */
-  public boolean validateCompanyId(int id) {
+  private void validateCompanyId(int id) throws CDBObjectCompanyIdException {
     if (id != -1) {
-      return CompanyService.getInstance().getCompany(id) != null;
-    } else {
-      return true;
+      if (CompanyService.getInstance().getCompany(id) == null) {
+        throw new CDBObjectCompanyIdException("Wrong company id");
+      }
     }
   }
 
   /**
    * Tells if the computer introduced and discontinued dates are valid.
    * @param computer to check
-   * @return whether the computer dates are valid or not.
+   * @throws CDBObjectDateException Thrown when the dates are invalid
    */
-  public boolean validateDate(Computer computer) {
-    if (computer.getIntroduced() == null) {
-      return true;
-    } else {
-      if (computer.getDiscontinued() == null) {
-        return true;
-      } else {
-        return computer.getIntroduced().before(computer.getDiscontinued());
+  private void validateDate(Computer computer) throws CDBObjectDateException {
+    if (computer.getIntroduced() != null && computer.getDiscontinued() != null) {
+      if (!computer.getIntroduced().before(computer.getDiscontinued())) {
+        throw new CDBObjectDateException("Introduced date should be earlier than the discontinued date.");
       }
     }
+  }
+
+  /**
+   * Check the computer is valid.
+   * @param computer The computer to validate
+   * @throws CDBObjectException Thrown if there is an error during the validation
+   */
+  public void validate(Computer computer) throws CDBObjectException {
+    validateDate(computer);
+    validateCompanyId(computer.getCompany().getId());
   }
 
 }

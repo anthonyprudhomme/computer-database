@@ -6,13 +6,9 @@ import java.util.Calendar;
 
 import org.excilys.computer_database.dao.ComputerDao;
 import org.excilys.computer_database.dao.ComputerDaoImpl;
+import org.excilys.computer_database.exceptions.CDBObjectException;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.validation.ComputerValidation;
-import org.excilys.computer_database.validation.ComputerValidationStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.mysql.cj.conf.ConnectionUrlParser.Pair;
 
 public class ComputerService {
 
@@ -22,8 +18,6 @@ public class ComputerService {
    * ComputerService singleton.
    */
   private ComputerService() { }
-
-  private final Logger LOGGER = LoggerFactory.getLogger(ComputerService.class);
 
   /**
    * Returns an instance of the ComputerService singleton.
@@ -52,57 +46,23 @@ public class ComputerService {
   /**
    * Check if the is a problem with the computer given as parameter then creates a computer.
    * @param computer computer to check and create
-   * @return the status of the validation and an associated message
+   * @exception CDBObjectException Thrown if there was an error when validating the computer
    */
-  public Pair<ComputerValidationStatus, String> createComputer(Computer computer) {
+  public void createComputer(Computer computer) throws CDBObjectException {
     updateDates(computer);
-    ComputerValidationStatus status = null;
-    String message = "";
-    if (ComputerValidation.getInstance().validateDate(computer)) {
-      if (ComputerValidation.getInstance().validateCompanyId(computer.getCompany().getId())) {
-        computerDao.createComputer(computer);
-        status = ComputerValidationStatus.OK;
-        message = "Computer successfully created.";
-        LOGGER.info("Computer created: " + computer.toString());
-      } else {
-        status = ComputerValidationStatus.COMPANY_ID_ERROR;
-        message = "The computer couldn't be created, the id of the company doesn't belong to any company in the database.";
-        LOGGER.error("Company id error when trying to update computer: " + computer.toString());
-      }
-    } else {
-      status = ComputerValidationStatus.DATE_ERROR;
-      message = "The computer couldn't be created, the discontinued date must be later than the introduced date.";
-      LOGGER.error("Date error when trying to create computer: " + computer.toString());
-    }
-    return new Pair<ComputerValidationStatus, String>(status, message);
+    ComputerValidation.getInstance().validate(computer);
+    computerDao.createComputer(computer);
   }
 
   /**
    * Check if the is a problem with the computer given as parameter then updates a computer.
    * @param computer computer to check and update
-   * @return the status of the validation and an associated message
+   * @exception CDBObjectException Thrown if there is an error with the update
    */
-  public Pair<ComputerValidationStatus, String> updateComputer(Computer computer) {
+  public void updateComputer(Computer computer) throws CDBObjectException {
     updateDates(computer);
-    ComputerValidationStatus status = null;
-    String message = "";
-    if (ComputerValidation.getInstance().validateDate(computer)) {
-      if (ComputerValidation.getInstance().validateCompanyId(computer.getCompany().getId())) {
-        computerDao.updateComputer(computer);
-        status = ComputerValidationStatus.OK;
-        message = "Computer successfully updated.";
-        LOGGER.info("Computer updated: " + computer.toString());
-      } else {
-        status = ComputerValidationStatus.COMPANY_ID_ERROR;
-        message = "The computer couldn't be updated, the id of the company doesn't belong to any company in the database.";
-        LOGGER.error("Company id error when trying to update computer: " + computer.toString());
-      }
-    } else {
-      status = ComputerValidationStatus.DATE_ERROR;
-      message = "The computer couldn't be updated, the discontinued date must be later than the introduced date.";
-      LOGGER.error("Date error when trying to update computer: " + computer.toString());
-    }
-    return new Pair<ComputerValidationStatus, String>(status, message);
+    ComputerValidation.getInstance().validate(computer);
+    computerDao.updateComputer(computer);
   }
   /**
    * Update the date to avoid day difference.

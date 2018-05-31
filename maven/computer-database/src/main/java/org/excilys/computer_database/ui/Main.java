@@ -4,17 +4,22 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import org.excilys.computer_database.exceptions.CDBObjectCompanyIdException;
+import org.excilys.computer_database.exceptions.CDBObjectDateException;
+import org.excilys.computer_database.exceptions.CDBObjectException;
 import org.excilys.computer_database.model.Company;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.model.DBModelType;
+import org.excilys.computer_database.persistence.JdbcConnection;
 import org.excilys.computer_database.service.CompanyService;
 import org.excilys.computer_database.service.ComputerService;
 import org.excilys.computer_database.util.Util;
-import org.excilys.computer_database.validation.ComputerValidationStatus;
-
-import com.mysql.cj.conf.ConnectionUrlParser.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(JdbcConnection.class);
 
   /**
    * Main function containing the CLI.
@@ -193,7 +198,6 @@ public class Main {
    * @param scan to get user inputs.
    */
   private static void createComputer(Scanner scan) {
-    ComputerValidationStatus status = null;
     System.out.println("Computer creation");
     System.out.println("Please enter the name of the computer you want to create:");
     String computerNameInput = scan.nextLine();
@@ -201,28 +205,24 @@ public class Main {
     Date discontinued = askForDate("Please enter the discontinued date of the computer you want to create with the format yyyy-mm-dd. Type \"skip\" to skip", scan, true);
     int companyId = askForInt("Please enter the id of the company that made the computer you want to add to the database. Type \"skip\" to skip.", scan, true);
     Computer computerToCreate = new Computer(-1, computerNameInput, introduced, discontinued, companyId, null);
-    Pair<ComputerValidationStatus, String> result = ComputerService.getInstance().createComputer(computerToCreate);
-    status = result.left;
-    System.out.println(result.right);
-    while (status != ComputerValidationStatus.OK) {
-      switch (status) {
-
-      case COMPANY_ID_ERROR:
+    boolean creationSuccessful = false;
+    while (!creationSuccessful) {
+      try {
+        ComputerService.getInstance().createComputer(computerToCreate);
+        creationSuccessful = true;
+      } catch (CDBObjectCompanyIdException exception) {
+        System.out.println(exception.getMessage());
         companyId = askForInt("Please enter the id of the company that made the computer you want to add to the database. Type \"skip\" to skip.", scan, true);
-        break;
-
-      case DATE_ERROR:
+        LOGGER.error("Error when creating computer - " + exception.getMessage() + " " + computerToCreate.toString());
+      } catch (CDBObjectDateException exception) {
+        System.out.println(exception.getMessage());
         computerToCreate.setIntroduced(askForDate("Please enter the introduced date of the computer you want to create with the format yyyy-mm-dd. Type \"skip\" to skip", scan, true));
         computerToCreate.setDiscontinued(askForDate("Please enter the discontinued date of the computer you want to create with the format yyyy-mm-dd. Type \"skip\" to skip", scan, true));
-        break;
-
-      default:
-        break;
-
+        LOGGER.error("Error when creating computer - " + exception.getMessage() + " " + computerToCreate.toString());
+      } catch (CDBObjectException exception) {
+        System.out.println(exception.getMessage());
+        LOGGER.error("Error when creating computer - " + exception.getMessage() + " " + computerToCreate.toString());
       }
-      result = ComputerService.getInstance().createComputer(computerToCreate);
-      status = result.left;
-      System.out.println(result.right);
     }
   }
 
@@ -244,9 +244,8 @@ public class Main {
 
     System.out.println(computerToUpdate.toString());
     UpdateOption updateOption = null;
-    ComputerValidationStatus status = null;
-
-    while (status != ComputerValidationStatus.OK) {
+    boolean updateSucessful = false;
+    while (!updateSucessful) {
       while (updateOption != UpdateOption.DONE) {
         System.out.println("\n\nWhat do you want to update ?");
         System.out.println("Pick one of the following:");
@@ -282,12 +281,14 @@ public class Main {
           break;
 
         case DONE:
-          Pair<ComputerValidationStatus, String> result = ComputerService.getInstance().updateComputer(computerToUpdate);
-          status = result.left;
-          if (status != ComputerValidationStatus.OK) {
+          try {
+            ComputerService.getInstance().updateComputer(computerToUpdate);
+            updateSucessful = true;
+          } catch (CDBObjectException exception) {
             updateOption = null;
+            System.out.println(exception.getMessage());
+            LOGGER.error("Error when updating computer - " + exception.getMessage() + " " + computerToUpdate.toString());
           }
-          System.out.println(result.right);
           break;
 
         default:
