@@ -4,10 +4,12 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import org.excilys.computer_database.model.Company;
 import org.excilys.computer_database.model.Computer;
-import org.excilys.computer_database.model.Page;
+import org.excilys.computer_database.model.DBModelType;
 import org.excilys.computer_database.service.CompanyService;
 import org.excilys.computer_database.service.ComputerService;
+import org.excilys.computer_database.util.Util;
 import org.excilys.computer_database.validation.ComputerValidationStatus;
 
 import com.mysql.cj.conf.ConnectionUrlParser.Pair;
@@ -155,8 +157,7 @@ public class Main {
    */
   public static void listComputers(Scanner scan) {
     System.out.println("Computer list");
-    ArrayList<Object> computers = new ArrayList<Object>(ComputerService.getInstance().getComputers());
-    new Page(computers, scan).startPageNavigation();
+    startPageNavigation(scan, DBModelType.COMPUTER);
   }
 
   /**
@@ -165,8 +166,7 @@ public class Main {
    */
   private static void listCompanies(Scanner scan) {
     System.out.println("Company list");
-    ArrayList<Object> companies = new ArrayList<Object>(CompanyService.getInstance().getCompanies());
-    new Page(companies, scan).startPageNavigation();
+    startPageNavigation(scan, DBModelType.COMPANY);
   }
 
   /**
@@ -306,6 +306,87 @@ public class Main {
     System.out.println("Delete a computer");
     int idToDelete = askForInt("Please enter the id of the computer you want to delete:", scan, false);
     ComputerService.getInstance().deleteComputer(idToDelete);
+  }
+
+  /**
+   * Display the computers per pages.
+   * @param scan Scanner object to read user inputs
+   * @param type type of the item to display
+   */
+  public static void startPageNavigation(Scanner scan, DBModelType type) {
+    int currentPage = 1;
+    String userInput = "";
+    int numberOfItems = 0;
+    switch (type) {
+    case COMPANY:
+      numberOfItems = CompanyService.getInstance().countCompanies();
+      break;
+
+    case COMPUTER:
+      numberOfItems = ComputerService.getInstance().countComputers();
+      break;
+    }
+    int numberOfPages = (int) Math.ceil(numberOfItems / 10);
+    currentPage = printPage(currentPage, type, numberOfPages);
+
+    while (!userInput.equalsIgnoreCase("d")) {
+      System.out.println((currentPage) + "/" + (numberOfPages) + " (n: next, p: previous, xx: go to xx page, d: done)");
+
+      userInput = scan.nextLine();
+      if (Util.isInteger(userInput)) {
+        currentPage = Integer.parseInt(userInput);
+        currentPage = printPage(currentPage, type, numberOfPages);
+      } else {
+        switch (userInput) {
+
+        case "n":
+        case "N":
+          currentPage = printPage(++currentPage, type, numberOfPages);
+          break;
+
+        case "p":
+        case "P":
+          currentPage = printPage(--currentPage, type, numberOfPages);
+          break;
+
+        case "d":
+        case "D":
+          System.out.println("Stopped page navigation");
+          break;
+        }
+      }
+    }
+  }
+  /**
+   * Print the item of the page.
+   * @param pageNumber page you want to display
+   * @param type of item to display
+   * @param numberOfPages Number of pages
+   * @return The new page number
+   */
+  public static int printPage(int pageNumber, DBModelType type, int numberOfPages) {
+    if (numberOfPages < pageNumber) {
+      pageNumber = numberOfPages;
+    }
+    if (pageNumber < 1) {
+      pageNumber = 1;
+    }
+    switch (type) {
+    case COMPANY:
+      ArrayList<Company> companies = CompanyService.getInstance().getCompaniesAtPage(10, pageNumber);
+      for (Company company: companies) {
+        System.out.println(company.toString());
+      }
+      break;
+
+    case COMPUTER:
+      ArrayList<Computer> computers = ComputerService.getInstance().getComputersAtPage(10, pageNumber);
+      for (Computer computer: computers) {
+        System.out.println(computer.toString());
+      }
+      break;
+    }
+    return pageNumber;
   }
 
 }

@@ -39,4 +39,22 @@ public class CompanyService {
     return companyDao.getCompany(id);
   }
 
+  /**
+   * Return the number of companies.
+   * @return the number of companies
+   */
+  public int countCompanies() {
+    return companyDao.countCompanies();
+  }
+
+  /**
+   * Returns the list of companies at the specific page.
+   * @param numberOfItemPerPage The number of items per pages.
+   * @param page The number of the page.
+   * @return the list of companies at the specific page.
+   */
+  public ArrayList<Company> getCompaniesAtPage(int numberOfItemPerPage, int page) {
+    return companyDao.getCompaniesAtPage(numberOfItemPerPage, page);
+  }
+
 }

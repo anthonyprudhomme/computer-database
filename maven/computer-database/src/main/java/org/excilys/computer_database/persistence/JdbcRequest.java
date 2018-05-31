@@ -122,11 +122,14 @@ public class JdbcRequest {
     LOGGER.info(loggerDatabasePrefix + query);
     ResultSet resultSet = null;
     PreparedStatement preparedStatement = null;
-    try {
-      preparedStatement = JdbcConnection.getConnection().prepareStatement(query);
+    try (Connection connection = JdbcConnection.getConnection()) {
+      preparedStatement = connection.prepareStatement(query);
       if (preparedStatement.execute()) {
         resultSet = preparedStatement.getResultSet();
-        count = resultSet.getInt("total");
+        if (resultSet.next()) {
+          count = resultSet.getInt("total");
+        }
+        resultSet.close();
       }
     } catch (SQLException sqlException) {
       LOGGER.error("SQLException: " + sqlException.getMessage());
@@ -148,8 +151,8 @@ public class JdbcRequest {
 
     ResultSet resultSet = null;
     PreparedStatement preparedStatement = null;
-    try {
-      preparedStatement = JdbcConnection.getConnection().prepareStatement(query);
+    try (Connection connection = JdbcConnection.getConnection()) {
+      preparedStatement = connection.prepareStatement(query);
       preparedStatement.setInt(1, limit);
       int offset = limit * (page - 1);
       preparedStatement.setInt(2, offset);

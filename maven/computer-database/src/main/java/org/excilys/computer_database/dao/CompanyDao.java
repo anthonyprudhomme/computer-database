@@ -16,8 +16,20 @@ public interface CompanyDao {
    */
   ArrayList<Company> getCompanies();
   /**
+   * Return the list of computers for the defined page.
+   * @param numberOfItemPerPage Number of items per page.
+   * @param page Page number
+   * @return the list of computers for the defined page.
+   */
+  ArrayList<Company> getCompaniesAtPage(int numberOfItemPerPage, int page);
+  /**
    * @param id of the company
    * @return list of companies
    */
   Company getCompany(int id);
+  /**
+   * Return the number of companies.
+   * @return the number of companies
+   */
+  int countCompanies();
 }

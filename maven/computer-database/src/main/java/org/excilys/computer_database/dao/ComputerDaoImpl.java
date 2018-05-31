@@ -17,7 +17,7 @@ public class ComputerDaoImpl implements ComputerDao {
   private static final String QUERY_CREATE_COMPUTER = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?,?,?,?)";
   private static final String QUERY_UPDATE_COMPUTER = "UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?";
   private static final String QUERY_DELETE_COMPUTER = "DELETE FROM computer WHERE id=";
-  private static final String QUERY_COUNT_COMPUTER = "SELECT COUNT(computer.id) FROM computer";
+  private static final String QUERY_COUNT_COMPUTER = "SELECT COUNT(computer.id) AS total FROM computer";
   private static final String QUERY_GET_COMPUTERS_AT_PAGE = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name FROM computer LEFT JOIN company ON computer.company_id=company.id LIMIT ? OFFSET ?";
 
   private JdbcRequest jdbcRequest = new JdbcRequest();
@@ -49,8 +49,8 @@ public class ComputerDaoImpl implements ComputerDao {
   @Override
   public ArrayList<Computer> getComputersAtPage(int numberOfItemPerPage, int page) {
     String query = QUERY_GET_COMPUTERS_AT_PAGE;
-    ResultSet reseultSet = jdbcRequest.itemsAtPageRequest(numberOfItemPerPage, page, query, RequestName.LIST_COMPUTERS_AT_PAGE);
-    return getListOfComputersFromResultSet(reseultSet);
+    ResultSet resultSet = jdbcRequest.itemsAtPageRequest(numberOfItemPerPage, page, query, RequestName.LIST_COMPUTERS_AT_PAGE);
+    return getListOfComputersFromResultSet(resultSet);
   }
 
   /**

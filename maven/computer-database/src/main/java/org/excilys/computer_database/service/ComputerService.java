@@ -144,12 +144,12 @@ public class ComputerService {
   public int countComputers() {
     return computerDao.countComputers();
   }
-/**
- * Returns the list of computers at the specific page.
- * @param numberOfItemPerPage The number of items per pages.
- * @param page The number of the page.
- * @return the list of computers at the specific page.
- */
+  /**
+   * Returns the list of computers at the specific page.
+   * @param numberOfItemPerPage The number of items per pages.
+   * @param page The number of the page.
+   * @return the list of computers at the specific page.
+   */
   public ArrayList<Computer> getComputersAtPage(int numberOfItemPerPage, int page) {
     return computerDao.getComputersAtPage(numberOfItemPerPage, page);
   }
