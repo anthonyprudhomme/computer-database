@@ -13,8 +13,8 @@ import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.persistence.JdbcConnection;
 import org.excilys.computer_database.service.CompanyService;
 import org.excilys.computer_database.service.ComputerService;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class DaoTest {
@@ -25,8 +25,8 @@ public class DaoTest {
    * @throws ClassNotFoundException if there is a ClassNotFoundException
    * @throws IOException if there is an IOException
    */
-  @BeforeClass
-  public static void init() throws SQLException, ClassNotFoundException, IOException {
+  @Before
+  public void init() throws SQLException, ClassNotFoundException, IOException {
     JdbcConnection.testMode = true;
     Class.forName("org.hsqldb.jdbc.JDBCDriver");
     initDatabase();
@@ -34,9 +34,16 @@ public class DaoTest {
 
   /**
    * Reset the connection to default mode.
+   * @throws SQLException  If there is an SQLException
    */
-  @AfterClass
-  public static void end() {
+  @After
+  public void end() throws SQLException {
+    Statement statement = JdbcConnection.getConnection().createStatement();
+    statement.execute("DROP TABLE company;");
+    statement.execute("DROP TABLE computer;");
+    statement.close();
+    JdbcConnection.getConnection().commit();
+    JdbcConnection.getConnection().close();
     JdbcConnection.testMode = false;
   }
 
@@ -62,13 +69,16 @@ public class DaoTest {
         );
     statement.executeUpdate("INSERT INTO company (name) values ('Apple Inc.');");
     statement.executeUpdate("INSERT INTO company (name) values ('HP');");
+    statement.executeUpdate("INSERT INTO company (name) values ('Company to delete');");
     statement.executeUpdate("INSERT INTO computer (name,introduced,discontinued,company_id) values ('Computer 1','1983-12-01','1984-04-01',1);");
     statement.executeUpdate("INSERT INTO computer (name,introduced,discontinued,company_id) values ('Computer 2',null,'1984-04-01',1);");
     statement.executeUpdate("INSERT INTO computer (name,introduced,discontinued,company_id) values ('Computer 3','1983-12-01',null,1);");
     statement.executeUpdate("INSERT INTO computer (name,introduced,discontinued,company_id) values ('Computer 4',null,null,1);");
     statement.executeUpdate("INSERT INTO computer (name,introduced,discontinued,company_id) values ('Computer 5',null,null,null);");
-
+    statement.executeUpdate("INSERT INTO computer (name,introduced,discontinued,company_id) values ('Computer 1','1983-12-01','1984-04-01',3);");
+    statement.close();
     JdbcConnection.getConnection().commit();
+    JdbcConnection.getConnection().close();
   }
 
   /**
@@ -102,7 +112,7 @@ public class DaoTest {
    */
   @Test
   public void testListOfComputers() {
-    assertEquals(5, getNumberOfComputers());
+    assertEquals(6, getNumberOfComputers());
   }
 
   /**
@@ -110,7 +120,7 @@ public class DaoTest {
    */
   @Test
   public void testListOfCompanies() {
-    assertEquals(2, getNumberOfCompanies());
+    assertEquals(3, getNumberOfCompanies());
   }
 
   /**
@@ -147,7 +157,7 @@ public class DaoTest {
    */
   @Test(expected = CDBObjectCompanyIdException.class)
   public void testCreateComputerWithInvalidCompanyId() throws CDBObjectException {
-    Computer wrongCompanyIdComputer = new Computer(-1, "New wrong company id computer", Date.valueOf("1999-10-10"), Date.valueOf("2000-10-10"), 3, "Apple Inc.");
+    Computer wrongCompanyIdComputer = new Computer(-1, "New wrong company id computer", Date.valueOf("1999-10-10"), Date.valueOf("2000-10-10"), 99, "Apple Inc.");
     ComputerService.getInstance().createComputer(wrongCompanyIdComputer);
   }
 
@@ -207,7 +217,7 @@ public class DaoTest {
    */
   @Test(expected = CDBObjectCompanyIdException.class)
   public void testUpdateComputerWithWrongCompanyid() throws CDBObjectException {
-    Computer wrongCompanyIdComputer = new Computer(1, "Updated wrong company id computer", Date.valueOf("1999-10-10"), Date.valueOf("2000-10-10"), 3, "Apple Inc.");
+    Computer wrongCompanyIdComputer = new Computer(1, "Updated wrong company id computer", Date.valueOf("1999-10-10"), Date.valueOf("2000-10-10"), 99, "Apple Inc.");
     ComputerService.getInstance().updateComputer(wrongCompanyIdComputer);
   }
 
@@ -219,6 +229,17 @@ public class DaoTest {
   public void testUpdateComputerWithWrongDate() throws CDBObjectException {
     Computer wrongDateComputer = new Computer(1, "Updated wrong date computer", Date.valueOf("1998-10-10"), Date.valueOf("1998-10-10"), 1, "Apple Inc.");
     ComputerService.getInstance().updateComputer(wrongDateComputer);
+  }
+
+  /**
+   * Check computer update with valid parameters.
+   * @throws CDBObjectException Thrown if there is an error with the validation
+   */
+  @Test
+  public void testDeleteCompany() throws CDBObjectException {
+    assertEquals(3, getNumberOfCompanies());
+    CompanyService.getInstance().deleteCompany(1);
+    assertEquals(2, getNumberOfCompanies());
   }
 
 }

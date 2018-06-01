@@ -57,6 +57,10 @@ public class Main {
         deleteComputer(scan);
         break;
 
+      case DELETE_COMPANY:
+        deleteCompany(scan);
+        break;
+
       case DONE:
         System.out.println("Thank you for using Computer Database");
         break;
@@ -307,6 +311,15 @@ public class Main {
     System.out.println("Delete a computer");
     int idToDelete = askForInt("Please enter the id of the computer you want to delete:", scan, false);
     ComputerService.getInstance().deleteComputer(idToDelete);
+  }
+  /**
+   * Deletes a company and its related computers.
+   * @param scan to get user inputs.
+   */
+  private static void deleteCompany(Scanner scan) {
+    System.out.println("Delete a company");
+    int idToDelete = askForInt("Please enter the id of the company you want to delete:", scan, false);
+    CompanyService.getInstance().deleteCompany(idToDelete);
   }
 
   /**

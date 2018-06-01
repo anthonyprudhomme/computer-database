@@ -128,4 +128,13 @@ public class ComputerService {
     return computerDao.getComputersWithParams(numberOfItemPerPage, currentPage, keyword, orderByParams);
   }
 
+  /**
+   * Returns the list of computers at the specific page.
+   * @param companyId Id of the company.
+   * @return the list of computers at the specific page.
+   */
+  public ArrayList<Integer> getComputersWithCompanyId(int companyId) {
+    return computerDao.getComputersWithCompanyId(companyId);
+  }
+
 }

@@ -316,4 +316,84 @@ public class JdbcRequest {
     LOGGER.error("VendorError: " + sqlException.getErrorCode());
     sqlException.printStackTrace();
   }
+
+  /**
+   * Return the result from the query to get the items at a specified page.
+   * @param query the query you want to ask to the database
+   * @param companyId id of the company you want to get computers from
+   * @return the result from the query to get the items at a specified page.
+   */
+  public ResultSet getComputersWithCompanyId(String query, int companyId) {
+    ResultSet resultSet = null;
+    PreparedStatement preparedStatement = null;
+    try (Connection connection = JdbcConnection.getConnection()) {
+      preparedStatement = connection.prepareStatement(query);
+      preparedStatement.setInt(1, companyId);
+      LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
+      if (preparedStatement.execute()) {
+        resultSet = preparedStatement.getResultSet();
+      }
+    } catch (SQLException sqlException) {
+      displayException(sqlException);
+    }
+    return resultSet;
+  }
+  /**
+   * Delete company and all related computers with the given id.
+   * @param queryDeleteCompany the query you want to ask to the database
+   * @param queryToDeleteComputer the query you want to ask to the database
+   * @param companyId id of the company you want to delete
+   */
+  public void deleteCompany(String queryDeleteCompany, String queryToDeleteComputer, int companyId) {
+    Connection connection = JdbcConnection.getConnection();
+    PreparedStatement preparedStatementDeleteComputers = null;
+    PreparedStatement preparedStatementDeleteCompany = null;
+    try {
+      connection.setAutoCommit(false);
+      preparedStatementDeleteComputers = connection.prepareStatement(queryToDeleteComputer);
+      preparedStatementDeleteComputers.setInt(1, companyId);
+      LOGGER.info(loggerDatabasePrefix + preparedStatementDeleteComputers.toString());
+      preparedStatementDeleteComputers.executeUpdate();
+
+      preparedStatementDeleteCompany = connection.prepareStatement(queryDeleteCompany);
+      preparedStatementDeleteCompany.setInt(1, companyId);
+      LOGGER.info(loggerDatabasePrefix + preparedStatementDeleteCompany.toString());
+
+      preparedStatementDeleteCompany.executeUpdate();
+      connection.commit();
+    } catch (SQLException sqlException) {
+      displayException(sqlException);
+      try {
+        connection.rollback();
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    } finally {
+
+      if (preparedStatementDeleteCompany != null) {
+        try {
+          preparedStatementDeleteCompany.close();
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
+      if (preparedStatementDeleteComputers != null) {
+        try {
+          preparedStatementDeleteComputers.close();
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
+      if (connection != null) {
+        try {
+          connection.close();
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+
+    }
+  }
 }

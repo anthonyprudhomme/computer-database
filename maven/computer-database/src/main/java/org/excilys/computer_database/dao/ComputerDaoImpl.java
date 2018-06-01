@@ -19,7 +19,7 @@ public class ComputerDaoImpl implements ComputerDao {
   private static final String QUERY_DELETE_COMPUTER = "DELETE FROM computer WHERE id=";
   private static final String QUERY_COUNT_COMPUTER = "SELECT COUNT(computer.id) AS total FROM computer";
   private static final String QUERY_COUNT_COMPUTER_WITH_SEARCH = "SELECT COUNT(computer.id) AS total FROM computer LEFT JOIN company ON computer.company_id=company.id WHERE (computer.name LIKE ? OR company.name LIKE ? ) ";
-
+  private static final String QUERY_GET_COMPUTER_WITH_COMPANY_ID = "SELECT computer.id FROM computer WHERE computer.company_id=?";
   private static final String SEARCH = "WHERE (computer.name LIKE ? OR company.name LIKE ? ) ";
   private static final String PAGE = "LIMIT ? OFFSET ? ";
   private static final String ORDER_BY = "ORDER BY ";
@@ -144,6 +144,23 @@ public class ComputerDaoImpl implements ComputerDao {
       }
     }
     return getListOfComputersFromResultSet(resultSet);
+  }
+
+  @Override
+  public ArrayList<Integer> getComputersWithCompanyId(int companyId) {
+    String query = QUERY_GET_COMPUTER_WITH_COMPANY_ID;
+    ResultSet resultSet = jdbcRequest.getComputersWithCompanyId(query, companyId);
+    ArrayList<Integer> idsToDelete = new ArrayList<>();
+    try {
+      while (resultSet.next()) {
+        idsToDelete.add(resultSet.getInt("computer.id"));
+      }
+      resultSet.close();
+      JdbcConnection.getConnection().close();
+    } catch (SQLException exception) {
+      jdbcRequest.handleException(resultSet, exception);
+    }
+    return idsToDelete;
   }
 
 }

@@ -19,6 +19,8 @@ public class CompanyDaoImpl implements CompanyDao {
   private static final String QUERY_GET_COMPANY = "SELECT company.id, company.name FROM company WHERE id=";
   private static final String QUERY_COUNT_COMPANIES = "SELECT COUNT(company.id) AS total FROM company";
   private static final String QUERY_GET_COMPANIES_AT_PAGE = "SELECT company.id, company.name FROM company LIMIT ? OFFSET ?";
+  private static final String QUERY_DELETE_COMPANY = "DELETE FROM company WHERE id= ?";
+  private static final String QUERY_DELETE_COMPUTER = "DELETE FROM computer WHERE computer.company_id= ?";
   private JdbcRequest jdbcRequest;
   private static CompanyDaoImpl instance = null;
 
@@ -93,6 +95,13 @@ public class CompanyDaoImpl implements CompanyDao {
       jdbcRequest.handleException(resultSet, exception);
     }
     return companies;
+  }
+
+  @Override
+  public void deleteCompany(int companyId) {
+    String queryDeleteCompany = QUERY_DELETE_COMPANY;
+    String queryDeleteComputer = QUERY_DELETE_COMPUTER;
+    jdbcRequest.deleteCompany(queryDeleteCompany, queryDeleteComputer, companyId);
   }
 
 }

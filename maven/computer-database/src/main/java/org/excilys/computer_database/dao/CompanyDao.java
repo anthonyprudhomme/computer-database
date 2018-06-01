@@ -32,4 +32,9 @@ public interface CompanyDao {
    * @return the number of companies
    */
   int countCompanies();
+  /**
+   * Delete the company and all associated computers with the corresponding company id.
+   * @param id of the company to delete
+   */
+  void deleteCompany(int id);
 }

@@ -8,6 +8,7 @@ public enum MenuOption {
   CREATE_COMPUTER,
   UPDATE_COMPUTER,
   DELETE_COMPUTER,
+  DELETE_COMPANY,
   DONE
 
 }
