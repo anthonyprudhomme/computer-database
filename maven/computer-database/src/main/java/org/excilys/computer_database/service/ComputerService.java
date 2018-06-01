@@ -104,14 +104,24 @@ public class ComputerService {
   public int countComputers() {
     return computerDao.countComputers();
   }
+
+  /**
+   * Count the number of computers.
+   * @param keyword The keyword you are looking for.
+   * @return the number of computers
+   */
+  public int countComputers(String keyword) {
+    return computerDao.countComputers(keyword);
+  }
   /**
    * Returns the list of computers at the specific page.
    * @param numberOfItemPerPage The number of items per pages.
    * @param page The number of the page.
+   * @param keyword The keyword you are looking for
    * @return the list of computers at the specific page.
    */
-  public ArrayList<Computer> getComputersAtPage(int numberOfItemPerPage, int page) {
-    return computerDao.getComputersAtPage(numberOfItemPerPage, page);
+  public ArrayList<Computer> getComputersWithPageAndSearch(int numberOfItemPerPage, int page, String keyword) {
+    return computerDao.getComputersWithPageAndSearch(numberOfItemPerPage, page, keyword);
   }
 
 }

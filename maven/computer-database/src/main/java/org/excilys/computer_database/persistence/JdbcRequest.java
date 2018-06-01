@@ -167,4 +167,70 @@ public class JdbcRequest {
     }
     return resultSet;
   }
+  /**
+   * Return the result from the query to get the items at a specified page.
+   * @param limit The number of items you want per page
+   * @param page the page number
+   * @param query the query you want to ask to the database
+   * @param keyword The keyword you are looking for
+   * @return the result from the query to get the items at a specified page.
+   */
+  public ResultSet itemsWithPageAndSearch(String query, int limit, int page, String keyword) {
+    ResultSet resultSet = null;
+    PreparedStatement preparedStatement = null;
+    try (Connection connection = JdbcConnection.getConnection()) {
+      preparedStatement = connection.prepareStatement(query);
+      if (keyword != null) {
+        preparedStatement.setString(1, "%" + keyword + "%");
+        preparedStatement.setString(2, "%" + keyword + "%");
+        preparedStatement.setInt(3, limit);
+        int offset = limit * (page - 1);
+        preparedStatement.setInt(4, offset);
+      } else {
+        preparedStatement.setInt(1, limit);
+        int offset = limit * (page - 1);
+        preparedStatement.setInt(2, offset);
+      }
+      LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
+      if (preparedStatement.execute()) {
+        resultSet = preparedStatement.getResultSet();
+      }
+      LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
+    } catch (SQLException sqlException) {
+      LOGGER.error("SQLException: " + sqlException.getMessage());
+      LOGGER.error("SQLState: " + sqlException.getSQLState());
+      LOGGER.error("VendorError: " + sqlException.getErrorCode());
+    }
+    return resultSet;
+  }
+  /**
+   * Count the number of computers.
+   * @param query query to send to the database
+   * @param requestName Type of request
+   * @param keyword The keyword you are looking for
+   * @return the number of computers
+   */
+  public int countWithKeywordRequest(String query, RequestName requestName, String keyword) {
+    int count = -1;
+    LOGGER.info(loggerDatabasePrefix + query);
+    ResultSet resultSet = null;
+    PreparedStatement preparedStatement = null;
+    try (Connection connection = JdbcConnection.getConnection()) {
+      preparedStatement = connection.prepareStatement(query);
+      preparedStatement.setString(1, "%" + keyword + "%");
+      preparedStatement.setString(2, "%" + keyword + "%");
+      if (preparedStatement.execute()) {
+        resultSet = preparedStatement.getResultSet();
+        if (resultSet.next()) {
+          count = resultSet.getInt("total");
+        }
+        resultSet.close();
+      }
+    } catch (SQLException sqlException) {
+      LOGGER.error("SQLException: " + sqlException.getMessage());
+      LOGGER.error("SQLState: " + sqlException.getSQLState());
+      LOGGER.error("VendorError: " + sqlException.getErrorCode());
+    }
+    return count;
+  }
 }

@@ -22,6 +22,7 @@ public class DashboardServlet extends HttpServlet {
   private static final String NUMBER_OF_PAGES = "numberOfPages";
   private static final String NUMBER_OF_COMPUTERS = "numberOfComputers";
   private static final String NUMBER_OF_ITEM_PER_PAGE = "numberOfItemPerPage";
+  private static final String KEYWORD = "search";
   private static final String DASHBOARD = "/WEB-INF/views/dashboard.jsp";
 
   @Override
@@ -51,10 +52,15 @@ public class DashboardServlet extends HttpServlet {
       numberOfItemPerPage = Integer.valueOf(request.getParameter(NUMBER_OF_ITEM_PER_PAGE));
     }
     request.setAttribute(NUMBER_OF_ITEM_PER_PAGE, numberOfItemPerPage);
-    int numberOfComputers = ComputerService.getInstance().countComputers();
+    String keyword = request.getParameter(KEYWORD);
+    System.out.println(keyword);
+    int numberOfComputers = ComputerService.getInstance().countComputers(keyword);
     request.setAttribute(NUMBER_OF_COMPUTERS, numberOfComputers);
 
-    int numberOfPages = (int) Math.ceil(numberOfComputers / numberOfItemPerPage);
+    int numberOfPages = (int) numberOfComputers / numberOfItemPerPage + 1;
+    if (numberOfComputers % numberOfItemPerPage == 0) {
+      numberOfPages = numberOfComputers / numberOfItemPerPage;
+    }
     request.setAttribute(NUMBER_OF_PAGES, numberOfPages);
 
     int currentPage = 1;
@@ -62,8 +68,10 @@ public class DashboardServlet extends HttpServlet {
       currentPage = Integer.valueOf(request.getParameter(PAGE));
     }
     request.setAttribute("currentPage", currentPage);
+    request.setAttribute(KEYWORD, keyword);
 
-    ArrayList<Computer> computersOfPage = ComputerService.getInstance().getComputersAtPage(numberOfItemPerPage, currentPage);
+
+    ArrayList<Computer> computersOfPage = ComputerService.getInstance().getComputersWithPageAndSearch(numberOfItemPerPage, currentPage, keyword);
     request.setAttribute("computers", computersOfPage);
   }
 }

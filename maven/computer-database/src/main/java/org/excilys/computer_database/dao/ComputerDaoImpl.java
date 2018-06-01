@@ -18,7 +18,16 @@ public class ComputerDaoImpl implements ComputerDao {
   private static final String QUERY_UPDATE_COMPUTER = "UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?";
   private static final String QUERY_DELETE_COMPUTER = "DELETE FROM computer WHERE id=";
   private static final String QUERY_COUNT_COMPUTER = "SELECT COUNT(computer.id) AS total FROM computer";
-  private static final String QUERY_GET_COMPUTERS_AT_PAGE = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name FROM computer LEFT JOIN company ON computer.company_id=company.id LIMIT ? OFFSET ?";
+  private static final String QUERY_COUNT_COMPUTER_WITH_SEARCH = "SELECT COUNT(computer.id) AS total FROM computer LEFT JOIN company ON computer.company_id=company.id WHERE (computer.name LIKE ? OR company.name LIKE ? ) ";
+  private static final String QUERY_GET_COMPUTERS_WITH_PAGE_AND_SEARCH = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, "
+      + "company.id, company.name FROM computer "
+      + "LEFT JOIN company ON computer.company_id=company.id "
+      + "WHERE (computer.name LIKE ? OR company.name LIKE ? ) "
+      + "LIMIT ? OFFSET ?";
+  private static final String QUERY_GET_COMPUTERS_WITH_PAGE = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, "
+      + "company.id, company.name FROM computer "
+      + "LEFT JOIN company ON computer.company_id=company.id "
+      + "LIMIT ? OFFSET ?";
 
   private JdbcRequest jdbcRequest = new JdbcRequest();
   private static ComputerDaoImpl instance = null;
@@ -47,9 +56,14 @@ public class ComputerDaoImpl implements ComputerDao {
   }
 
   @Override
-  public ArrayList<Computer> getComputersAtPage(int numberOfItemPerPage, int page) {
-    String query = QUERY_GET_COMPUTERS_AT_PAGE;
-    ResultSet resultSet = jdbcRequest.itemsAtPageRequest(numberOfItemPerPage, page, query, RequestName.LIST_COMPUTERS_AT_PAGE);
+  public ArrayList<Computer> getComputersWithPageAndSearch(int numberOfItemPerPage, int page, String keyword) {
+    String query;
+    if (keyword == null || keyword.isEmpty()) {
+      query = QUERY_GET_COMPUTERS_WITH_PAGE;
+    } else {
+      query = QUERY_GET_COMPUTERS_WITH_PAGE_AND_SEARCH;
+    }
+    ResultSet resultSet = jdbcRequest.itemsWithPageAndSearch(query, numberOfItemPerPage, page, keyword);
     return getListOfComputersFromResultSet(resultSet);
   }
 
@@ -113,6 +127,15 @@ public class ComputerDaoImpl implements ComputerDao {
   public int countComputers() {
     String query = QUERY_COUNT_COMPUTER;
     return jdbcRequest.countRequest(query, RequestName.COUNT_COMPUTERS);
+  }
+
+  @Override
+  public int countComputers(String keyword) {
+    if (keyword == null || keyword.isEmpty()) {
+      return countComputers();
+    }
+    String query = QUERY_COUNT_COMPUTER_WITH_SEARCH;
+    return jdbcRequest.countWithKeywordRequest(query, RequestName.COUNT_COMPUTERS, keyword);
   }
 
 }

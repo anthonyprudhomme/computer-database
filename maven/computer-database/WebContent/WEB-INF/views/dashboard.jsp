@@ -35,7 +35,7 @@
 					<form id="searchForm" action="#" method="GET" class="form-inline">
 
 						<input type="search" id="searchbox" name="search"
-							class="form-control" placeholder="Search name" /> <input
+							class="form-control" placeholder="Search name" value="<c:out value="${search}" />" /> <input
 							type="submit" id="searchsubmit" value="Filter by name"
 							class="btn btn-primary" />
 					</form>
@@ -104,15 +104,15 @@
 
 			<pagination:display maxLinks="5" currentPage="${currentPage}"
 				numberOfPages="${numberOfPages}" uri="${uri}"
-				numberOfItemPerPage="${numberOfItemPerPage}" />
+				numberOfItemPerPage="${numberOfItemPerPage}" search="${search}" />
 
 			<div class="btn-group btn-group-sm pull-right" role="group">
 				<a type="button" class="btn btn-default"
-					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="10"/>>10</a>
+					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="10" search="${search}"/>>10</a>
 				<a type="button" class="btn btn-default"
-					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="50"/>>50</a>
+					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="50" search="${search}"/>>50</a>
 				<a type="button" class="btn btn-default"
-					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="100"/>>100</a>
+					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="100" search="${search}"/>>100</a>
 			</div>
 		</div>
 	</footer>

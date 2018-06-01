@@ -170,7 +170,6 @@ public class Selenium {
     driver.get(BASE_URL);
     driver.manage().timeouts().implicitlyWait(1000, TimeUnit.MILLISECONDS);
     int newNumberOfComputer = getTotalNumberOfComputers();
-    System.out.println("numberOfComputer: " + numberOfComputer + " newNumberOfComputer: " + newNumberOfComputer);
     assertEquals(numberOfComputer, newNumberOfComputer + 1);
   }
 

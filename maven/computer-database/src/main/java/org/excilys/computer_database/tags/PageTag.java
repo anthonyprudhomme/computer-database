@@ -12,6 +12,7 @@ public class PageTag extends SimpleTagSupport {
   private int numberOfPages;
   private int maxLinks = 10;
   private int numberOfItemPerPage = 10;
+  private String search;
 
   /**
    * Accessor for writer.
@@ -92,6 +93,7 @@ public class PageTag extends SimpleTagSupport {
     .append(uri)
     .append("?page=" + String.valueOf(page))
     .append("&numberOfItemPerPage=" + String.valueOf(numberOfItemPerPage))
+    .append("&search=" + search)
     .append("\">")
     .append(text)
     .append("</a></li>");
@@ -100,6 +102,10 @@ public class PageTag extends SimpleTagSupport {
 
   public void setUri(String uri) {
     this.uri = uri;
+  }
+
+  public void setSearch(String search) {
+    this.search = search;
   }
 
   public void setCurrentPage(int currentPage) {

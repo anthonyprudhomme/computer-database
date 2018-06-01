@@ -327,7 +327,10 @@ public class Main {
       numberOfItems = ComputerService.getInstance().countComputers();
       break;
     }
-    int numberOfPages = (int) Math.ceil(numberOfItems / 10);
+    int numberOfPages = (int) numberOfItems / 10 + 1;
+    if (numberOfItems % 10 == 0) {
+      numberOfPages = numberOfItems / 10;
+    }
     currentPage = printPage(currentPage, type, numberOfPages);
 
     while (!userInput.equalsIgnoreCase("d")) {
@@ -381,7 +384,7 @@ public class Main {
       break;
 
     case COMPUTER:
-      ArrayList<Computer> computers = ComputerService.getInstance().getComputersAtPage(10, pageNumber);
+      ArrayList<Computer> computers = ComputerService.getInstance().getComputersWithPageAndSearch(10, pageNumber, null);
       for (Computer computer: computers) {
         System.out.println(computer.toString());
       }
