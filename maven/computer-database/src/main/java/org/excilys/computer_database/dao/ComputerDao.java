@@ -10,17 +10,20 @@ public interface ComputerDao {
    */
   ArrayList<Computer> getComputers();
   /**
-   * Return the list of computers for the defined page.
-   * @param numberOfItemPerPage Number of items per page.
-   * @param page Page number
-   * @param keyword Keyword you are looking for
-   * @return the list of computers for the defined page.
+   * Returns the list of computers at the specific page.
+   * @param numberOfItemPerPage The number of items per pages.
+   * @param currentPage The number of the page.
+   * @param keyword The keyword you are looking for
+   * @param orderByParams Params to order by with
+   * @return the list of computers at the specific page.
    */
-  ArrayList<Computer> getComputersWithPageAndSearch(int numberOfItemPerPage, int page, String keyword);
+  ArrayList<Computer> getComputersWithParams(int numberOfItemPerPage, int currentPage, String keyword,
+      OrderByParams orderByParams);
   /**
    * @param id Id of the computer
    * @return Computer with id
    */
+
   Computer getComputerDetails(int id);
   /**
    * Count the number of computers.

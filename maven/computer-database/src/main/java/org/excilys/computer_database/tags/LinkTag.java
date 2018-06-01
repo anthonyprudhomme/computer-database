@@ -17,6 +17,8 @@ public class LinkTag extends SimpleTagSupport {
   private int currentPage;
   private int numberOfItemPerPage;
   private String search;
+  private String orderBy;
+  private String ascOrDesc;
 
   /**
    * Accessor for writer.
@@ -35,7 +37,9 @@ public class LinkTag extends SimpleTagSupport {
       link.append(uri)
       .append("?page=" + String.valueOf(currentPage))
       .append("&numberOfItemPerPage=" + String.valueOf(numberOfItemPerPage))
-      .append("?search=" + search);
+      .append("&search=" + search)
+      .append("&orderBy=" + orderBy)
+      .append("&ascOrDesc=" + ascOrDesc);
       writer.print(link);
     } catch (IOException e) {
         LOGGER.debug("Link Tag:" + e.getMessage());
@@ -49,6 +53,14 @@ public class LinkTag extends SimpleTagSupport {
 
   public void setSearch(String search) {
     this.search = search;
+  }
+
+  public void setOrderBy(String orderBy) {
+    this.orderBy = orderBy;
+  }
+
+  public void setAscOrDesc(String ascOrDesc) {
+    this.ascOrDesc = ascOrDesc;
   }
 
   public void setCurrentPage(int currentPage) {

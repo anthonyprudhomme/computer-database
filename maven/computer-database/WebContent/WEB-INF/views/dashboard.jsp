@@ -23,6 +23,7 @@
 				Application - Computer Database </a>
 		</div>
 	</header>
+	<c:url var="uri" value="/list-computer" />
 
 	<section id="main">
 		<div class="container">
@@ -35,9 +36,9 @@
 					<form id="searchForm" action="#" method="GET" class="form-inline">
 
 						<input type="search" id="searchbox" name="search"
-							class="form-control" placeholder="Search name" value="<c:out value="${search}" />" /> <input
-							type="submit" id="searchsubmit" value="Filter by name"
-							class="btn btn-primary" />
+							class="form-control" placeholder="Search name"
+							value="<c:out value="${search}" />" /> <input type="submit"
+							id="searchsubmit" value="Filter by name" class="btn btn-primary" />
 					</form>
 				</div>
 				<div class="pull-right">
@@ -67,12 +68,46 @@
 									class="fa fa-trash-o fa-lg"></i>
 							</a>
 						</span></th>
-						<th>Computer name</th>
-						<th>Introduced date</th>
+						<th><a
+							href=<linkLib:display uri="${uri}" 
+							currentPage="${currentPage}" 
+							numberOfItemPerPage="${numberOfItemPerPage}" 
+							search="${search}" 
+							orderBy="computerName" 
+							ascOrDesc="${orderBy == 'computerName' ? ascOrDesc == 'asc' ? 'desc' : 'asc' : 'asc'}"/>>
+								Computer name <i
+								class="fa fa-fw ${orderBy == 'computerName' ? ascOrDesc == 'asc' ? 'fa-sort-asc' : 'fa-sort-desc' : 'fa-sort'}"></i>
+						</a></th>
+						<!-- Table header for Introduced Date -->
+						<th><a
+							href=<linkLib:display uri="${uri}" 
+							currentPage="${currentPage}" 
+							numberOfItemPerPage="${numberOfItemPerPage}" 
+							search="${search}" 
+							orderBy="introduced" 
+							ascOrDesc="${orderBy == 'introduced' ? ascOrDesc == 'asc' ? 'desc' : 'asc' : 'asc'}"/>>Introduced
+								date <i class="fa fa-fw ${orderBy == 'introduced' ? ascOrDesc == 'asc' ? 'fa-sort-asc' : 'fa-sort-desc' : 'fa-sort'}"></i>
+						</a></th>
 						<!-- Table header for Discontinued Date -->
-						<th>Discontinued date</th>
+						<th><a
+							href=<linkLib:display uri="${uri}" 
+							currentPage="${currentPage}" 
+							numberOfItemPerPage="${numberOfItemPerPage}" 
+							search="${search}" 
+							orderBy="discontinued" 
+							ascOrDesc="${orderBy == 'discontinued' ? ascOrDesc == 'asc' ? 'desc' : 'asc' : 'asc'}"/>>Discontinued
+								date <i class="fa fa-fw ${orderBy == 'discontinued' ? ascOrDesc == 'asc' ? 'fa-sort-asc' : 'fa-sort-desc' : 'fa-sort'}"></i>
+						</a></th>
 						<!-- Table header for Company -->
-						<th>Company</th>
+						<th><a
+							href=<linkLib:display uri="${uri}" 
+							currentPage="${currentPage}" 
+							numberOfItemPerPage="${numberOfItemPerPage}" 
+							search="${search}" 
+							orderBy="companyName" 
+							ascOrDesc="${orderBy == 'companyName' ? ascOrDesc == 'asc' ? 'desc' : 'asc' : 'asc'}"/>>Company
+								<i class="fa fa-fw ${orderBy == 'companyName' ? ascOrDesc == 'asc' ? 'fa-sort-asc' : 'fa-sort-desc' : 'fa-sort'}"></i>
+						</a></th>
 
 					</tr>
 				</thead>
@@ -100,19 +135,18 @@
 	<footer class="navbar-fixed-bottom">
 		<div class="container text-center">
 
-			<c:url var="uri" value="/list-computer" />
-
 			<pagination:display maxLinks="5" currentPage="${currentPage}"
 				numberOfPages="${numberOfPages}" uri="${uri}"
-				numberOfItemPerPage="${numberOfItemPerPage}" search="${search}" />
+				numberOfItemPerPage="${numberOfItemPerPage}" search="${search}"
+				orderBy="${orderBy}" ascOrDesc="${ascOrDesc}" />
 
 			<div class="btn-group btn-group-sm pull-right" role="group">
 				<a type="button" class="btn btn-default"
-					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="10" search="${search}"/>>10</a>
+					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="10" search="${search}" orderBy="${orderBy}" ascOrDesc="${ascOrDesc}"/>>10</a>
 				<a type="button" class="btn btn-default"
-					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="50" search="${search}"/>>50</a>
+					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="50" search="${search}" orderBy="${orderBy}" ascOrDesc="${ascOrDesc}"/>>50</a>
 				<a type="button" class="btn btn-default"
-					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="100" search="${search}"/>>100</a>
+					href=<linkLib:display uri="${uri}" currentPage="${currentPage}" numberOfItemPerPage="100" search="${search}" orderBy="${orderBy}" ascOrDesc="${ascOrDesc}"/>>100</a>
 			</div>
 		</div>
 	</footer>

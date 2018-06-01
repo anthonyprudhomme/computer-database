@@ -13,6 +13,8 @@ public class PageTag extends SimpleTagSupport {
   private int maxLinks = 10;
   private int numberOfItemPerPage = 10;
   private String search;
+  private String orderBy;
+  private String ascOrDesc;
 
   /**
    * Accessor for writer.
@@ -94,6 +96,8 @@ public class PageTag extends SimpleTagSupport {
     .append("?page=" + String.valueOf(page))
     .append("&numberOfItemPerPage=" + String.valueOf(numberOfItemPerPage))
     .append("&search=" + search)
+    .append("&orderBy=" + orderBy)
+    .append("&ascOrDesc=" + ascOrDesc)
     .append("\">")
     .append(text)
     .append("</a></li>");
@@ -106,6 +110,14 @@ public class PageTag extends SimpleTagSupport {
 
   public void setSearch(String search) {
     this.search = search;
+  }
+
+  public void setOrderBy(String orderBy) {
+    this.orderBy = orderBy;
+  }
+
+  public void setAscOrDesc(String ascOrDesc) {
+    this.ascOrDesc = ascOrDesc;
   }
 
   public void setCurrentPage(int currentPage) {

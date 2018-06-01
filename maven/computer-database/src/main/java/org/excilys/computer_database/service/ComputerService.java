@@ -6,6 +6,7 @@ import java.util.Calendar;
 
 import org.excilys.computer_database.dao.ComputerDao;
 import org.excilys.computer_database.dao.ComputerDaoImpl;
+import org.excilys.computer_database.dao.OrderByParams;
 import org.excilys.computer_database.exceptions.CDBObjectException;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.validation.ComputerValidation;
@@ -113,15 +114,18 @@ public class ComputerService {
   public int countComputers(String keyword) {
     return computerDao.countComputers(keyword);
   }
+
   /**
    * Returns the list of computers at the specific page.
    * @param numberOfItemPerPage The number of items per pages.
-   * @param page The number of the page.
+   * @param currentPage The number of the page.
    * @param keyword The keyword you are looking for
+   * @param orderByParams Params to order by with
    * @return the list of computers at the specific page.
    */
-  public ArrayList<Computer> getComputersWithPageAndSearch(int numberOfItemPerPage, int page, String keyword) {
-    return computerDao.getComputersWithPageAndSearch(numberOfItemPerPage, page, keyword);
+  public ArrayList<Computer> getComputersWithParams(int numberOfItemPerPage, int currentPage, String keyword,
+      OrderByParams orderByParams) {
+    return computerDao.getComputersWithParams(numberOfItemPerPage, currentPage, keyword, orderByParams);
   }
 
 }

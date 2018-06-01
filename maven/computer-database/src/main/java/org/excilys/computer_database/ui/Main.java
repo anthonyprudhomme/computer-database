@@ -384,7 +384,7 @@ public class Main {
       break;
 
     case COMPUTER:
-      ArrayList<Computer> computers = ComputerService.getInstance().getComputersWithPageAndSearch(10, pageNumber, null);
+      ArrayList<Computer> computers = ComputerService.getInstance().getComputersWithParams(10, pageNumber, null, null);
       for (Computer computer: computers) {
         System.out.println(computer.toString());
       }

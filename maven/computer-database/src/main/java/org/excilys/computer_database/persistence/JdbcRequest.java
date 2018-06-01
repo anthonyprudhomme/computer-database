@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import org.excilys.computer_database.dao.OrderByParams;
 import org.excilys.computer_database.model.Computer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,19 +24,17 @@ public class JdbcRequest {
    * @return the resultSet from the request
    */
   public ResultSet doARequest(String query, RequestName requestName, Computer computer) {
-    LOGGER.info(loggerDatabasePrefix + query);
     ResultSet resultSet = null;
     PreparedStatement preparedStatement = null;
     try (Connection connection = JdbcConnection.getConnection()) {
       preparedStatement = connection.prepareStatement(query);
       preparedStatement = this.prepareRequest(preparedStatement, requestName, computer);
+      LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
       if (preparedStatement.execute()) {
         return preparedStatement.getResultSet();
       }
     } catch (SQLException sqlException) {
-      LOGGER.error("SQLException: " + sqlException.getMessage());
-      LOGGER.error("SQLState: " + sqlException.getSQLState());
-      LOGGER.error("VendorError: " + sqlException.getErrorCode());
+      displayException(sqlException);
     }
     return resultSet;
   }
@@ -124,6 +123,7 @@ public class JdbcRequest {
     PreparedStatement preparedStatement = null;
     try (Connection connection = JdbcConnection.getConnection()) {
       preparedStatement = connection.prepareStatement(query);
+      LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
       if (preparedStatement.execute()) {
         resultSet = preparedStatement.getResultSet();
         if (resultSet.next()) {
@@ -132,9 +132,7 @@ public class JdbcRequest {
         resultSet.close();
       }
     } catch (SQLException sqlException) {
-      LOGGER.error("SQLException: " + sqlException.getMessage());
-      LOGGER.error("SQLState: " + sqlException.getSQLState());
-      LOGGER.error("VendorError: " + sqlException.getErrorCode());
+      displayException(sqlException);
     }
     return count;
   }
@@ -161,9 +159,7 @@ public class JdbcRequest {
         resultSet = preparedStatement.getResultSet();
       }
     } catch (SQLException sqlException) {
-      LOGGER.error("SQLException: " + sqlException.getMessage());
-      LOGGER.error("SQLState: " + sqlException.getSQLState());
-      LOGGER.error("VendorError: " + sqlException.getErrorCode());
+      displayException(sqlException);
     }
     return resultSet;
   }
@@ -195,11 +191,8 @@ public class JdbcRequest {
       if (preparedStatement.execute()) {
         resultSet = preparedStatement.getResultSet();
       }
-      LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
     } catch (SQLException sqlException) {
-      LOGGER.error("SQLException: " + sqlException.getMessage());
-      LOGGER.error("SQLState: " + sqlException.getSQLState());
-      LOGGER.error("VendorError: " + sqlException.getErrorCode());
+      displayException(sqlException);
     }
     return resultSet;
   }
@@ -219,6 +212,7 @@ public class JdbcRequest {
       preparedStatement = connection.prepareStatement(query);
       preparedStatement.setString(1, "%" + keyword + "%");
       preparedStatement.setString(2, "%" + keyword + "%");
+      LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
       if (preparedStatement.execute()) {
         resultSet = preparedStatement.getResultSet();
         if (resultSet.next()) {
@@ -227,10 +221,99 @@ public class JdbcRequest {
         resultSet.close();
       }
     } catch (SQLException sqlException) {
-      LOGGER.error("SQLException: " + sqlException.getMessage());
-      LOGGER.error("SQLState: " + sqlException.getSQLState());
-      LOGGER.error("VendorError: " + sqlException.getErrorCode());
+      displayException(sqlException);
     }
     return count;
+  }
+
+  /**
+   * Return the result from the query to get the items at a specified page.
+   * @param limit The number of items you want per page
+   * @param page the page number
+   * @param query the query you want to ask to the database
+   * @return the result from the query to get the items at a specified page.
+   */
+  public ResultSet itemsWithPage(String query, int limit, int page) {
+    ResultSet resultSet = null;
+    PreparedStatement preparedStatement = null;
+    try (Connection connection = JdbcConnection.getConnection()) {
+      preparedStatement = connection.prepareStatement(query);
+      preparedStatement.setInt(1, limit);
+      int offset = limit * (page - 1);
+      preparedStatement.setInt(2, offset);
+      LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
+      if (preparedStatement.execute()) {
+        resultSet = preparedStatement.getResultSet();
+      }
+    } catch (SQLException sqlException) {
+      displayException(sqlException);
+    }
+    return resultSet;
+  }
+  /**
+   * Return the result from the query to get the items at a specified page.
+   * @param limit The number of items you want per page
+   * @param page the page number
+   * @param query the query you want to ask to the database
+   * @param keyword The keyword you are looking for
+   * @param orderByParams OrderBy params
+   * @return the result from the query to get the items at a specified page.
+   */
+  public ResultSet itemsWithParams(String query, int limit, int page, String keyword,
+      OrderByParams orderByParams) {
+    ResultSet resultSet = null;
+    PreparedStatement preparedStatement = null;
+    try (Connection connection = JdbcConnection.getConnection()) {
+      preparedStatement = connection.prepareStatement(query);
+      preparedStatement.setString(1, "%" + keyword + "%");
+      preparedStatement.setString(2, "%" + keyword + "%");
+      preparedStatement.setInt(3, limit);
+      int offset = limit * (page - 1);
+      preparedStatement.setInt(4, offset);
+      LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
+      if (preparedStatement.execute()) {
+        resultSet = preparedStatement.getResultSet();
+      }
+    } catch (SQLException sqlException) {
+      displayException(sqlException);
+    }
+    return resultSet;
+  }
+  /**
+   * Return the result from the query to get the items at a specified page.
+   * @param limit The number of items you want per page
+   * @param page the page number
+   * @param query the query you want to ask to the database
+   * @param orderByParams OrderBy params
+   * @return the result from the query to get the items at a specified page.
+   */
+  public ResultSet itemsWithPageAndOrderBy(String query, int limit, int page,
+      OrderByParams orderByParams) {
+    ResultSet resultSet = null;
+    PreparedStatement preparedStatement = null;
+    try (Connection connection = JdbcConnection.getConnection()) {
+      preparedStatement = connection.prepareStatement(query);
+      preparedStatement.setInt(1, limit);
+      int offset = limit * (page - 1);
+      preparedStatement.setInt(2, offset);
+      LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
+      if (preparedStatement.execute()) {
+        resultSet = preparedStatement.getResultSet();
+      }
+    } catch (SQLException sqlException) {
+      displayException(sqlException);
+    }
+    return resultSet;
+  }
+
+  /**
+   * Display log messages when the exception is thrown.
+   * @param sqlException Exception object to display
+   */
+  private void displayException(SQLException sqlException) {
+    LOGGER.error("SQLException: " + sqlException.getMessage());
+    LOGGER.error("SQLState: " + sqlException.getSQLState());
+    LOGGER.error("VendorError: " + sqlException.getErrorCode());
+    sqlException.printStackTrace();
   }
 }

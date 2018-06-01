@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.excilys.computer_database.dao.OrderByParams;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.service.ComputerService;
 import org.excilys.computer_database.util.Util;
@@ -23,6 +24,8 @@ public class DashboardServlet extends HttpServlet {
   private static final String NUMBER_OF_COMPUTERS = "numberOfComputers";
   private static final String NUMBER_OF_ITEM_PER_PAGE = "numberOfItemPerPage";
   private static final String KEYWORD = "search";
+  private static final String ORDER_BY = "orderBy";
+  private static final String ASC_OR_DESC = "ascOrDesc";
   private static final String DASHBOARD = "/WEB-INF/views/dashboard.jsp";
 
   @Override
@@ -34,12 +37,20 @@ public class DashboardServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    deleteComputersIfRequired(request);
+    setComputers(request);
+    this.getServletContext().getRequestDispatcher(DASHBOARD).forward(request, response);
+  }
+
+  /**
+   * Delete the computers defined by the user.
+   * @param request Request containing the ids to delete
+   */
+  private void deleteComputersIfRequired(HttpServletRequest request) {
     String[] idsToDelete = request.getParameter("selection").split(",");
     for (int i = 0; i < idsToDelete.length; i++) {
       ComputerService.getInstance().deleteComputer(Integer.valueOf(idsToDelete[i]));
     }
-    setComputers(request);
-    this.getServletContext().getRequestDispatcher(DASHBOARD).forward(request, response);
   }
 
   /**
@@ -47,31 +58,97 @@ public class DashboardServlet extends HttpServlet {
    * @param request Request object to get the different parameters
    */
   private void setComputers(HttpServletRequest request) {
-    int numberOfItemPerPage = 10;
-    if (Util.isInteger(request.getParameter(NUMBER_OF_ITEM_PER_PAGE))) {
-      numberOfItemPerPage = Integer.valueOf(request.getParameter(NUMBER_OF_ITEM_PER_PAGE));
-    }
-    request.setAttribute(NUMBER_OF_ITEM_PER_PAGE, numberOfItemPerPage);
-    String keyword = request.getParameter(KEYWORD);
-    System.out.println(keyword);
-    int numberOfComputers = ComputerService.getInstance().countComputers(keyword);
-    request.setAttribute(NUMBER_OF_COMPUTERS, numberOfComputers);
+    int numberOfItemPerPage = getNumberOfItemPerPage(request);
+    String keyword = getKeyword(request);
+    int numberOfComputers = getNumberOfComputers(request, keyword);
+    setNumberOfPages(request, numberOfComputers, numberOfItemPerPage);
+    int currentPage = getCurrentPage(request);
+    OrderByParams orderByParams = getOrderByparams(request);
+    ArrayList<Computer> computersOfPage = ComputerService.getInstance().getComputersWithParams(numberOfItemPerPage, currentPage, keyword, orderByParams);
+    request.setAttribute("computers", computersOfPage);
+  }
 
-    int numberOfPages = (int) numberOfComputers / numberOfItemPerPage + 1;
-    if (numberOfComputers % numberOfItemPerPage == 0) {
-      numberOfPages = numberOfComputers / numberOfItemPerPage;
-    }
-    request.setAttribute(NUMBER_OF_PAGES, numberOfPages);
-
+  /**
+   * Get the currentPage from the request.
+   * @param request to get the params from
+   * @return the currentPage from the request
+   */
+  private int getCurrentPage(HttpServletRequest request) {
     int currentPage = 1;
     if (Util.isInteger(request.getParameter(PAGE))) {
       currentPage = Integer.valueOf(request.getParameter(PAGE));
     }
     request.setAttribute("currentPage", currentPage);
+    return currentPage;
+  }
+
+  /**
+   * Get the numberOfPages from the request.
+   * @param request to get the params from
+   * @param numberOfComputers number of computers
+   * @param numberOfItemPerPage number of item per page
+   */
+  private void setNumberOfPages(HttpServletRequest request, int numberOfComputers, int numberOfItemPerPage) {
+    int numberOfPages = (int) numberOfComputers / numberOfItemPerPage + 1;
+    if (numberOfComputers % numberOfItemPerPage == 0) {
+      numberOfPages = numberOfComputers / numberOfItemPerPage;
+    }
+    request.setAttribute(NUMBER_OF_PAGES, numberOfPages);
+  }
+
+  /**
+   * Get the numberOfComputers from the request.
+   * @param request to get the params from
+   * @param keyword the keyword to look for
+   * @return the numberOfComputers from the request
+   */
+  private int getNumberOfComputers(HttpServletRequest request, String keyword) {
+    int numberOfComputers = ComputerService.getInstance().countComputers(keyword);
+    request.setAttribute(NUMBER_OF_COMPUTERS, numberOfComputers);
+    return numberOfComputers;
+  }
+
+  /**
+   * Get the numberOfItemPerPage from the request.
+   * @param request to get the params from
+   * @return the numberOfItemPerPage from the request
+   */
+  private String getKeyword(HttpServletRequest request) {
+    String keyword = request.getParameter(KEYWORD);
     request.setAttribute(KEYWORD, keyword);
+    return keyword;
+  }
 
+  /**
+   * Get the numberOfItemPerPage from the request.
+   * @param request to get the params from
+   * @return the numberOfItemPerPage from the request
+   */
+  private int getNumberOfItemPerPage(HttpServletRequest request) {
+    int numberOfItemPerPage = 10;
+    if (Util.isInteger(request.getParameter(NUMBER_OF_ITEM_PER_PAGE))) {
+      numberOfItemPerPage = Integer.valueOf(request.getParameter(NUMBER_OF_ITEM_PER_PAGE));
+    }
+    request.setAttribute(NUMBER_OF_ITEM_PER_PAGE, numberOfItemPerPage);
+    return numberOfItemPerPage;
+  }
 
-    ArrayList<Computer> computersOfPage = ComputerService.getInstance().getComputersWithPageAndSearch(numberOfItemPerPage, currentPage, keyword);
-    request.setAttribute("computers", computersOfPage);
+  /**
+   * Get the OderByParams object from the request.
+   * @param request to get the params from
+   * @return the OderByParams object from the request
+   */
+  private OrderByParams getOrderByparams(HttpServletRequest request) {
+    String orderBy = request.getParameter(ORDER_BY);
+    if (orderBy == null || orderBy.isEmpty()) {
+      return null;
+    }
+    String ascOrDesc = request.getParameter(ASC_OR_DESC);
+    if (ascOrDesc == null || ascOrDesc.isEmpty()) {
+      return null;
+    }
+    request.setAttribute(ORDER_BY, orderBy);
+    request.setAttribute(ASC_OR_DESC, ascOrDesc);
+    return new OrderByParams(orderBy, ascOrDesc);
   }
 }
