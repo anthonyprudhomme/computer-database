@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.excilys.computer_database.exceptions.CDBObjectException;
 import org.excilys.computer_database.model.Company;
 import org.excilys.computer_database.model.Computer;
-import org.excilys.computer_database.persistence.JdbcConnection;
 import org.excilys.computer_database.service.CompanyService;
 import org.excilys.computer_database.service.ComputerService;
 import org.excilys.computer_database.util.Util;
@@ -32,7 +31,7 @@ public class AddComputerServlet extends HttpServlet {
   public static final String ADD_COMPUTER = "/WEB-INF/views/addComputer.jsp";
   public static final String DASHBOARD = "list-computer";
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(JdbcConnection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AddComputerServlet.class);
 
   @Autowired
   private CompanyService companyService;

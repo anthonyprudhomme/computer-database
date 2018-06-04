@@ -4,9 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.sql.DataSource;
+
 import org.excilys.computer_database.mapper.ComputerMapper;
 import org.excilys.computer_database.model.Computer;
-import org.excilys.computer_database.persistence.JdbcConnection;
 import org.excilys.computer_database.persistence.JdbcRequest;
 import org.excilys.computer_database.persistence.RequestName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class ComputerDaoImpl implements ComputerDao {
   @Autowired
   private JdbcRequest jdbcRequest;
 
+  @Autowired
+  private DataSource dataSource;
+
   @Override
   public ArrayList<Computer> getComputers() {
     String query = QUERY_GET_ALL_COMPUTERS;
@@ -49,7 +53,7 @@ public class ComputerDaoImpl implements ComputerDao {
         computers.add(ComputerMapper.getInstance().mapComputer(resultSet));
       }
       resultSet.close();
-      JdbcConnection.getConnection().close();
+      dataSource.getConnection().close();
     } catch (SQLException exception) {
       jdbcRequest.handleException(resultSet, exception);
     }
@@ -66,7 +70,7 @@ public class ComputerDaoImpl implements ComputerDao {
         computer = ComputerMapper.getInstance().mapComputer(resultSet);
       }
       resultSet.close();
-      JdbcConnection.getConnection().close();
+      dataSource.getConnection().close();
     } catch (SQLException exception) {
       jdbcRequest.handleException(resultSet, exception);
     }
@@ -143,7 +147,7 @@ public class ComputerDaoImpl implements ComputerDao {
         idsToDelete.add(resultSet.getInt("computer.id"));
       }
       resultSet.close();
-      JdbcConnection.getConnection().close();
+      dataSource.getConnection().close();
     } catch (SQLException exception) {
       jdbcRequest.handleException(resultSet, exception);
     }

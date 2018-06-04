@@ -10,7 +10,6 @@ import org.excilys.computer_database.exceptions.CDBObjectException;
 import org.excilys.computer_database.model.Company;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.model.DBModelType;
-import org.excilys.computer_database.persistence.JdbcConnection;
 import org.excilys.computer_database.service.CompanyService;
 import org.excilys.computer_database.service.ComputerService;
 import org.excilys.computer_database.spring.AppConfig;
@@ -23,7 +22,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 
 public class Main {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(JdbcConnection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
   @Autowired
   private static CompanyService companyService;

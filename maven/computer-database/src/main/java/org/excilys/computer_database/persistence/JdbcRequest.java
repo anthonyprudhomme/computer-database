@@ -6,10 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import javax.sql.DataSource;
+
 import org.excilys.computer_database.dao.OrderByParams;
 import org.excilys.computer_database.model.Computer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +20,8 @@ public class JdbcRequest {
 
   private final Logger LOGGER = LoggerFactory.getLogger(JdbcRequest.class);
   private String loggerDatabasePrefix = "Request to SQL database: ";
+  @Autowired
+  private DataSource dataSource;
 
   /**
    * Starts an MySQL request.
@@ -28,7 +33,7 @@ public class JdbcRequest {
   public ResultSet doARequest(String query, RequestName requestName, Computer computer) {
     ResultSet resultSet = null;
     PreparedStatement preparedStatement = null;
-    try (Connection connection = JdbcConnection.getConnection()) {
+    try (Connection connection = dataSource.getConnection()) {
       preparedStatement = connection.prepareStatement(query);
       preparedStatement = this.prepareRequest(preparedStatement, requestName, computer);
       LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
@@ -123,7 +128,7 @@ public class JdbcRequest {
     LOGGER.info(loggerDatabasePrefix + query);
     ResultSet resultSet = null;
     PreparedStatement preparedStatement = null;
-    try (Connection connection = JdbcConnection.getConnection()) {
+    try (Connection connection = dataSource.getConnection()) {
       preparedStatement = connection.prepareStatement(query);
       LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
       if (preparedStatement.execute()) {
@@ -151,7 +156,7 @@ public class JdbcRequest {
 
     ResultSet resultSet = null;
     PreparedStatement preparedStatement = null;
-    try (Connection connection = JdbcConnection.getConnection()) {
+    try (Connection connection = dataSource.getConnection()) {
       preparedStatement = connection.prepareStatement(query);
       preparedStatement.setInt(1, limit);
       int offset = limit * (page - 1);
@@ -176,7 +181,7 @@ public class JdbcRequest {
   public ResultSet itemsWithPageAndSearch(String query, int limit, int page, String keyword) {
     ResultSet resultSet = null;
     PreparedStatement preparedStatement = null;
-    try (Connection connection = JdbcConnection.getConnection()) {
+    try (Connection connection = dataSource.getConnection()) {
       preparedStatement = connection.prepareStatement(query);
       if (keyword != null) {
         preparedStatement.setString(1, "%" + keyword + "%");
@@ -210,7 +215,7 @@ public class JdbcRequest {
     LOGGER.info(loggerDatabasePrefix + query);
     ResultSet resultSet = null;
     PreparedStatement preparedStatement = null;
-    try (Connection connection = JdbcConnection.getConnection()) {
+    try (Connection connection = dataSource.getConnection()) {
       preparedStatement = connection.prepareStatement(query);
       preparedStatement.setString(1, "%" + keyword + "%");
       preparedStatement.setString(2, "%" + keyword + "%");
@@ -238,7 +243,7 @@ public class JdbcRequest {
   public ResultSet itemsWithPage(String query, int limit, int page) {
     ResultSet resultSet = null;
     PreparedStatement preparedStatement = null;
-    try (Connection connection = JdbcConnection.getConnection()) {
+    try (Connection connection = dataSource.getConnection()) {
       preparedStatement = connection.prepareStatement(query);
       preparedStatement.setInt(1, limit);
       int offset = limit * (page - 1);
@@ -265,7 +270,7 @@ public class JdbcRequest {
       OrderByParams orderByParams) {
     ResultSet resultSet = null;
     PreparedStatement preparedStatement = null;
-    try (Connection connection = JdbcConnection.getConnection()) {
+    try (Connection connection = dataSource.getConnection()) {
       preparedStatement = connection.prepareStatement(query);
       preparedStatement.setString(1, "%" + keyword + "%");
       preparedStatement.setString(2, "%" + keyword + "%");
@@ -293,7 +298,7 @@ public class JdbcRequest {
       OrderByParams orderByParams) {
     ResultSet resultSet = null;
     PreparedStatement preparedStatement = null;
-    try (Connection connection = JdbcConnection.getConnection()) {
+    try (Connection connection = dataSource.getConnection()) {
       preparedStatement = connection.prepareStatement(query);
       preparedStatement.setInt(1, limit);
       int offset = limit * (page - 1);
@@ -328,7 +333,7 @@ public class JdbcRequest {
   public ResultSet getComputersWithCompanyId(String query, int companyId) {
     ResultSet resultSet = null;
     PreparedStatement preparedStatement = null;
-    try (Connection connection = JdbcConnection.getConnection()) {
+    try (Connection connection = dataSource.getConnection()) {
       preparedStatement = connection.prepareStatement(query);
       preparedStatement.setInt(1, companyId);
       LOGGER.info(loggerDatabasePrefix + preparedStatement.toString());
@@ -347,7 +352,12 @@ public class JdbcRequest {
    * @param companyId id of the company you want to delete
    */
   public void deleteCompany(String queryDeleteCompany, String queryToDeleteComputer, int companyId) {
-    Connection connection = JdbcConnection.getConnection();
+    Connection connection = null;
+    try {
+      connection = dataSource.getConnection();
+    } catch (SQLException e1) {
+      e1.printStackTrace();
+    }
     PreparedStatement preparedStatementDeleteComputers = null;
     PreparedStatement preparedStatementDeleteCompany = null;
     try {

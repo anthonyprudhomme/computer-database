@@ -4,9 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.sql.DataSource;
+
 import org.excilys.computer_database.mapper.CompanyMapper;
 import org.excilys.computer_database.model.Company;
-import org.excilys.computer_database.persistence.JdbcConnection;
 import org.excilys.computer_database.persistence.JdbcRequest;
 import org.excilys.computer_database.persistence.RequestName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class CompanyDaoImpl implements CompanyDao {
 
   @Autowired
   private JdbcRequest jdbcRequest;
+
+  @Autowired
+  private DataSource dataSource;
 
   @Override
   public ArrayList<Company> getCompanies() {
@@ -41,7 +45,7 @@ public class CompanyDaoImpl implements CompanyDao {
         company = CompanyMapper.getInstance().mapCompany(resultSet);
       }
       resultSet.close();
-      JdbcConnection.getConnection().close();
+      dataSource.getConnection().close();
     } catch (SQLException exception) {
       jdbcRequest.handleException(resultSet, exception);
     }
@@ -73,7 +77,7 @@ public class CompanyDaoImpl implements CompanyDao {
         companies.add(CompanyMapper.getInstance().mapCompany(resultSet));
       }
       resultSet.close();
-      JdbcConnection.getConnection().close();
+      dataSource.getConnection().close();
     } catch (SQLException exception) {
       jdbcRequest.handleException(resultSet, exception);
     }

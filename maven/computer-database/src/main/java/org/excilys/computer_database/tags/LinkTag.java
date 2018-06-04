@@ -6,13 +6,12 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-import org.excilys.computer_database.persistence.JdbcConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LinkTag extends SimpleTagSupport {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(JdbcConnection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LinkTag.class);
   private String uri;
   private int currentPage;
   private int numberOfItemPerPage;
