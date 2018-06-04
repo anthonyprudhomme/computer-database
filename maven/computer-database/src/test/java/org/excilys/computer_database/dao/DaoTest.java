@@ -238,7 +238,7 @@ public class DaoTest {
   @Test
   public void testDeleteCompany() throws CDBObjectException {
     assertEquals(3, getNumberOfCompanies());
-    CompanyService.getInstance().deleteCompany(1);
+    CompanyService.getInstance().deleteCompany(2);
     assertEquals(2, getNumberOfCompanies());
   }
 
