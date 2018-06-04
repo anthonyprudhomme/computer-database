@@ -8,16 +8,22 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import org.excilys.computer_database.AppTestConfig;
 //import org.excilys.computer_database.persistence.JdbcConnection;
 //import org.excilys.computer_database.validation.DatabaseTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = AppTestConfig.class)
 public class Selenium {
 
   private static WebDriver driver;
@@ -30,9 +36,6 @@ public class Selenium {
    */
   @BeforeClass
   public static void initDriver() throws ClassNotFoundException, SQLException {
-    //JdbcConnection.testMode = true;
-    //Class.forName("org.hsqldb.jdbc.JDBCDriver");
-    //DatabaseTest.initDatabase();
     driver = new FirefoxDriver();
   }
 
@@ -41,7 +44,6 @@ public class Selenium {
    */
   @AfterClass
   public static void closeDriver() {
-    //JdbcConnection.testMode = false;
     driver.close();
   }
 

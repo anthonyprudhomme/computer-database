@@ -1,4 +1,4 @@
-package org.excilys.computer_database.spring;
+package org.excilys.computer_database;
 
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -15,15 +15,14 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @ComponentScan(basePackages = "org.excilys.computer_database")
-public class AppConfig {
-
+public class AppTestConfig {
   /**
    * Create the datasource using Hikari.
    * @return the datasource
    */
   @Bean
   public DataSource dataSource() {
-    ResourceBundle resourceBundle = ResourceBundle.getBundle("config");
+    ResourceBundle resourceBundle = ResourceBundle.getBundle("testConfig");
     Properties properties = Util.convertResourceBundleToProperties(resourceBundle);
     HikariConfig hikariConfig = new HikariConfig(properties);
     HikariDataSource hikariDataSource = new HikariDataSource(hikariConfig);

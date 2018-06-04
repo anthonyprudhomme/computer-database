@@ -1,13 +1,15 @@
 package org.excilys.computer_database.util;
 
 import java.sql.Date;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.excilys.computer_database.model.Company;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.service.CompanyService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class Util {
 
@@ -15,9 +17,6 @@ public class Util {
   public static final String INTRODUCED = "introduced";
   public static final String DISCONTINUED = "discontinued";
   public static final String COMPANY_ID = "companyId";
-
-  @Autowired
-  private static CompanyService companyService;
 
   /**
    * Tells if the String is possible to cast into an integer or not.
@@ -70,9 +69,10 @@ public class Util {
   /**
    * Get a computer from the request.
    * @param request Sent from user
+   * @param companyService company service object to query the database
    * @return the computer created
    */
-  public static Computer getComputerFromRequest(HttpServletRequest request) {
+  public static Computer getComputerFromRequest(HttpServletRequest request, CompanyService companyService) {
     int id = -1;
     String idAsString = request.getParameter("id");
     if (isInteger(idAsString)) {
@@ -85,6 +85,21 @@ public class Util {
     int companyId = Integer.valueOf(request.getParameter(COMPANY_ID));
     Company company = companyService.getCompany(companyId);
     return new Computer(id, computerName, introduced, discontinued, companyId, company.getName());
+  }
+
+  /**
+   * Convert ResourceBundle into a Properties object.
+   * @param resource a resource bundle to convert.
+   * @return Properties a properties version of the resource bundle.
+   */
+  public static Properties convertResourceBundleToProperties(ResourceBundle resource) {
+    Properties properties = new Properties();
+    Enumeration<String> keys = resource.getKeys();
+    while (keys.hasMoreElements()) {
+      String key = keys.nextElement();
+      properties.put(key, resource.getString(key));
+    }
+    return properties;
   }
 
 }

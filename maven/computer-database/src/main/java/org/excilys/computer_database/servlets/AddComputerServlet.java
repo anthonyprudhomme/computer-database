@@ -3,6 +3,7 @@ package org.excilys.computer_database.servlets;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,6 +19,7 @@ import org.excilys.computer_database.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 @WebServlet("/add-computer")
 public class AddComputerServlet extends HttpServlet {
@@ -38,6 +40,13 @@ public class AddComputerServlet extends HttpServlet {
   @Autowired
   private ComputerService computerService;
 
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    super.init(config);
+    SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
+        config.getServletContext());
+  }
+
   /**
    * Overload of doGet method.
    */
@@ -50,7 +59,7 @@ public class AddComputerServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    Computer computer = Util.getComputerFromRequest(request);
+    Computer computer = Util.getComputerFromRequest(request, companyService);
     try {
       computerService.createComputer(computer);
       ArrayList<Computer> computers = computerService.getComputers();
