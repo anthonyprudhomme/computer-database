@@ -5,31 +5,21 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.excilys.computer_database.dao.ComputerDao;
-import org.excilys.computer_database.dao.ComputerDaoImpl;
 import org.excilys.computer_database.dao.OrderByParams;
 import org.excilys.computer_database.exceptions.CDBObjectException;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.validation.ComputerValidation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ComputerService {
 
-  private static ComputerService instance = null;
-  private ComputerDao computerDao = ComputerDaoImpl.getInstance();
-  /**
-   * ComputerService singleton.
-   */
-  private ComputerService() { }
+  @Autowired
+  private ComputerDao computerDao;
 
-  /**
-   * Returns an instance of the ComputerService singleton.
-   * @return an instance of the ComputerService singleton
-   */
-  public static ComputerService getInstance() {
-    if (instance == null) {
-      instance = new ComputerService();
-    }
-    return instance;
-  }
+  @Autowired
+  private ComputerValidation computerValidation;
 
   public ArrayList<Computer> getComputers() {
     return computerDao.getComputers();
@@ -51,7 +41,7 @@ public class ComputerService {
    */
   public void createComputer(Computer computer) throws CDBObjectException {
     updateDates(computer);
-    ComputerValidation.getInstance().validate(computer);
+    computerValidation.validate(computer);
     computerDao.createComputer(computer);
   }
 
@@ -62,7 +52,7 @@ public class ComputerService {
    */
   public void updateComputer(Computer computer) throws CDBObjectException {
     updateDates(computer);
-    ComputerValidation.getInstance().validate(computer);
+    computerValidation.validate(computer);
     computerDao.updateComputer(computer);
   }
   /**

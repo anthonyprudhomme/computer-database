@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.excilys.computer_database.model.Company;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.service.CompanyService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class Util {
 
@@ -14,6 +15,9 @@ public class Util {
   public static final String INTRODUCED = "introduced";
   public static final String DISCONTINUED = "discontinued";
   public static final String COMPANY_ID = "companyId";
+
+  @Autowired
+  private static CompanyService companyService;
 
   /**
    * Tells if the String is possible to cast into an integer or not.
@@ -79,7 +83,7 @@ public class Util {
     Date discontinued = Util.getDateFromInput(request, DISCONTINUED);
 
     int companyId = Integer.valueOf(request.getParameter(COMPANY_ID));
-    Company company = CompanyService.getInstance().getCompany(companyId);
+    Company company = companyService.getCompany(companyId);
     return new Computer(id, computerName, introduced, discontinued, companyId, company.getName());
   }
 

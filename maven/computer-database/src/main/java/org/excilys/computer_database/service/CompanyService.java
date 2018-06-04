@@ -3,28 +3,15 @@ package org.excilys.computer_database.service;
 import java.util.ArrayList;
 
 import org.excilys.computer_database.dao.CompanyDao;
-import org.excilys.computer_database.dao.CompanyDaoImpl;
 import org.excilys.computer_database.model.Company;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CompanyService {
 
-  private static CompanyService instance = null;
-  private CompanyDao companyDao = CompanyDaoImpl.getInstance();
-  /**
-   * Singleton of CompanyService.
-   */
-  private CompanyService() { }
-
-  /**
-   * Return an instance of CompanyService.
-   * @return an instance of CompanyService
-   */
-  public static CompanyService getInstance() {
-    if (instance == null) {
-      instance = new CompanyService();
-    }
-    return instance;
-  }
+  @Autowired
+  private CompanyDao companyDao;
 
   public ArrayList<Company> getCompanies() {
     return companyDao.getCompanies();

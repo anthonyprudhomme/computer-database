@@ -25,7 +25,7 @@
 		<tlib.version>1.1.2</tlib.version>
 		<selenium.version>3.12.0</selenium.version>
 		<hikari.version>3.1.0</hikari.version>
-		<spring.version>5.0.6.RELEASE</spring.version>
+		<spring.version>5.0.4.RELEASE</spring.version>
 
 	</properties>
 
@@ -95,6 +95,9 @@
 			<version>${ibatis.version}</version>
 		</dependency>
 
+		<!-- =======JSP - JSTL========= -->
+		<!-- =========================== -->
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
@@ -133,19 +136,32 @@
 			<version>${hikari.version}</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+		<!-- =======Spring framework========= -->
+		<!-- ================================ -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${spring.version}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-			<version>${spring.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
 
 
 	</dependencies>

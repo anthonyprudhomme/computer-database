@@ -3,6 +3,7 @@ package org.excilys.computer_database.servlets;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,6 +14,8 @@ import org.excilys.computer_database.dao.OrderByParams;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.service.ComputerService;
 import org.excilys.computer_database.util.Util;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 @WebServlet("/list-computer")
 public class DashboardServlet extends HttpServlet {
@@ -28,11 +31,20 @@ public class DashboardServlet extends HttpServlet {
   private static final String ASC_OR_DESC = "ascOrDesc";
   private static final String DASHBOARD = "/WEB-INF/views/dashboard.jsp";
 
+  @Autowired
+  private ComputerService computerService;
+
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    super.init(config);
+    SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
+        config.getServletContext());
+  }
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     setComputers(request);
     this.getServletContext().getRequestDispatcher(DASHBOARD).forward(request, response);
-
   }
 
   @Override
@@ -49,7 +61,7 @@ public class DashboardServlet extends HttpServlet {
   private void deleteComputersIfRequired(HttpServletRequest request) {
     String[] idsToDelete = request.getParameter("selection").split(",");
     for (int i = 0; i < idsToDelete.length; i++) {
-      ComputerService.getInstance().deleteComputer(Integer.valueOf(idsToDelete[i]));
+      computerService.deleteComputer(Integer.valueOf(idsToDelete[i]));
     }
   }
 
@@ -64,7 +76,7 @@ public class DashboardServlet extends HttpServlet {
     setNumberOfPages(request, numberOfComputers, numberOfItemPerPage);
     int currentPage = getCurrentPage(request);
     OrderByParams orderByParams = getOrderByparams(request);
-    ArrayList<Computer> computersOfPage = ComputerService.getInstance().getComputersWithParams(numberOfItemPerPage, currentPage, keyword, orderByParams);
+    ArrayList<Computer> computersOfPage = computerService.getComputersWithParams(numberOfItemPerPage, currentPage, keyword, orderByParams);
     request.setAttribute("computers", computersOfPage);
   }
 
@@ -103,7 +115,7 @@ public class DashboardServlet extends HttpServlet {
    * @return the numberOfComputers from the request
    */
   private int getNumberOfComputers(HttpServletRequest request, String keyword) {
-    int numberOfComputers = ComputerService.getInstance().countComputers(keyword);
+    int numberOfComputers = computerService.countComputers(keyword);
     request.setAttribute(NUMBER_OF_COMPUTERS, numberOfComputers);
     return numberOfComputers;
   }

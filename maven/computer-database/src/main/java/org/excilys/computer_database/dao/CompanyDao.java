@@ -3,13 +3,10 @@ package org.excilys.computer_database.dao;
 import java.util.ArrayList;
 
 import org.excilys.computer_database.model.Company;
-
-/**
- * @author anthony.
- *
- */
+import org.springframework.stereotype.Repository;
 
 
+@Repository("companyDao")
 public interface CompanyDao {
   /**
    * @return list of companies

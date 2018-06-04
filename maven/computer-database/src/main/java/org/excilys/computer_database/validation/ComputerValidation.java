@@ -5,26 +5,14 @@ import org.excilys.computer_database.exceptions.CDBObjectDateException;
 import org.excilys.computer_database.exceptions.CDBObjectException;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.service.CompanyService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+@Repository("comuterValidation")
 public class ComputerValidation {
 
-  private static ComputerValidation instance = null;
-
-  /**
-   * Singleton for ComputerValidation.
-   */
-  private ComputerValidation() { }
-
-  /**
-   * Returns an instance of the singleton for ComputerValidation.
-   * @return an instance of the singleton for ComputerValidation
-   */
-  public static ComputerValidation getInstance() {
-    if (instance == null) {
-      instance = new ComputerValidation();
-    }
-    return instance;
-  }
+  @Autowired
+  private CompanyService companyService;
 
   /**
    * Tells if the company id links to a a company in the database.
@@ -33,7 +21,7 @@ public class ComputerValidation {
    */
   private void validateCompanyId(int id) throws CDBObjectCompanyIdException {
     if (id != -1) {
-      if (CompanyService.getInstance().getCompany(id) == null) {
+      if (companyService.getCompany(id) == null) {
         throw new CDBObjectCompanyIdException("Wrong company id");
       }
     }

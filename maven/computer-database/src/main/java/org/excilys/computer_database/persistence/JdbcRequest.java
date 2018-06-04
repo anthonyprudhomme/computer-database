@@ -10,7 +10,9 @@ import org.excilys.computer_database.dao.OrderByParams;
 import org.excilys.computer_database.model.Computer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class JdbcRequest {
 
   private final Logger LOGGER = LoggerFactory.getLogger(JdbcRequest.class);

@@ -16,9 +16,15 @@ import org.excilys.computer_database.service.ComputerService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class DaoTest {
 
+  @Autowired
+  CompanyService companyService;
+
+  @Autowired
+  ComputerService computerService;
   /**
    * Prepares the database.
    * @throws SQLException if there is an SQLException
@@ -86,7 +92,7 @@ public class DaoTest {
    * @return total number of records. In case of exception 0 is returned
    */
   private int getNumberOfComputers() {
-    return ComputerService.getInstance().countComputers();
+    return computerService.countComputers();
   }
 
   /**
@@ -94,7 +100,7 @@ public class DaoTest {
    * @return total number of records. In case of exception 0 is returned
    */
   private int getNumberOfCompanies() {
-    return CompanyService.getInstance().countCompanies();
+    return companyService.countCompanies();
   }
 
   /**
@@ -103,7 +109,7 @@ public class DaoTest {
    * @param id id of the computer you want details of.
    */
   private Computer getComputerDetails(int id) {
-    Computer computer = ComputerService.getInstance().getComputerDetails(id);
+    Computer computer = computerService.getComputerDetails(id);
     return computer;
   }
 
@@ -148,7 +154,7 @@ public class DaoTest {
   @Test
   public void testCreateComputerWithValidData() throws CDBObjectException {
     Computer goodComputer = new Computer(-1, "New good computer", Date.valueOf("1999-10-10"), Date.valueOf("2000-10-10"), 1, "Apple Inc.");
-    ComputerService.getInstance().createComputer(goodComputer);
+    computerService.createComputer(goodComputer);
   }
 
   /**
@@ -158,7 +164,7 @@ public class DaoTest {
   @Test(expected = CDBObjectCompanyIdException.class)
   public void testCreateComputerWithInvalidCompanyId() throws CDBObjectException {
     Computer wrongCompanyIdComputer = new Computer(-1, "New wrong company id computer", Date.valueOf("1999-10-10"), Date.valueOf("2000-10-10"), 99, "Apple Inc.");
-    ComputerService.getInstance().createComputer(wrongCompanyIdComputer);
+    computerService.createComputer(wrongCompanyIdComputer);
   }
 
   /**
@@ -168,7 +174,7 @@ public class DaoTest {
   @Test(expected = CDBObjectException.class)
   public void testCreateComputerWithInvalidDate() throws CDBObjectException {
     Computer wrongDateComputer = new Computer(-1, "New wrong date computer", Date.valueOf("1998-10-10"), Date.valueOf("1997-10-10"), 1, "Apple Inc.");
-    ComputerService.getInstance().createComputer(wrongDateComputer);
+    computerService.createComputer(wrongDateComputer);
   }
 
   /**
@@ -178,7 +184,7 @@ public class DaoTest {
   @Test
   public void testUpdateComputerWithValidData() throws CDBObjectException {
     Computer goodComputer = new Computer(1, "Updated good computer", Date.valueOf("1999-10-10"), Date.valueOf("2000-10-10"), 1, "Apple Inc.");
-    ComputerService.getInstance().updateComputer(goodComputer);
+    computerService.updateComputer(goodComputer);
   }
 
   /**
@@ -188,7 +194,7 @@ public class DaoTest {
   @Test
   public void testUpdateComputerWithOnlyName() throws CDBObjectException {
     Computer onlyNameComputer = new Computer(1, "Updated only name computer", null, null, -1, null);
-    ComputerService.getInstance().updateComputer(onlyNameComputer);
+    computerService.updateComputer(onlyNameComputer);
   }
 
   /**
@@ -198,7 +204,7 @@ public class DaoTest {
   @Test
   public void testUpdateComputerWithOnlyNameAndDate() throws CDBObjectException {
     Computer onlyNameAndDateComputer = new Computer(1, "Updated only name and date computer", Date.valueOf("1999-10-10"), Date.valueOf("2000-10-10"), -1, null);
-    ComputerService.getInstance().updateComputer(onlyNameAndDateComputer);
+    computerService.updateComputer(onlyNameAndDateComputer);
   }
 
   /**
@@ -208,7 +214,7 @@ public class DaoTest {
   @Test
   public void testUpdateComputerWithOnlyNameAndCompanyId() throws CDBObjectException {
     Computer onlyNameCompanyIdComputer = new Computer(1, "Updated only name and company idcomputer", null, null, 1, null);
-    ComputerService.getInstance().updateComputer(onlyNameCompanyIdComputer);
+    computerService.updateComputer(onlyNameCompanyIdComputer);
   }
 
   /**
@@ -218,7 +224,7 @@ public class DaoTest {
   @Test(expected = CDBObjectCompanyIdException.class)
   public void testUpdateComputerWithWrongCompanyid() throws CDBObjectException {
     Computer wrongCompanyIdComputer = new Computer(1, "Updated wrong company id computer", Date.valueOf("1999-10-10"), Date.valueOf("2000-10-10"), 99, "Apple Inc.");
-    ComputerService.getInstance().updateComputer(wrongCompanyIdComputer);
+    computerService.updateComputer(wrongCompanyIdComputer);
   }
 
   /**
@@ -228,7 +234,7 @@ public class DaoTest {
   @Test(expected = CDBObjectException.class)
   public void testUpdateComputerWithWrongDate() throws CDBObjectException {
     Computer wrongDateComputer = new Computer(1, "Updated wrong date computer", Date.valueOf("1998-10-10"), Date.valueOf("1998-10-10"), 1, "Apple Inc.");
-    ComputerService.getInstance().updateComputer(wrongDateComputer);
+    computerService.updateComputer(wrongDateComputer);
   }
 
   /**
@@ -238,7 +244,7 @@ public class DaoTest {
   @Test
   public void testDeleteCompany() throws CDBObjectException {
     assertEquals(3, getNumberOfCompanies());
-    CompanyService.getInstance().deleteCompany(2);
+    companyService.deleteCompany(2);
     assertEquals(2, getNumberOfCompanies());
   }
 

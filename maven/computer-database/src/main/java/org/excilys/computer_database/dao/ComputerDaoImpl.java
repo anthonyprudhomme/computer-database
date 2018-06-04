@@ -9,7 +9,10 @@ import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.persistence.JdbcConnection;
 import org.excilys.computer_database.persistence.JdbcRequest;
 import org.excilys.computer_database.persistence.RequestName;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ComputerDaoImpl implements ComputerDao {
 
   private static final String QUERY_GET_ALL_COMPUTERS = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name FROM computer LEFT JOIN company ON computer.company_id=company.id ";
@@ -24,24 +27,8 @@ public class ComputerDaoImpl implements ComputerDao {
   private static final String PAGE = "LIMIT ? OFFSET ? ";
   private static final String ORDER_BY = "ORDER BY ";
 
-  private JdbcRequest jdbcRequest = new JdbcRequest();
-  private static ComputerDaoImpl instance = null;
-  /**
-   * Singleton.
-   */
-  private ComputerDaoImpl() {
-    jdbcRequest = new JdbcRequest();
-  }
-
-  /**
-   * @return singleton
-   */
-  public static ComputerDaoImpl getInstance() {
-    if (instance == null) {
-      instance = new ComputerDaoImpl();
-    }
-    return instance;
-  }
+  @Autowired
+  private JdbcRequest jdbcRequest;
 
   @Override
   public ArrayList<Computer> getComputers() {

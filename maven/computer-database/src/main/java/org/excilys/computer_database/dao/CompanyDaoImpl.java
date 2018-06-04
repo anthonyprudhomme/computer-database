@@ -9,11 +9,10 @@ import org.excilys.computer_database.model.Company;
 import org.excilys.computer_database.persistence.JdbcConnection;
 import org.excilys.computer_database.persistence.JdbcRequest;
 import org.excilys.computer_database.persistence.RequestName;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-/**
- * @author anthony
- *
- */
+@Component
 public class CompanyDaoImpl implements CompanyDao {
   private static final String QUERY_GET_ALL_COMPANIES = "SELECT company.id, company.name FROM company";
   private static final String QUERY_GET_COMPANY = "SELECT company.id, company.name FROM company WHERE id=";
@@ -21,25 +20,9 @@ public class CompanyDaoImpl implements CompanyDao {
   private static final String QUERY_GET_COMPANIES_AT_PAGE = "SELECT company.id, company.name FROM company LIMIT ? OFFSET ?";
   private static final String QUERY_DELETE_COMPANY = "DELETE FROM company WHERE id= ?";
   private static final String QUERY_DELETE_COMPUTER = "DELETE FROM computer WHERE computer.company_id= ?";
+
+  @Autowired
   private JdbcRequest jdbcRequest;
-  private static CompanyDaoImpl instance = null;
-
-  /**
-   * Singleton.
-   */
-  private CompanyDaoImpl() {
-    jdbcRequest = new JdbcRequest();
-  }
-
-  /**
-   * @return CompanyDaoImpl
-   */
-  public static CompanyDaoImpl getInstance() {
-    if (instance == null) {
-      instance = new CompanyDaoImpl();
-    }
-    return instance;
-  }
 
   @Override
   public ArrayList<Company> getCompanies() {

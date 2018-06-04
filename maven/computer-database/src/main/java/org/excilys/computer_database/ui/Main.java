@@ -13,19 +13,31 @@ import org.excilys.computer_database.model.DBModelType;
 import org.excilys.computer_database.persistence.JdbcConnection;
 import org.excilys.computer_database.service.CompanyService;
 import org.excilys.computer_database.service.ComputerService;
+import org.excilys.computer_database.spring.AppConfig;
 import org.excilys.computer_database.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 public class Main {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JdbcConnection.class);
+
+  @Autowired
+  private static CompanyService companyService;
+  @Autowired
+  private static ComputerService computerService;
 
   /**
    * Main function containing the CLI.
    * @param args not used
    */
   public static void main(String[] args) {
+    AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+    companyService = context.getBean(CompanyService.class);
+    computerService = context.getBean(ComputerService.class);
     Scanner scan = new Scanner(System.in);
     MenuOption menuOption = null;
     while (menuOption != MenuOption.DONE) {
@@ -74,6 +86,7 @@ public class Main {
         scan.nextLine();
       }
     }
+    context.close();
     scan.close();
   }
 
@@ -152,7 +165,8 @@ public class Main {
     System.out.println("4 - CREATE a computer in the database.");
     System.out.println("5 - UPDATE informations about a computer.");
     System.out.println("6 - DELETE a computer of the database.");
-    System.out.println("7 - I am done, thank you.");
+    System.out.println("7 - DELETE a company of the database.");
+    System.out.println("8 - I am done, thank you.");
     int userInputChoice = -1;
     while (userInputChoice < 1 || userInputChoice > MenuOption.values().length) {
       userInputChoice = askForInt("Your choice: ", scan, false);
@@ -187,7 +201,7 @@ public class Main {
     System.out.println("Details about a computer");
     while (!foundSomething) {
       int idInput = askForInt("Please enter the id of the computer you want details of:", scan, false);
-      Computer computerDetails = ComputerService.getInstance().getComputerDetails(idInput);
+      Computer computerDetails = computerService.getComputerDetails(idInput);
       if (computerDetails != null) {
         foundSomething = true;
         System.out.println(computerDetails.toString());
@@ -212,7 +226,7 @@ public class Main {
     boolean creationSuccessful = false;
     while (!creationSuccessful) {
       try {
-        ComputerService.getInstance().createComputer(computerToCreate);
+        computerService.createComputer(computerToCreate);
         creationSuccessful = true;
       } catch (CDBObjectCompanyIdException exception) {
         System.out.println(exception.getMessage());
@@ -240,7 +254,7 @@ public class Main {
     System.out.println("Update a computer");
     while (!foundSomething) {
       int idToUpdateInput = askForInt("Please enter the id of the computer you want to update:", scan, false);
-      computerToUpdate = ComputerService.getInstance().getComputerDetails(idToUpdateInput);
+      computerToUpdate = computerService.getComputerDetails(idToUpdateInput);
       if (computerToUpdate != null) {
         foundSomething = true;
       }
@@ -286,7 +300,7 @@ public class Main {
 
         case DONE:
           try {
-            ComputerService.getInstance().updateComputer(computerToUpdate);
+            computerService.updateComputer(computerToUpdate);
             updateSucessful = true;
           } catch (CDBObjectException exception) {
             updateOption = null;
@@ -310,7 +324,7 @@ public class Main {
   private static void deleteComputer(Scanner scan) {
     System.out.println("Delete a computer");
     int idToDelete = askForInt("Please enter the id of the computer you want to delete:", scan, false);
-    ComputerService.getInstance().deleteComputer(idToDelete);
+    computerService.deleteComputer(idToDelete);
   }
   /**
    * Deletes a company and its related computers.
@@ -319,7 +333,7 @@ public class Main {
   private static void deleteCompany(Scanner scan) {
     System.out.println("Delete a company");
     int idToDelete = askForInt("Please enter the id of the company you want to delete:", scan, false);
-    CompanyService.getInstance().deleteCompany(idToDelete);
+    companyService.deleteCompany(idToDelete);
   }
 
   /**
@@ -333,11 +347,11 @@ public class Main {
     int numberOfItems = 0;
     switch (type) {
     case COMPANY:
-      numberOfItems = CompanyService.getInstance().countCompanies();
+      numberOfItems = companyService.countCompanies();
       break;
 
     case COMPUTER:
-      numberOfItems = ComputerService.getInstance().countComputers();
+      numberOfItems = computerService.countComputers();
       break;
     }
     int numberOfPages = (int) numberOfItems / 10 + 1;
@@ -390,14 +404,14 @@ public class Main {
     }
     switch (type) {
     case COMPANY:
-      ArrayList<Company> companies = CompanyService.getInstance().getCompaniesAtPage(10, pageNumber);
+      ArrayList<Company> companies = companyService.getCompaniesAtPage(10, pageNumber);
       for (Company company: companies) {
         System.out.println(company.toString());
       }
       break;
 
     case COMPUTER:
-      ArrayList<Computer> computers = ComputerService.getInstance().getComputersWithParams(10, pageNumber, null, null);
+      ArrayList<Computer> computers = computerService.getComputersWithParams(10, pageNumber, null, null);
       for (Computer computer: computers) {
         System.out.println(computer.toString());
       }

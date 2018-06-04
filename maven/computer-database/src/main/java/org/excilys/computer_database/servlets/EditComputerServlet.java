@@ -18,6 +18,7 @@ import org.excilys.computer_database.service.ComputerService;
 import org.excilys.computer_database.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @WebServlet("/edit-computer")
 public class EditComputerServlet extends HttpServlet {
@@ -29,15 +30,20 @@ public class EditComputerServlet extends HttpServlet {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JdbcConnection.class);
 
+  @Autowired
+  private ComputerService computerService;
+  @Autowired
+  private CompanyService companyService;
+
   /**
    * Overload of doGet method.
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     int id = Integer.valueOf(request.getParameter("id"));
-    Computer computer = ComputerService.getInstance().getComputerDetails(id);
+    Computer computer = computerService.getComputerDetails(id);
     request.setAttribute("computer", computer);
-    ArrayList<Company> companies = CompanyService.getInstance().getCompanies();
+    ArrayList<Company> companies = companyService.getCompanies();
     request.setAttribute("companies", companies);
     this.getServletContext().getRequestDispatcher(EDIT_COMPUTER).forward(request, response);
   }
@@ -47,12 +53,12 @@ public class EditComputerServlet extends HttpServlet {
     Computer computer = Util.getComputerFromRequest(request);
 
     try {
-      ComputerService.getInstance().updateComputer(computer);
-      ArrayList<Computer> computers = ComputerService.getInstance().getComputers();
+      computerService.updateComputer(computer);
+      ArrayList<Computer> computers = computerService.getComputers();
       request.setAttribute("computers", computers);
       response.sendRedirect(DASHBOARD);
     } catch (CDBObjectException exception) {
-      ArrayList<Company> companies = CompanyService.getInstance().getCompanies();
+      ArrayList<Company> companies = companyService.getCompanies();
       request.setAttribute("companies", companies);
       request.setAttribute("error", exception.getMessage());
       LOGGER.error("Error when editing a computer - " + exception.getMessage() + " " + computer.toString());

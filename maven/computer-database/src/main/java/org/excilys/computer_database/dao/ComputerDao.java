@@ -3,7 +3,9 @@ package org.excilys.computer_database.dao;
 import java.util.ArrayList;
 
 import org.excilys.computer_database.model.Computer;
+import org.springframework.stereotype.Repository;
 
+@Repository("computerDao")
 public interface ComputerDao {
   /**
    * @return List of computers
