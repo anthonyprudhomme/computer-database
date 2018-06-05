@@ -1,106 +1,100 @@
 package org.excilys.computer_database.dao;
 
-import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 
 import javax.sql.DataSource;
 
 import org.excilys.computer_database.mapper.ComputerMapper;
 import org.excilys.computer_database.model.Computer;
-import org.excilys.computer_database.persistence.JdbcRequest;
-import org.excilys.computer_database.persistence.RequestName;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ComputerDaoImpl implements ComputerDao {
 
   private static final String QUERY_GET_ALL_COMPUTERS = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name FROM computer LEFT JOIN company ON computer.company_id=company.id ";
-  private static final String QUERY_COMPUTER_DETAIL = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name FROM computer LEFT JOIN company ON computer.company_id=company.id WHERE computer.id=";
+  private static final String QUERY_COMPUTER_DETAIL = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name FROM computer LEFT JOIN company ON computer.company_id=company.id WHERE computer.id= ?";
   private static final String QUERY_CREATE_COMPUTER = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?,?,?,?)";
-  private static final String QUERY_UPDATE_COMPUTER = "UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?";
-  private static final String QUERY_DELETE_COMPUTER = "DELETE FROM computer WHERE id=";
+  private static final String QUERY_UPDATE_COMPUTER = "UPDATE computer SET name= ? , introduced= ? , discontinued= ? , company_id= ? WHERE id= ?";
+  private static final String QUERY_DELETE_COMPUTER = "DELETE FROM computer WHERE id= ?";
   private static final String QUERY_COUNT_COMPUTER = "SELECT COUNT(computer.id) AS total FROM computer";
   private static final String QUERY_COUNT_COMPUTER_WITH_SEARCH = "SELECT COUNT(computer.id) AS total FROM computer LEFT JOIN company ON computer.company_id=company.id WHERE (computer.name LIKE ? OR company.name LIKE ? ) ";
-  private static final String QUERY_GET_COMPUTER_WITH_COMPANY_ID = "SELECT computer.id FROM computer WHERE computer.company_id=?";
   private static final String SEARCH = "WHERE (computer.name LIKE ? OR company.name LIKE ? ) ";
   private static final String PAGE = "LIMIT ? OFFSET ? ";
   private static final String ORDER_BY = "ORDER BY ";
 
-  @Autowired
-  private JdbcRequest jdbcRequest;
+  private JdbcTemplate jdbcTemplate;
 
   @Autowired
-  private DataSource dataSource;
+  public void setDataSource(DataSource dataSource) {
+    this.jdbcTemplate = new JdbcTemplate(dataSource);
+  }
 
   @Override
   public ArrayList<Computer> getComputers() {
-    String query = QUERY_GET_ALL_COMPUTERS;
-    ResultSet resultSet = jdbcRequest.doARequest(query, RequestName.LIST_COMPUTERS);
-    return getListOfComputersFromResultSet(resultSet);
-  }
-
-  /**
-   * Return the list of computers from the resultSet object.
-   * @param resultSet ResultSet object from the request.
-   * @return the list of computers from the resultSet object.
-   */
-  private ArrayList<Computer> getListOfComputersFromResultSet(ResultSet resultSet) {
-    ArrayList<Computer> computers = new ArrayList<Computer>();
-    try {
-      while (resultSet.next()) {
-        computers.add(ComputerMapper.getInstance().mapComputer(resultSet));
-      }
-      resultSet.close();
-      dataSource.getConnection().close();
-    } catch (SQLException exception) {
-      jdbcRequest.handleException(resultSet, exception);
-    }
-    return computers;
+    return (ArrayList<Computer>) jdbcTemplate.query(QUERY_GET_ALL_COMPUTERS, new ComputerMapper());
   }
 
   @Override
   public Computer getComputerDetails(int id) {
-    Computer computer = null;
-    String query = QUERY_COMPUTER_DETAIL + id;
-    ResultSet resultSet = jdbcRequest.doARequest(query, RequestName.COMPUTER_DETAILS);
     try {
-      while (resultSet.next()) {
-        computer = ComputerMapper.getInstance().mapComputer(resultSet);
-      }
-      resultSet.close();
-      dataSource.getConnection().close();
-    } catch (SQLException exception) {
-      jdbcRequest.handleException(resultSet, exception);
+      return (Computer) jdbcTemplate.queryForObject(QUERY_COMPUTER_DETAIL, new Object[]{id}, new ComputerMapper());
+    } catch (EmptyResultDataAccessException exception) {
+      return null;
     }
-    return computer;
   }
 
   @Override
   public void createComputer(Computer computer) {
-    String query = QUERY_CREATE_COMPUTER;
-    jdbcRequest.doARequest(query, RequestName.CREATE_COMPUTER, computer);
-
+    PreparedStatementSetter preparedStatementSetter = new PreparedStatementSetter() {
+      public void setValues(PreparedStatement preparedStatement) throws
+      SQLException {
+        preparedStatement.setString(1, computer.getName());
+        preparedStatement.setDate(2, computer.getIntroduced());
+        preparedStatement.setDate(3, computer.getDiscontinued());
+        if (computer.getCompany() == null || computer.getCompany().getId() == -1) {
+          preparedStatement.setNull(4, Types.INTEGER);
+        } else {
+          preparedStatement.setInt(4, computer.getCompany().getId());
+        }
+      }
+    };
+    jdbcTemplate.update(QUERY_CREATE_COMPUTER, preparedStatementSetter);
   }
 
   @Override
   public void updateComputer(Computer computer) {
-    String query = QUERY_UPDATE_COMPUTER;
-    jdbcRequest.doARequest(query, RequestName.UPDATE_COMPUTER, computer);
-
+    PreparedStatementSetter preparedStatementSetter = new PreparedStatementSetter() {
+      public void setValues(PreparedStatement preparedStatement) throws
+      SQLException {
+        preparedStatement.setString(1, computer.getName());
+        preparedStatement.setDate(2, computer.getIntroduced());
+        preparedStatement.setDate(3, computer.getDiscontinued());
+        if (computer.getCompany() == null || computer.getCompany().getId() == -1) {
+          preparedStatement.setNull(4, Types.INTEGER);
+        } else {
+          preparedStatement.setInt(4, computer.getCompany().getId());
+        }
+        preparedStatement.setInt(5, computer.getId());
+      }
+    };
+    jdbcTemplate.update(QUERY_UPDATE_COMPUTER, preparedStatementSetter);
   }
 
   @Override
   public void deleteComputer(int id) {
-    String query = QUERY_DELETE_COMPUTER + id;
-    jdbcRequest.doARequest(query, RequestName.DELETE_COMPUTER);
+    jdbcTemplate.update(QUERY_DELETE_COMPUTER, new Object[]{id});
   }
 
   @Override
   public int countComputers() {
-    String query = QUERY_COUNT_COMPUTER;
-    return jdbcRequest.countRequest(query, RequestName.COUNT_COMPUTERS);
+    return jdbcTemplate.queryForObject(QUERY_COUNT_COMPUTER, Integer.class);
   }
 
   @Override
@@ -108,50 +102,30 @@ public class ComputerDaoImpl implements ComputerDao {
     if (keyword == null || keyword.isEmpty()) {
       return countComputers();
     }
-    String query = QUERY_COUNT_COMPUTER_WITH_SEARCH;
-    return jdbcRequest.countWithKeywordRequest(query, RequestName.COUNT_COMPUTERS, keyword);
+    return jdbcTemplate.queryForObject(QUERY_COUNT_COMPUTER_WITH_SEARCH, new Object[]{keyword}, Integer.class);
   }
 
   @Override
   public ArrayList<Computer> getComputersWithParams(int numberOfItemPerPage, int page, String keyword,
       OrderByParams orderByParams) {
-    String query;
-    ResultSet resultSet;
+    String query = null;
+    int offset = numberOfItemPerPage * (page - 1);
     if (keyword == null || keyword.isEmpty()) {
       if (orderByParams == null) {
         query = QUERY_GET_ALL_COMPUTERS + PAGE;
-        resultSet = jdbcRequest.itemsWithPage(query, numberOfItemPerPage, page);
+        return (ArrayList<Computer>) jdbcTemplate.query(query, new Object[]{numberOfItemPerPage, offset}, new ComputerMapper());
       } else {
         query = QUERY_GET_ALL_COMPUTERS + ORDER_BY + " ISNULL(" + orderByParams.getColumnToOrder() + ")," + orderByParams.getColumnToOrder() + " " + orderByParams.getAscOrDesc() + " " + PAGE;
-        resultSet = jdbcRequest.itemsWithPageAndOrderBy(query, numberOfItemPerPage, page, orderByParams);
+        return (ArrayList<Computer>) jdbcTemplate.query(query, new Object[]{numberOfItemPerPage, offset}, new ComputerMapper());
       }
     } else {
       if (orderByParams == null) {
         query = QUERY_GET_ALL_COMPUTERS + SEARCH + PAGE;
-        resultSet = jdbcRequest.itemsWithPageAndSearch(query, numberOfItemPerPage, page, keyword);
+        return (ArrayList<Computer>) jdbcTemplate.query(query, new Object[]{keyword, keyword, numberOfItemPerPage, offset}, new ComputerMapper());
       } else {
         query = QUERY_GET_ALL_COMPUTERS + SEARCH + ORDER_BY + " ISNULL(" + orderByParams.getColumnToOrder() + ")," + orderByParams.getColumnToOrder() + " " + orderByParams.getAscOrDesc() + " " + PAGE;
-        resultSet = jdbcRequest.itemsWithParams(query, numberOfItemPerPage, page, keyword, orderByParams);
+        return (ArrayList<Computer>) jdbcTemplate.query(query, new Object[]{keyword, keyword, numberOfItemPerPage, offset}, new ComputerMapper());
       }
     }
-    return getListOfComputersFromResultSet(resultSet);
   }
-
-  @Override
-  public ArrayList<Integer> getComputersWithCompanyId(int companyId) {
-    String query = QUERY_GET_COMPUTER_WITH_COMPANY_ID;
-    ResultSet resultSet = jdbcRequest.getComputersWithCompanyId(query, companyId);
-    ArrayList<Integer> idsToDelete = new ArrayList<>();
-    try {
-      while (resultSet.next()) {
-        idsToDelete.add(resultSet.getInt("computer.id"));
-      }
-      resultSet.close();
-      dataSource.getConnection().close();
-    } catch (SQLException exception) {
-      jdbcRequest.handleException(resultSet, exception);
-    }
-    return idsToDelete;
-  }
-
 }

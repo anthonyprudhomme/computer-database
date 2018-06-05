@@ -50,11 +50,4 @@ public interface ComputerDao {
    * @param id id of the computer to delete
    */
   void deleteComputer(int id);
-
-  /**
-   * Return a list of computer that match the given company id.
-   * @param companyId company id you want the computers of.
-   * @return a list of computer that match the given company id.
-   */
-  ArrayList<Integer> getComputersWithCompanyId(int companyId);
 }

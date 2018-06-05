@@ -5,33 +5,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.excilys.computer_database.model.Computer;
+import org.springframework.jdbc.core.RowMapper;
 
-public class ComputerMapper {
-
-  private static ComputerMapper instance = null;
-
-  /**
-   * Singleton.
-   */
-  private ComputerMapper() { }
+public class ComputerMapper implements RowMapper<Computer> {
 
   /**
-   * @return the computer associated
-   */
-  public static ComputerMapper getInstance() {
-    if (instance == null) {
-      instance = new ComputerMapper();
-    }
-    return instance;
-  }
-
-  /**
-   * @param resultSet the resulSet received from the JDBCRequest
+   * @param resultSet the resulSet received from JDBCTemplate
    * @return the computer associated
    * @throws SQLException if there was an error when accessing the resulSet
    */
-  public Computer mapComputer(ResultSet resultSet) throws SQLException {
-
+  @Override
+  public Computer mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
     int id = resultSet.getInt("computer.id");
     String name = resultSet.getString("computer.name");
     Date introduced = resultSet.getDate("computer.introduced");
