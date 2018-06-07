@@ -69,21 +69,21 @@ public class PageTag extends SimpleTagSupport {
 
   /**
    * Construct the link.
-   * @param page wanted
+   * @param currentPage wanted
    * @return the link
    */
-  private String constructLink(int page) {
-    return constructLink(page, String.valueOf(page), null);
+  private String constructLink(int currentPage) {
+    return constructLink(currentPage, String.valueOf(currentPage), null);
   }
 
   /**
    * Construct the link.
-   * @param page wanted
+   * @param currentPage wanted
    * @param text param
    * @param className name of the class.
    * @return the link
    */
-  private String constructLink(int page, String text, String className) {
+  private String constructLink(int currentPage, String text, String className) {
     StringBuilder link = new StringBuilder("<li");
     if (className != null) {
       link.append(" class=\"");
@@ -93,7 +93,7 @@ public class PageTag extends SimpleTagSupport {
     link.append(">")
     .append("<a href=\"")
     .append(uri)
-    .append("?page=" + String.valueOf(page))
+    .append("?currentPage=" + String.valueOf(currentPage))
     .append("&numberOfItemPerPage=" + String.valueOf(numberOfItemPerPage))
     .append("&search=" + search)
     .append("&orderBy=" + orderBy)

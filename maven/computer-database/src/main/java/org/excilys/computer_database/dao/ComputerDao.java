@@ -1,6 +1,7 @@
 package org.excilys.computer_database.dao;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.excilys.computer_database.model.Computer;
 import org.springframework.stereotype.Repository;
@@ -26,7 +27,7 @@ public interface ComputerDao {
    * @return Computer with id
    */
 
-  Computer getComputerDetails(int id);
+  Optional<Computer> getComputerDetails(int id);
   /**
    * Count the number of computers.
    * @param keyword Keyword you are searching.
@@ -50,4 +51,8 @@ public interface ComputerDao {
    * @param id id of the computer to delete
    */
   void deleteComputer(int id);
+  /**
+   * @param ids ids of the computers to delete
+   */
+  void deleteComputers(int[] ids);
 }

@@ -2,6 +2,8 @@
 <%@ taglib uri="/WEB-INF/tagLibs/linkLib.tld" prefix="linkLib"%>
 <%@ taglib uri="/WEB-INF/tagLibs/pageLib.tld" prefix="pagination"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 
 <!DOCTYPE html>
@@ -12,18 +14,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="utf-8">
 <!-- Bootstrap -->
-<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="css/font-awesome.css" rel="stylesheet" media="screen">
-<link href="css/main.css" rel="stylesheet" media="screen">
+<link
+	href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css"
+	rel="stylesheet" media="screen">
+<link
+	href="${pageContext.request.contextPath}/resources/css/font-awesome.css"
+	rel="stylesheet" media="screen">
+<link href="${pageContext.request.contextPath}/resources/css/main.css"
+	rel="stylesheet" media="screen">
 </head>
 <body>
 	<header class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container">
-			<a class="navbar-brand" href=<c:url value="list-computer" />>
-				Application - Computer Database </a>
+			<a class="navbar-brand"
+				href="${pageContext.request.contextPath}/computers"> Application
+				- Computer Database </a>
 		</div>
 	</header>
-	<c:url var="uri" value="/list-computer" />
+	<c:url var="uri" value="/computers" />
 
 	<section id="main">
 		<div class="container">
@@ -43,14 +51,14 @@
 				</div>
 				<div class="pull-right">
 					<a class="btn btn-success" id="addComputer"
-						href=<c:url value="add-computer" />>Add Computer</a> <a
-						class="btn btn-default" id="editComputer" href="#"
+						href="${pageContext.request.contextPath}/computers/add">Add
+						Computer</a> <a class="btn btn-default" id="editComputer" href="#"
 						onclick="$.fn.toggleEditMode();">Edit</a>
 				</div>
 			</div>
 		</div>
 
-		<form id="deleteForm" action="#" method="POST">
+		<form id="deleteForm" action="${pageContext.request.contextPath}/computers/delete" method="POST">
 			<input type="hidden" name="selection" value="">
 		</form>
 
@@ -63,7 +71,8 @@
 
 						<th class="editMode" style="width: 60px; height: 22px;"><input
 							type="checkbox" id="selectall" /> <span
-							style="vertical-align: top;"> - <a href="#"
+							style="vertical-align: top;"> - <a
+								
 								id="deleteSelected" onclick="$.fn.deleteSelected();"> <i
 									class="fa fa-trash-o fa-lg"></i>
 							</a>
@@ -86,7 +95,8 @@
 							search="${search}" 
 							orderBy="introduced" 
 							ascOrDesc="${orderBy == 'introduced' ? ascOrDesc == 'asc' ? 'desc' : 'asc' : 'asc'}"/>>Introduced
-								date <i class="fa fa-fw ${orderBy == 'introduced' ? ascOrDesc == 'asc' ? 'fa-sort-asc' : 'fa-sort-desc' : 'fa-sort'}"></i>
+								date <i
+								class="fa fa-fw ${orderBy == 'introduced' ? ascOrDesc == 'asc' ? 'fa-sort-asc' : 'fa-sort-desc' : 'fa-sort'}"></i>
 						</a></th>
 						<!-- Table header for Discontinued Date -->
 						<th><a
@@ -96,7 +106,8 @@
 							search="${search}" 
 							orderBy="discontinued" 
 							ascOrDesc="${orderBy == 'discontinued' ? ascOrDesc == 'asc' ? 'desc' : 'asc' : 'asc'}"/>>Discontinued
-								date <i class="fa fa-fw ${orderBy == 'discontinued' ? ascOrDesc == 'asc' ? 'fa-sort-asc' : 'fa-sort-desc' : 'fa-sort'}"></i>
+								date <i
+								class="fa fa-fw ${orderBy == 'discontinued' ? ascOrDesc == 'asc' ? 'fa-sort-asc' : 'fa-sort-desc' : 'fa-sort'}"></i>
 						</a></th>
 						<!-- Table header for Company -->
 						<th><a
@@ -106,7 +117,8 @@
 							search="${search}" 
 							orderBy="companyName" 
 							ascOrDesc="${orderBy == 'companyName' ? ascOrDesc == 'asc' ? 'desc' : 'asc' : 'asc'}"/>>Company
-								<i class="fa fa-fw ${orderBy == 'companyName' ? ascOrDesc == 'asc' ? 'fa-sort-asc' : 'fa-sort-desc' : 'fa-sort'}"></i>
+								<i
+								class="fa fa-fw ${orderBy == 'companyName' ? ascOrDesc == 'asc' ? 'fa-sort-asc' : 'fa-sort-desc' : 'fa-sort'}"></i>
 						</a></th>
 
 					</tr>
@@ -118,11 +130,11 @@
 							<td class="editMode"><input type="checkbox" name="cb"
 								class="cb" value="${computer.id}"></td>
 							<td><a
-								href=<c:url value="edit-computer?id=${computer.id}" />
+								href="${pageContext.request.contextPath}/computers/${computer.id}/update"
 								onclick=""><c:out value="${computer.name}" /></a></td>
 							<td><c:out value="${computer.introduced}" /></td>
 							<td><c:out value="${computer.discontinued}" /></td>
-							<td><c:out value="${computer.company.name}" /></td>
+							<td><c:out value="${computer.companyName}" /></td>
 
 						</tr>
 					</c:forEach>
@@ -150,9 +162,12 @@
 			</div>
 		</div>
 	</footer>
-	<script src="js/jquery.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<script src="js/dashboard.js"></script>
+	<script
+		src="${pageContext.request.contextPath}/resources/js/jquery.min.js"></script>
+	<script
+		src="${pageContext.request.contextPath}/resources/js/bootstrap.min.js"></script>
+	<script
+		src="${pageContext.request.contextPath}/resources/js/dashboard.js"></script>
 
 </body>
 </html>

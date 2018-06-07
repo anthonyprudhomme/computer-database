@@ -5,6 +5,7 @@ import java.sql.Date;
 import org.excilys.computer_database.AppTestConfig;
 import org.excilys.computer_database.exceptions.CDBObjectException;
 import org.excilys.computer_database.model.Computer;
+import org.excilys.computer_database.validator.ComputerValidator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class ComputerValidationTest {
 
   @Autowired
-  ComputerValidation computerValidation;
+  ComputerValidator computerValidation;
 
   /**
    * Test the date and see if a later discontinued date returns true.

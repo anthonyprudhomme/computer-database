@@ -48,12 +48,12 @@ public class EditComputerServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    int id = Integer.valueOf(request.getParameter("id"));
+    /*int id = Integer.valueOf(request.getParameter("id"));
     Computer computer = computerService.getComputerDetails(id);
     request.setAttribute("computer", computer);
     ArrayList<Company> companies = companyService.getCompanies();
     request.setAttribute("companies", companies);
-    this.getServletContext().getRequestDispatcher(EDIT_COMPUTER).forward(request, response);
+    this.getServletContext().getRequestDispatcher(EDIT_COMPUTER).forward(request, response);*/
   }
 
   @Override

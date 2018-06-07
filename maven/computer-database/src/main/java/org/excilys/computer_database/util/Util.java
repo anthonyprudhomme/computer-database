@@ -1,6 +1,9 @@
 package org.excilys.computer_database.util;
 
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -17,6 +20,8 @@ public class Util {
   public static final String INTRODUCED = "introduced";
   public static final String DISCONTINUED = "discontinued";
   public static final String COMPANY_ID = "companyId";
+
+  private static final String DATE_FORMAT = "yyyy-MM-dd";
 
   /**
    * Tells if the String is possible to cast into an integer or not.
@@ -66,6 +71,20 @@ public class Util {
     }
     return date;
   }
+
+  /**
+   * Return the date from String. Returns null if nothing was entered.
+   * @param dateString The date as String
+   * @return the date
+   */
+  public static Date getDateFromString(String dateString) {
+    Date date = null;
+    if (dateString != null && !dateString.isEmpty()) {
+      date = Date.valueOf(dateString);
+    }
+    return date;
+  }
+
   /**
    * Get a computer from the request.
    * @param request Sent from user
@@ -100,6 +119,22 @@ public class Util {
       properties.put(key, resource.getString(key));
     }
     return properties;
+  }
+
+  /**
+   * Check whether the date is valid or not.
+   * @param date the date you want to check
+   * @return whether the date is valid or not
+   */
+  public static boolean isDateValid(String date) {
+    try {
+      DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+      df.setLenient(false);
+      df.parse(date);
+      return true;
+    } catch (ParseException e) {
+      return false;
+    }
   }
 
 }

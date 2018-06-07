@@ -1,4 +1,4 @@
-package org.excilys.computer_database.validation;
+package org.excilys.computer_database.validator;
 
 import org.excilys.computer_database.exceptions.CDBObjectCompanyIdException;
 import org.excilys.computer_database.exceptions.CDBObjectDateException;
@@ -10,7 +10,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 
 @Repository("comuterValidation")
-public class ComputerValidation {
+public class ComputerValidator {
 
   @Autowired
   private CompanyService companyService;

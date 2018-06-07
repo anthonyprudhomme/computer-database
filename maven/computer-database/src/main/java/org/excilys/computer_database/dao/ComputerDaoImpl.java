@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
@@ -23,6 +24,7 @@ public class ComputerDaoImpl implements ComputerDao {
   private static final String QUERY_CREATE_COMPUTER = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES(?,?,?,?)";
   private static final String QUERY_UPDATE_COMPUTER = "UPDATE computer SET name= ? , introduced= ? , discontinued= ? , company_id= ? WHERE id= ?";
   private static final String QUERY_DELETE_COMPUTER = "DELETE FROM computer WHERE id= ?";
+  private static final String QUERY_DELETE_COMPUTERS = "DELETE FROM computer WHERE id IN ";
   private static final String QUERY_COUNT_COMPUTER = "SELECT COUNT(computer.id) AS total FROM computer";
   private static final String QUERY_COUNT_COMPUTER_WITH_SEARCH = "SELECT COUNT(computer.id) AS total FROM computer LEFT JOIN company ON computer.company_id=company.id WHERE (computer.name LIKE ? OR company.name LIKE ? ) ";
   private static final String SEARCH = "WHERE (computer.name LIKE ? OR company.name LIKE ? ) ";
@@ -42,11 +44,11 @@ public class ComputerDaoImpl implements ComputerDao {
   }
 
   @Override
-  public Computer getComputerDetails(int id) {
+  public Optional<Computer> getComputerDetails(int id) {
     try {
-      return (Computer) jdbcTemplate.queryForObject(QUERY_COMPUTER_DETAIL, new Object[]{id}, new ComputerMapper());
+      return Optional.of((Computer) jdbcTemplate.queryForObject(QUERY_COMPUTER_DETAIL, new Object[]{id}, new ComputerMapper()));
     } catch (EmptyResultDataAccessException exception) {
-      return null;
+      return Optional.empty();
     }
   }
 
@@ -102,7 +104,7 @@ public class ComputerDaoImpl implements ComputerDao {
     if (keyword == null || keyword.isEmpty()) {
       return countComputers();
     }
-    return jdbcTemplate.queryForObject(QUERY_COUNT_COMPUTER_WITH_SEARCH, new Object[]{keyword}, Integer.class);
+    return jdbcTemplate.queryForObject(QUERY_COUNT_COMPUTER_WITH_SEARCH, new Object[]{"%" + keyword + "%", "%" + keyword + "%"}, Integer.class);
   }
 
   @Override
@@ -121,11 +123,25 @@ public class ComputerDaoImpl implements ComputerDao {
     } else {
       if (orderByParams == null) {
         query = QUERY_GET_ALL_COMPUTERS + SEARCH + PAGE;
-        return (ArrayList<Computer>) jdbcTemplate.query(query, new Object[]{keyword, keyword, numberOfItemPerPage, offset}, new ComputerMapper());
+        return (ArrayList<Computer>) jdbcTemplate.query(query, new Object[]{"%" + keyword + "%", "%" + keyword + "%", numberOfItemPerPage, offset}, new ComputerMapper());
       } else {
         query = QUERY_GET_ALL_COMPUTERS + SEARCH + ORDER_BY + " ISNULL(" + orderByParams.getColumnToOrder() + ")," + orderByParams.getColumnToOrder() + " " + orderByParams.getAscOrDesc() + " " + PAGE;
-        return (ArrayList<Computer>) jdbcTemplate.query(query, new Object[]{keyword, keyword, numberOfItemPerPage, offset}, new ComputerMapper());
+        return (ArrayList<Computer>) jdbcTemplate.query(query, new Object[]{"%" + keyword + "%", "%" + keyword + "%", numberOfItemPerPage, offset}, new ComputerMapper());
       }
     }
+  }
+
+  @Override
+  public void deleteComputers(int[] ids) {
+    String query = QUERY_DELETE_COMPUTERS + "(";
+    for (int i = 0; i < ids.length; i++) {
+      query += ids[i];
+      if (i != ids.length - 1) {
+        query += ",";
+      }
+    }
+    query += ")";
+    System.out.println(query);
+    jdbcTemplate.update(query);
   }
 }

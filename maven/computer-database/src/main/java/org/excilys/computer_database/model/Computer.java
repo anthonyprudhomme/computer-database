@@ -2,6 +2,9 @@ package org.excilys.computer_database.model;
 
 import java.sql.Date;
 
+import org.excilys.computer_database.dto.ComputerDto;
+import org.excilys.computer_database.util.Util;
+
 public class Computer {
 
   private int id;
@@ -19,12 +22,23 @@ public class Computer {
    * @param companyName name of the company
    */
   public Computer(int id, String name, Date introduced, Date discontinued, int companyId, String companyName) {
-    super();
     this.id = id;
     this.name = name;
     this.introduced = introduced;
     this.discontinued = discontinued;
     this.company = new Company(companyId, companyName);
+  }
+
+  /**
+   * ComputerDto to Computer.
+   * @param computerDto the computerDto you want a computer from
+   */
+  public Computer(ComputerDto computerDto) {
+    this.id = computerDto.getId();
+    this.name = computerDto.getName();
+    this.introduced = Util.getDateFromString(computerDto.getIntroduced());
+    this.discontinued = Util.getDateFromString(computerDto.getDiscontinued());
+    this.company = new Company(computerDto.getCompanyId(), "");
   }
 
   public int getId() {
@@ -76,8 +90,4 @@ public class Computer {
   public String getShortToString() {
     return this.id + " " + this.name;
   }
-
-
-
-
 }

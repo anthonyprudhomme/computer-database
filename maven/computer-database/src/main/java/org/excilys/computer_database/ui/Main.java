@@ -2,6 +2,7 @@ package org.excilys.computer_database.ui;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Scanner;
 
 import org.excilys.computer_database.exceptions.CDBObjectCompanyIdException;
@@ -197,10 +198,10 @@ public class Main {
     System.out.println("Details about a computer");
     while (!foundSomething) {
       int idInput = askForInt("Please enter the id of the computer you want details of:", scan, false);
-      Computer computerDetails = computerService.getComputerDetails(idInput);
-      if (computerDetails != null) {
+      Optional<Computer> computerDetails = computerService.getComputerDetails(idInput);
+      if (computerDetails.isPresent()) {
         foundSomething = true;
-        System.out.println(computerDetails.toString());
+        System.out.println(computerDetails.get().toString());
       } else {
         System.out.println("The id you typed doesn't match any computer in the database.");
       }
@@ -246,12 +247,12 @@ public class Main {
    */
   private static void updateComputer(Scanner scan) {
     boolean foundSomething = false;
-    Computer computerToUpdate = null;
+    Optional<Computer> computerToUpdate = null;
     System.out.println("Update a computer");
     while (!foundSomething) {
       int idToUpdateInput = askForInt("Please enter the id of the computer you want to update:", scan, false);
       computerToUpdate = computerService.getComputerDetails(idToUpdateInput);
-      if (computerToUpdate != null) {
+      if (computerToUpdate.isPresent()) {
         foundSomething = true;
       }
     }
@@ -279,24 +280,24 @@ public class Main {
 
         case NAME:
           System.out.print("Please enter the new name of the computer:");
-          computerToUpdate.setName(scan.nextLine());
+          computerToUpdate.get().setName(scan.nextLine());
           break;
 
         case INTRODUCED:
-          computerToUpdate.setIntroduced(askForDate("Please enter the new introduced date of the computer with the format yyyy-mm-dd.", scan, true));
+          computerToUpdate.get().setIntroduced(askForDate("Please enter the new introduced date of the computer with the format yyyy-mm-dd.", scan, true));
           break;
 
         case DISCONTINUED:
-          computerToUpdate.setDiscontinued(askForDate("Please enter the new discontinued date of the computer with the format yyyy-mm-dd.", scan, true));
+          computerToUpdate.get().setDiscontinued(askForDate("Please enter the new discontinued date of the computer with the format yyyy-mm-dd.", scan, true));
           break;
 
         case COMPANY_ID:
-          computerToUpdate.getCompany().setId(askForInt("Please enter the new id of the company that made the computer:", scan, true));
+          computerToUpdate.get().getCompany().setId(askForInt("Please enter the new id of the company that made the computer:", scan, true));
           break;
 
         case DONE:
           try {
-            computerService.updateComputer(computerToUpdate);
+            computerService.updateComputer(computerToUpdate.get());
             updateSucessful = true;
           } catch (CDBObjectException exception) {
             updateOption = null;

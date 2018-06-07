@@ -3,12 +3,13 @@ package org.excilys.computer_database.service;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Optional;
 
 import org.excilys.computer_database.dao.ComputerDao;
 import org.excilys.computer_database.dao.OrderByParams;
 import org.excilys.computer_database.exceptions.CDBObjectException;
 import org.excilys.computer_database.model.Computer;
-import org.excilys.computer_database.validation.ComputerValidation;
+import org.excilys.computer_database.validator.ComputerValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class ComputerService {
   private ComputerDao computerDao;
 
   @Autowired
-  private ComputerValidation computerValidation;
+  private ComputerValidator computerValidation;
 
   public ArrayList<Computer> getComputers() {
     return computerDao.getComputers();
@@ -30,7 +31,7 @@ public class ComputerService {
    * @param id Id of the computer
    * @return the computer with the id you gave.
    */
-  public Computer getComputerDetails(int id) {
+  public Optional<Computer> getComputerDetails(int id) {
     return computerDao.getComputerDetails(id);
   }
 
@@ -116,6 +117,14 @@ public class ComputerService {
   public ArrayList<Computer> getComputersWithParams(int numberOfItemPerPage, int currentPage, String keyword,
       OrderByParams orderByParams) {
     return computerDao.getComputersWithParams(numberOfItemPerPage, currentPage, keyword, orderByParams);
+  }
+
+  /**
+   * Delete all the computers in the matching ids of the array.
+   * @param idsToDelete ids you want to delete
+   */
+  public void deleteComputers(int[] idsToDelete) {
+    computerDao.deleteComputers(idsToDelete);
   }
 
 }

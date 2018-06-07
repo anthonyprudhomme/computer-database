@@ -1,11 +1,14 @@
 package org.excilys.computer_database.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
@@ -112,16 +115,6 @@ public class DaoTest {
   }
 
   /**
-   * Get total records in company table.
-   * @return total number of records. In case of exception 0 is returned
-   * @param id id of the computer you want details of.
-   */
-  private Computer getComputerDetails(int id) {
-    Computer computer = computerService.getComputerDetails(id);
-    return computer;
-  }
-
-  /**
    * Get all computers and checks there is the right number.
    */
   @Test
@@ -143,7 +136,9 @@ public class DaoTest {
   @Test
   public void testGetDetailedComputerWithValidId() {
     int goodId = 1;
-    assertEquals(goodId, getComputerDetails(goodId).getId());
+    Optional<Computer> computer = computerService.getComputerDetails(goodId);
+    assertTrue(computer.isPresent());
+    assertEquals(goodId, computer.get().getId());
   }
 
   /**
@@ -152,7 +147,8 @@ public class DaoTest {
   @Test
   public void testGetDetailedComputerWithInvalidId() {
     int wrongId = -1;
-    assertEquals(null, getComputerDetails(wrongId));
+    Optional<Computer> computer = computerService.getComputerDetails(wrongId);
+    assertFalse(computer.isPresent());
   }
 
   /**
