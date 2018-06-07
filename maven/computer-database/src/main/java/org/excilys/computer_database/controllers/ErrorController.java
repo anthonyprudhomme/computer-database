@@ -15,7 +15,6 @@ public class ErrorController {
 
   @RequestMapping(value = "/errors", method = RequestMethod.GET)
   public ModelAndView renderErrorPage(HttpServletRequest request) {
-    System.out.println("renderErrorPage: ");
     ModelAndView errorPage = new ModelAndView();
     int httpErrorCode = getErrorCode(request);
     Throwable throwable = (Throwable) request.getAttribute("javax.servlet.error.exception");

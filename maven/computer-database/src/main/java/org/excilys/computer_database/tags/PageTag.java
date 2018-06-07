@@ -15,6 +15,8 @@ public class PageTag extends SimpleTagSupport {
   private String search;
   private String orderBy;
   private String ascOrDesc;
+  private String prev;
+  private String next;
 
   /**
    * Accessor for writer.
@@ -45,7 +47,7 @@ public class PageTag extends SimpleTagSupport {
       out.write("<ul class=\"pagination\">");
 
       if (currentPage > 1) {
-        out.write(constructLink(currentPage - 1, "Previous", "paginatorPrev"));
+        out.write(constructLink(currentPage - 1, prev, "paginatorPrev"));
       }
 
       for (int i = pgStart; i < pgEnd; i++) {
@@ -57,7 +59,7 @@ public class PageTag extends SimpleTagSupport {
       }
 
       if (!lastPage) {
-        out.write(constructLink(currentPage + 1, "Next", "paginatorNext paginatorLast"));
+        out.write(constructLink(currentPage + 1, next, "paginatorNext paginatorLast"));
       }
 
       out.write("</ul>");
@@ -118,6 +120,14 @@ public class PageTag extends SimpleTagSupport {
 
   public void setAscOrDesc(String ascOrDesc) {
     this.ascOrDesc = ascOrDesc;
+  }
+
+  public void setPrev(String prev) {
+    this.prev = prev;
+  }
+
+  public void setNext(String next) {
+    this.next = next;
   }
 
   public void setCurrentPage(int currentPage) {

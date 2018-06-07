@@ -52,7 +52,9 @@ public class ComputerController {
    * @param companyService the companyService
    * @param computerFormValidator validator
    */
-  public ComputerController(ComputerService computerService, CompanyService companyService, ComputerFormValidator computerFormValidator) {
+  public ComputerController(ComputerService computerService,
+      CompanyService companyService,
+      ComputerFormValidator computerFormValidator) {
     this.computerService = computerService;
     this.companyService = companyService;
     this.computerFormValidator = computerFormValidator;
@@ -144,8 +146,8 @@ public class ComputerController {
         modelAndView = new ModelAndView("addComputer");
         ArrayList<Company> companies = companyService.getCompanies();
         modelAndView.addObject("companies", companies);
-        result.rejectValue("discontinued", "Error.code", "Invalid date: the discontinued date cannot be earlier than the introduced date.");
-        result.rejectValue("introduced", "Error.code", "Invalid date: the introduced date cannot be later than the discontinued date.");
+        result.rejectValue("discontinued", "error.discontinued.time");
+        result.rejectValue("introduced", "error.introduced.time");
       }
     }
     return modelAndView;

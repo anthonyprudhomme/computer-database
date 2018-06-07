@@ -19,18 +19,15 @@ public class ComputerFormValidator implements Validator {
   public void validate(Object target, Errors errors) {
     ComputerDto computer = (ComputerDto) target;
     System.out.println("Validating");
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "Error.code", "You have to fill the name field.");
-    if (computer.getName() == null || computer.getName().isEmpty()) {
-      errors.rejectValue("name", "Error.code", "The name of the computer is mandatory and can't be empty.");
-    }
+    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name.empty");
     if (computer.getIntroduced() != null && !computer.getIntroduced().isEmpty()) {
       if (!Util.isDateValid(computer.getIntroduced())) {
-        errors.rejectValue("introduced", "Error.code", "Invalid date: the date isn't in the right format.");
+        errors.rejectValue("introduced", "error.date.format");
       }
     }
     if (computer.getDiscontinued() != null && !computer.getDiscontinued().isEmpty()) {
       if (!Util.isDateValid(computer.getDiscontinued())) {
-        errors.rejectValue("discontinued", "Error.code", "Invalid date: the date isn't in the right format.");
+        errors.rejectValue("discontinued", "error.date.format");
       }
     }
   }

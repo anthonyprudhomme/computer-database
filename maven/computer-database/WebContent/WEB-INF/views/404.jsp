@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,17 +19,17 @@
 	<header class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container">
 			<a class="navbar-brand" href="${pageContext.request.contextPath}/computers"> Application -
-				Computer Database </a>
+				<spring:message code="dashboard.cdb" /> </a>
 		</div>
 	</header>
 
 	<section id="main">
 		<div class="container">
 			<div class="alert alert-danger">
-				<h2>Error 404. Sorry the page you are trying to reach doesn't exist. </h2>
+				<h2><spring:message code="error.404.error" /></h2>
 				<br />
 				<br />
-				<h3>Reason: ${errorMessage}</h3>
+				<h3><spring:message code="error.reason" /> ${errorMessage}</h3>
 			</div>
 		</div>
 	</section>
