@@ -15,3 +15,6 @@
 #### Hikari CP
 #### Selenium tests
 #### Computer Creation/Deletion/Edition
+#### Company Deletion
+#### Search and Order By
+#### Spring - MVC - i18n (internationalization)
