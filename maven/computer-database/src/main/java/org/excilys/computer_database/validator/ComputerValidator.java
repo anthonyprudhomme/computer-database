@@ -6,7 +6,6 @@ import org.excilys.computer_database.exceptions.CDBObjectException;
 import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 
 @Repository("comuterValidation")
@@ -20,11 +19,9 @@ public class ComputerValidator {
    * @param id if of the company
    * @throws CDBObjectCompanyIdException Thrown when the company id is invalid
    */
-  private void validateCompanyId(int id) throws CDBObjectCompanyIdException {
-    if (id != -1) {
-      try {
-        companyService.getCompany(id);
-      } catch (EmptyResultDataAccessException exception) {
+  private void validateCompanyId(Integer id) throws CDBObjectCompanyIdException {
+    if (id != null && id != -1) {
+      if (!companyService.getCompany(id).isPresent()) {
         throw new CDBObjectCompanyIdException("Wrong company id");
       }
     }
@@ -50,7 +47,9 @@ public class ComputerValidator {
    */
   public void validate(Computer computer) throws CDBObjectException {
     validateDate(computer);
-    validateCompanyId(computer.getCompany().getId());
+    if (computer.getCompany() != null) {
+      validateCompanyId(computer.getCompany().getId());
+    }
   }
 
 }

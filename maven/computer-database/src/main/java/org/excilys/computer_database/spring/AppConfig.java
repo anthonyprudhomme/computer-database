@@ -7,10 +7,14 @@ import java.util.ResourceBundle;
 import javax.sql.DataSource;
 
 import org.excilys.computer_database.util.Util;
+import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -26,6 +30,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @EnableWebMvc
+@EnableTransactionManagement
 @ComponentScan(basePackages = {"org.excilys.computer_database.controllers",
     "org.excilys.computer_database.service",
     "org.excilys.computer_database.dao",
@@ -55,13 +60,32 @@ public class AppConfig implements WebMvcConfigurer {
     viewResolver.setViewClass(JstlView.class);
     viewResolver.setPrefix("/WEB-INF/views/");
     viewResolver.setSuffix(".jsp");
-
     return viewResolver;
   }
 
   @Override
   public void addResourceHandlers(final ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+  }
+  /**
+   * Get the session factory.
+   * @return the session factory
+   */
+  @Bean
+  public SessionFactory sessionFactory() {
+    SessionFactory sessionFactory = new org.hibernate.cfg.Configuration().configure().buildSessionFactory();
+    return sessionFactory;
+  }
+
+  /**
+   * Return the transaction manager.
+   * @return the transaction manager.
+   */
+  @Bean
+  public PlatformTransactionManager transactionManager() {
+    JpaTransactionManager transactionManager = new JpaTransactionManager();
+    transactionManager.setEntityManagerFactory(sessionFactory());
+    return transactionManager;
   }
 
   /**

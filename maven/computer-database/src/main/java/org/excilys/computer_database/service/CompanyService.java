@@ -1,6 +1,7 @@
 package org.excilys.computer_database.service;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.excilys.computer_database.dao.CompanyDao;
 import org.excilys.computer_database.model.Company;
@@ -22,7 +23,7 @@ public class CompanyService {
    * @param id of the company
    * @return the company
    */
-  public Company getCompany(int id) {
+  public Optional<Company> getCompany(int id) {
     return companyDao.getCompany(id);
   }
 

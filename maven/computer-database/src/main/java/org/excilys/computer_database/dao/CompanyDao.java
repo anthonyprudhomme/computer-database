@@ -1,6 +1,7 @@
 package org.excilys.computer_database.dao;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.excilys.computer_database.model.Company;
 import org.springframework.stereotype.Repository;
@@ -23,7 +24,7 @@ public interface CompanyDao {
    * @param id of the company
    * @return list of companies
    */
-  Company getCompany(int id);
+  Optional<Company> getCompany(int id);
   /**
    * Return the number of companies.
    * @return the number of companies

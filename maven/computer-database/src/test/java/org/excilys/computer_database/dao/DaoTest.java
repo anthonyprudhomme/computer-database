@@ -138,7 +138,7 @@ public class DaoTest {
     int goodId = 1;
     Optional<Computer> computer = computerService.getComputerDetails(goodId);
     assertTrue(computer.isPresent());
-    assertEquals(goodId, computer.get().getId());
+    assertEquals(goodId, (int) computer.get().getId());
   }
 
   /**

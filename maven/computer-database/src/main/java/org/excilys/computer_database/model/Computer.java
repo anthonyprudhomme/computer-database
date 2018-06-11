@@ -2,15 +2,41 @@ package org.excilys.computer_database.model;
 
 import java.sql.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+//import javax.persistence.Temporal;
+//import javax.persistence.TemporalType;
+
 import org.excilys.computer_database.dto.ComputerDto;
 import org.excilys.computer_database.util.Util;
 
+@Entity
+@Table(name = "computer")
 public class Computer {
 
-  private int id;
+  @Id @GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)
+  @Column(name = "id", nullable = false)
+  private Integer id;
+
+  @Column(name = "name", nullable = false)
   private String name;
+
+  //@Temporal(TemporalType.DATE)
+  @Column(name = "introduced")
   private Date introduced;
+
+  //@Temporal(TemporalType.DATE)
+  @Column(name = "discontinued")
   private Date discontinued;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "company_id")
   private Company company;
 
   /**
@@ -21,13 +47,18 @@ public class Computer {
    * @param companyId id of the company
    * @param companyName name of the company
    */
-  public Computer(int id, String name, Date introduced, Date discontinued, int companyId, String companyName) {
+  public Computer(int id, String name, Date introduced, Date discontinued, Integer companyId, String companyName) {
     this.id = id;
     this.name = name;
     this.introduced = introduced;
     this.discontinued = discontinued;
     this.company = new Company(companyId, companyName);
   }
+
+  /**
+   * Empty constructor for computer.
+   */
+  public Computer() { }
 
   /**
    * ComputerDto to Computer.
@@ -41,7 +72,7 @@ public class Computer {
     this.company = new Company(computerDto.getCompanyId(), "");
   }
 
-  public int getId() {
+  public Integer getId() {
     return id;
   }
 
@@ -84,7 +115,7 @@ public class Computer {
   @Override
   public String toString() {
     return "Computer [id=" + id + ", name=" + name + ", introduced=" + introduced + ", discontinued=" + discontinued
-        + ", company=" + company.toString() + "]";
+        + ", company=" + company + "]";
   }
 
   public String getShortToString() {

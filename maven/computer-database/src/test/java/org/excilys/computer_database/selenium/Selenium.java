@@ -27,7 +27,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class Selenium {
 
   private static WebDriver driver;
-  private static final String BASE_URL = "http://localhost:8080/computer-database/list-computer";
+  private static final String BASE_URL = "http://localhost:8080/computer-database/computers";
 
   /**
    * Starts the Firefox driver.

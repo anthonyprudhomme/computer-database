@@ -218,7 +218,10 @@ public class Main {
     String computerNameInput = scan.nextLine();
     Date introduced = askForDate("Please enter the introduced date of the computer you want to create with the format yyyy-mm-dd. Type \"skip\" to skip", scan, true);
     Date discontinued = askForDate("Please enter the discontinued date of the computer you want to create with the format yyyy-mm-dd. Type \"skip\" to skip", scan, true);
-    int companyId = askForInt("Please enter the id of the company that made the computer you want to add to the database. Type \"skip\" to skip.", scan, true);
+    Integer companyId = askForInt("Please enter the id of the company that made the computer you want to add to the database. Type \"skip\" to skip.", scan, true);
+    if (companyId == -1) {
+      companyId = null;
+    }
     Computer computerToCreate = new Computer(-1, computerNameInput, introduced, discontinued, companyId, null);
     boolean creationSuccessful = false;
     while (!creationSuccessful) {

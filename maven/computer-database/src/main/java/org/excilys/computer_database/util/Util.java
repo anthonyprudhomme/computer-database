@@ -102,7 +102,7 @@ public class Util {
     Date discontinued = Util.getDateFromInput(request, DISCONTINUED);
 
     int companyId = Integer.valueOf(request.getParameter(COMPANY_ID));
-    Company company = companyService.getCompany(companyId);
+    Company company = companyService.getCompany(companyId).get();
     return new Computer(id, computerName, introduced, discontinued, companyId, company.getName());
   }
 

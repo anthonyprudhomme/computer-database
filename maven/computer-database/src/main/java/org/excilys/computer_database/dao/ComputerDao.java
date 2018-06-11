@@ -5,8 +5,10 @@ import java.util.Optional;
 
 import org.excilys.computer_database.model.Computer;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository("computerDao")
+@Transactional
 public interface ComputerDao {
   /**
    * @return List of computers
