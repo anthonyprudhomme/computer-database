@@ -1,19 +1,12 @@
 package org.excilys.computer_database.spring;
 
 import java.util.Locale;
-import java.util.Properties;
-import java.util.ResourceBundle;
 
-import javax.sql.DataSource;
-
-import org.excilys.computer_database.util.Util;
-import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -25,31 +18,13 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
-@ComponentScan(basePackages = {"org.excilys.computer_database.controllers",
-    "org.excilys.computer_database.service",
-    "org.excilys.computer_database.dao",
-    "org.excilys.computer_database.ui",
-"org.excilys.computer_database.validator"})
-public class AppConfig implements WebMvcConfigurer {
+@Import(PersistenceConfig.class)
+@ComponentScan(basePackages = {"org.excilys.computer_database.controllers"})
+public class WebConfig implements WebMvcConfigurer {
 
-  /**
-   * Create the datasource using Hikari.
-   * @return the datasource
-   */
-  @Bean
-  public DataSource dataSource() {
-    ResourceBundle resourceBundle = ResourceBundle.getBundle("config");
-    Properties properties = Util.convertResourceBundleToProperties(resourceBundle);
-    HikariConfig hikariConfig = new HikariConfig(properties);
-    HikariDataSource hikariDataSource = new HikariDataSource(hikariConfig);
-    return hikariDataSource;
-  }
   /**
    * Resolves views.
    * @return the view
@@ -62,30 +37,10 @@ public class AppConfig implements WebMvcConfigurer {
     viewResolver.setSuffix(".jsp");
     return viewResolver;
   }
-
+  
   @Override
   public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
-  }
-  /**
-   * Get the session factory.
-   * @return the session factory
-   */
-  @Bean
-  public SessionFactory sessionFactory() {
-    SessionFactory sessionFactory = new org.hibernate.cfg.Configuration().configure().buildSessionFactory();
-    return sessionFactory;
-  }
-
-  /**
-   * Return the transaction manager.
-   * @return the transaction manager.
-   */
-  @Bean
-  public PlatformTransactionManager transactionManager() {
-    JpaTransactionManager transactionManager = new JpaTransactionManager();
-    transactionManager.setEntityManagerFactory(sessionFactory());
-    return transactionManager;
+      registry.addResourceHandler("/**").addResourceLocations("/");
   }
 
   /**

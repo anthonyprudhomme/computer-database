@@ -87,7 +87,7 @@ public class Computer {
     this.introduced = introduced;
   }
 
-  public void setDiscontinued(Date discontinued) {
+	public void setDiscontinued(Date discontinued) {
     this.discontinued = discontinued;
   }
 

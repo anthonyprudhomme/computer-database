@@ -139,7 +139,7 @@ public class ComputerController {
       modelAndView.addObject("companies", companies);
     } else {
       try {
-        computerService.createComputer(new Computer(computerForm));
+        computerService.createComputer(computerForm.toComputer());
         modelAndView = new ModelAndView("dashboard");
         modelAndView = prepareDashboard(modelAndView);
       } catch (CDBObjectException exception) {
@@ -174,7 +174,7 @@ public class ComputerController {
       modelAndView.addObject("companies", companies);
     } else {
       try {
-        computerService.updateComputer(new Computer(computerForm));
+        computerService.updateComputer(computerForm.toComputer());
         modelAndView = new ModelAndView("dashboard");
         modelAndView = prepareDashboard(modelAndView);
       } catch (CDBObjectException exception) {

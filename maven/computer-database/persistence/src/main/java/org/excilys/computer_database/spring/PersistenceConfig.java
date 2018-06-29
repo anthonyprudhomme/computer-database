@@ -1,0 +1,42 @@
+package org.excilys.computer_database.spring;
+
+import org.hibernate.SessionFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+@EnableWebMvc
+@EnableTransactionManagement
+@ComponentScan(basePackages = {"org.excilys.computer_database.service",
+    "org.excilys.computer_database.dao",
+    "org.excilys.computer_database.ui",
+	"org.excilys.computer_database.validator"})
+public class PersistenceConfig implements WebMvcConfigurer {
+  
+  /**
+   * Get the session factory.
+   * @return the session factory
+   */
+  @Bean
+  public SessionFactory sessionFactory() {
+    return new org.hibernate.cfg.Configuration().configure("/resources/hibernate.cfg.xml").buildSessionFactory();
+  }
+
+  /**
+   * Return the transaction manager.
+   * @return the transaction manager.
+   */
+  @Bean
+  public PlatformTransactionManager transactionManager() {
+    JpaTransactionManager transactionManager = new JpaTransactionManager();
+    transactionManager.setEntityManagerFactory(sessionFactory());
+    return transactionManager;
+  }
+  
+}

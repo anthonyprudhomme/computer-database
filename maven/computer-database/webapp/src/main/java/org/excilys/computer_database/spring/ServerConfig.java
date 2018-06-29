@@ -16,7 +16,7 @@ public class ServerConfig implements WebApplicationInitializer {
   @Override
   public void onStartup(ServletContext servletContext) throws ServletException {
       AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-      context.register(AppConfig.class);
+      context.register(WebConfig.class);
       ContextLoaderListener contextLoaderListener = new ContextLoaderListener(context);
       servletContext.addListener(contextLoaderListener);
       DispatcherServlet dispatcherServlet = new DispatcherServlet(context);
@@ -25,5 +25,4 @@ public class ServerConfig implements WebApplicationInitializer {
       servlet.setLoadOnStartup(1);
       servlet.addMapping("/");
   }
-
 }

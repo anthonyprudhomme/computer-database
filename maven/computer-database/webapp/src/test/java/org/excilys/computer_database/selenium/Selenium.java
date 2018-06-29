@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import org.excilys.computer_database.AppTestConfig;
-//import org.excilys.computer_database.persistence.JdbcConnection;
-//import org.excilys.computer_database.validation.DatabaseTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

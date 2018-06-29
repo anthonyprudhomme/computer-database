@@ -13,7 +13,7 @@ import org.excilys.computer_database.model.Computer;
 import org.excilys.computer_database.model.DBModelType;
 import org.excilys.computer_database.service.CompanyService;
 import org.excilys.computer_database.service.ComputerService;
-import org.excilys.computer_database.spring.AppConfig;
+import org.excilys.computer_database.spring.PersistenceConfig;
 import org.excilys.computer_database.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class Main {
    * @param args not used
    */
   public static void main(String[] args) {
-    AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+    AbstractApplicationContext context = new AnnotationConfigApplicationContext(PersistenceConfig.class);
     companyService = context.getBean(CompanyService.class);
     computerService = context.getBean(ComputerService.class);
     Scanner scan = new Scanner(System.in);

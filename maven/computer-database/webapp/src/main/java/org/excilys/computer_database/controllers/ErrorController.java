@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Throwables;
 
+
 @Controller
 public class ErrorController {
 

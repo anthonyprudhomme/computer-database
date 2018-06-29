@@ -10,6 +10,8 @@ import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -19,28 +21,41 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableTransactionManagement
 @ComponentScan(basePackages = "org.excilys.computer_database")
 public class AppTestConfig {
+
   /**
    * Create the datasource using Hikari.
    * @return the datasource
    */
   @Bean
   public DataSource dataSource() {
-    ResourceBundle resourceBundle = ResourceBundle.getBundle("testConfig");
+    ResourceBundle resourceBundle = ResourceBundle.getBundle("resources/testConfig");
     Properties properties = Util.convertResourceBundleToProperties(resourceBundle);
     HikariConfig hikariConfig = new HikariConfig(properties);
     HikariDataSource hikariDataSource = new HikariDataSource(hikariConfig);
     return hikariDataSource;
   }
+
   /**
    * Get the session factory.
    * @return the session factory
    */
   @Bean
   public SessionFactory sessionFactory() {
-    org.hibernate.cfg.Configuration configuration = new org.hibernate.cfg.Configuration().configure();
+    org.hibernate.cfg.Configuration configuration = new org.hibernate.cfg.Configuration().configure("/resources/hibernate.cfg.xml");
     configuration.setProperty("hibernate.connection.driver_class", "org.hsqldb.jdbc.JDBCDriver");
     configuration.setProperty("hibernate.connection.url", "jdbc:hsqldb:mem:computerdatabase");
     SessionFactory sessionFactory = configuration.buildSessionFactory();
     return sessionFactory;
+  }
+  
+  /**
+   * Return the transaction manager.
+   * @return the transaction manager.
+   */
+  @Bean
+  public PlatformTransactionManager transactionManager() {
+    JpaTransactionManager transactionManager = new JpaTransactionManager();
+    transactionManager.setEntityManagerFactory(sessionFactory());
+    return transactionManager;
   }
 }
