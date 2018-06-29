@@ -22,11 +22,9 @@ public class Computer {
   @Column(name = "name", nullable = false)
   private String name;
 
-  //@Temporal(TemporalType.DATE)
   @Column(name = "introduced")
   private Date introduced;
 
-  //@Temporal(TemporalType.DATE)
   @Column(name = "discontinued")
   private Date discontinued;
 

@@ -28,7 +28,7 @@
 		<div class="container">
 			<div class="alert alert-danger">
 				
-				<h2><spring:message code="error.500.message" /></h2>
+				<h2><spring:message code="error.500.error" /></h2>
 				
 				<br />
 				<h3><spring:message code="error.reason" /> ${errorMessage}</h3>

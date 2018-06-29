@@ -7,17 +7,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@EnableWebMvc
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"org.excilys.computer_database.service",
     "org.excilys.computer_database.dao",
     "org.excilys.computer_database.ui",
 	"org.excilys.computer_database.validator"})
-public class PersistenceConfig implements WebMvcConfigurer {
+public class PersistenceConfig {
   
   /**
    * Get the session factory.

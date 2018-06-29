@@ -27,16 +27,16 @@ public class OrderByParams {
   public void setColumnToOrder(String columnToOrder) {
     switch (columnToOrder) {
     case "computerName":
-      this.columnToOrder = "computer.name";
+      this.columnToOrder = "name";
       break;
     case "introduced":
-      this.columnToOrder = "computer.introduced";
+      this.columnToOrder = "introduced";
       break;
     case "discontinued":
-      this.columnToOrder = "computer.discontinued";
+      this.columnToOrder = "discontinued";
       break;
     case "companyName":
-      this.columnToOrder = "company.name";
+      this.columnToOrder = "company";
       break;
     default:
       this.columnToOrder = null;

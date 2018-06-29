@@ -10,9 +10,11 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
+import org.excilys.computer_database.model.Company;
 import org.excilys.computer_database.model.Computer;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -178,10 +180,10 @@ public class ComputerDaoImpl implements ComputerDao {
       transaction = session.beginTransaction();
       CriteriaBuilder builder = session.getCriteriaBuilder();
       CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
-      Root<Computer> variableRoot = criteria.from(Computer.class);
-      criteria.select(builder.count(variableRoot));
-      criteria.where(builder.like(variableRoot.get("computer.name"), "%" + keyword + "%"));
-      criteria.where(builder.like(variableRoot.get("company.name"), "%" + keyword + "%"));
+      Root<Computer> computerRoot = criteria.from(Computer.class);
+      Join<Computer,Company> join = computerRoot.join("company");
+      criteria.select(builder.count(computerRoot));
+      criteria.where(builder.or(builder.like(computerRoot.get("name"), "%" + keyword + "%"), builder.like(join.get("name"), "%" + keyword + "%")));
       Query<Long> query = session.createQuery(criteria);
       result = Math.toIntExact(query.getSingleResult());
       transaction.commit();
@@ -205,11 +207,12 @@ public class ComputerDaoImpl implements ComputerDao {
 
       CriteriaBuilder builder = session.getCriteriaBuilder();
       CriteriaQuery<Computer> criteria = builder.createQuery(Computer.class);
-      Root<Computer> variableRoot = criteria.from(Computer.class);
-      variableRoot.fetch("company", JoinType.LEFT);
-      criteria.select(variableRoot);
-      prepareCriteriaWithOrderByParams(criteria, builder, variableRoot, orderByParams);
-      prepareCriteriaWithKeyword(criteria, builder, variableRoot, keyword);
+      Root<Computer> computerRoot = criteria.from(Computer.class);
+      Join<Computer,Company> join = computerRoot.join("company");
+      computerRoot.fetch("company", JoinType.LEFT);
+      criteria.select(computerRoot);
+      prepareCriteriaWithOrderByParams(criteria, builder, computerRoot, join, orderByParams);
+      prepareCriteriaWithKeyword(criteria, builder, computerRoot, join, keyword);
       Query<Computer> query = session.createQuery(criteria);
       int offset = numberOfItemPerPage * (page - 1);
       prepareCriteriaWithPage(query, numberOfItemPerPage, offset);
@@ -231,10 +234,9 @@ public class ComputerDaoImpl implements ComputerDao {
    * @param keyword the keyword you are looking for
    */
   private void prepareCriteriaWithKeyword(CriteriaQuery<Computer> criteria, CriteriaBuilder builder,
-      Root<Computer> variableRoot, String keyword) {
+      Root<Computer> computerRoot, Join<Computer, Company> join, String keyword) {
     if (keyword != null && !keyword.isEmpty()) {
-      criteria.where(builder.like(variableRoot.get("computer.name"), "%" + keyword + "%"));
-      criteria.where(builder.like(variableRoot.get("company.name"), "%" + keyword + "%"));
+      criteria.where(builder.or(builder.like(computerRoot.get("name"), "%" + keyword + "%"), builder.like(join.get("name"), "%" + keyword + "%")));
     }
   }
   /**
@@ -256,12 +258,20 @@ public class ComputerDaoImpl implements ComputerDao {
    * @param orderByParams OrderByParams object
    */
   private void prepareCriteriaWithOrderByParams(CriteriaQuery<Computer> criteria, CriteriaBuilder builder,
-      Root<Computer> variableRoot, OrderByParams orderByParams) {
+      Root<Computer> variableRoot, Join<Computer, Company> join, OrderByParams orderByParams) {
     if (orderByParams != null) {
       if (orderByParams.getAscOrDesc().equalsIgnoreCase("asc")) {
-        criteria.orderBy(builder.asc(variableRoot.get(orderByParams.getColumnToOrder())));
+        if(orderByParams.getColumnToOrder().equals("company")) {
+          criteria.orderBy(builder.asc(join.get("name")));
+        }else {
+          criteria.orderBy(builder.asc(variableRoot.get(orderByParams.getColumnToOrder())));
+        }
       } else {
-        criteria.orderBy(builder.desc(variableRoot.get(orderByParams.getColumnToOrder())));
+        if(orderByParams.getColumnToOrder().equals("company")) {
+          criteria.orderBy(builder.desc(join.get("name")));
+        }else {
+          criteria.orderBy(builder.desc(variableRoot.get(orderByParams.getColumnToOrder())));
+        }
       }
     }
 
