@@ -35,4 +35,27 @@ public interface CompanyDao {
    * @param id of the company to delete
    */
   void deleteCompany(int id);
+  
+  /**
+   * Get the list of companies with the given params.
+   * @param ascOrDesc Whether it is asc or desc
+   * @param orderBy which param to order by with
+   * @param search keyword you are looking for
+   * @param numberOfItemPerPage number of items you want to display per page
+   * @param currentPage the current page number
+   * @param id of the company to delete
+   */
+  ArrayList<Company> getCompaniesWithParams(Integer currentPage, Integer numberOfItemPerPage, String search, String orderBy, String ascOrDesc);
+  
+  /**
+   * Create a company.
+   * @param company to create
+   */
+  void createCompany(Company company);
+  
+  /**
+   * Update a company.
+   * @param company to update
+   */
+  void updateCompany(Company company);
 }

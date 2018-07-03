@@ -21,7 +21,7 @@ public class UserService implements UserDetailsService {
   @Autowired
   private UserDao userDao;
    
-  public User registerNewUserAccount(String username, String password) throws RegistrationFailedException {
+  public User createUser(String username, String password) throws RegistrationFailedException {
     Optional<User> user = userDao.createUser(username, password);
     if(user.isPresent()) {
       return user.get();
@@ -45,6 +45,14 @@ public class UserService implements UserDetailsService {
     } else {
       throw new UsernameNotFoundException("Username: " + username + " not found.");
     }
+  }
+
+  public void deleteUser(String username) {
+    userDao.deleteUser(username);
+  }
+
+  public void updateUser(User currentUser) {
+    userDao.updateUser(currentUser);
   }
 
 }

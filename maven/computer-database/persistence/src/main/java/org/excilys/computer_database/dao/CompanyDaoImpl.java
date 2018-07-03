@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
 
 import org.excilys.computer_database.model.Company;
@@ -141,6 +142,122 @@ public class CompanyDaoImpl implements CompanyDao {
       Root<Company> companyRoot = companyCriteria.from(Company.class);
       companyCriteria.where(companyCriteriabuilder.equal(companyRoot.get("id"), companyId));
       session.createQuery(companyCriteria).executeUpdate();
+      transaction.commit();
+      session.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+      if (transaction != null) {
+        transaction.rollback();
+      }
+    }
+  }
+
+  @Override
+  public ArrayList<Company> getCompaniesWithParams(Integer page, Integer numberOfItemPerPage, String keyword,
+      String orderBy, String ascOrDesc) {
+    Transaction transaction = null;
+    ArrayList<Company> companies = new ArrayList<>();
+    try (Session session = sessionFactory.getCurrentSession()) {
+      transaction = session.beginTransaction();
+
+      CriteriaBuilder builder = session.getCriteriaBuilder();
+      CriteriaQuery<Company> criteria = builder.createQuery(Company.class);
+      Root<Company> companyRoot = criteria.from(Company.class);
+      criteria.select(companyRoot);
+      prepareCriteriaWithOrderByParams(criteria, builder, companyRoot, orderBy, ascOrDesc);
+      prepareCriteriaWithKeyword(criteria, builder, companyRoot, keyword);
+      Query<Company> query = session.createQuery(criteria);
+      int offset = numberOfItemPerPage * (page - 1);
+      prepareCriteriaWithPage(query, numberOfItemPerPage, offset);
+      companies = (ArrayList<Company>) query.getResultList();
+      session.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+      if (transaction != null) {
+        transaction.rollback();
+      }
+    }
+    return companies;
+  }
+  /**
+   * Prepare the criteria depending on the Keyword.
+   * @param criteria Criteria object
+   * @param builder Builder object
+   * @param variableRoot Root Object
+   * @param keyword the keyword you are looking for
+   */
+  private void prepareCriteriaWithKeyword(CriteriaQuery<Company> criteria, CriteriaBuilder builder,
+      Root<Company> companyRoot, String keyword) {
+    if (keyword != null && !keyword.isEmpty()) {
+      criteria.where(builder.or(builder.like(companyRoot.get("name"), "%" + keyword + "%")));
+    }
+  }
+  /**
+   * Prepare the criteria depending on the page params.
+   * @param query The Query object
+   * @param numberOfItemPerPage numberOfItemPerPage
+   * @param offset offset
+   */
+  private void prepareCriteriaWithPage(Query<Company> query, int numberOfItemPerPage, int offset) {
+    query.setMaxResults(numberOfItemPerPage);
+    query.setFirstResult(offset);
+  }
+
+  /**
+   * Prepare the criteria depending on the orderByparams.
+   * @param criteria Criteria object
+   * @param builder Builder object
+   * @param variableRoot Root Object
+   * @param orderByParams OrderByParams object
+   */
+  private void prepareCriteriaWithOrderByParams(CriteriaQuery<Company> criteria, CriteriaBuilder builder,
+      Root<Company> variableRoot, String orderBy, String ascOrdDesc) {
+    if (orderBy != null) {
+      if (ascOrdDesc.equalsIgnoreCase("asc")) {
+        if(orderBy.equalsIgnoreCase("company")) {
+          criteria.orderBy(builder.asc(variableRoot.get("name")));
+        }else {
+          criteria.orderBy(builder.asc(variableRoot.get(orderBy)));
+        }
+      } else {
+        if(orderBy.equalsIgnoreCase("company")) {
+          criteria.orderBy(builder.desc(variableRoot.get("name")));
+        }else {
+          criteria.orderBy(builder.desc(variableRoot.get(orderBy)));
+        }
+      }
+    }
+
+  }
+
+  @Override
+  public void createCompany(Company company) {
+    Transaction transaction = null;
+    try (Session session = sessionFactory.getCurrentSession()) {
+      transaction = session.beginTransaction();
+      session.save(company);
+      transaction.commit();
+      session.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+      if (transaction != null) {
+        transaction.rollback();
+      }
+    }
+  }
+
+  @Override
+  public void updateCompany(Company company) {
+    Transaction transaction = null;
+    try (Session session = sessionFactory.getCurrentSession()) {
+      transaction = session.beginTransaction();
+      CriteriaBuilder builder = session.getCriteriaBuilder();
+      CriteriaUpdate<Company> criteria = builder.createCriteriaUpdate(Company.class);
+      criteria.from(Company.class);
+      Root<Company> root = criteria.from(Company.class);
+      criteria.where(builder.equal(root.get("id"), company.getId()));
+      criteria.set("name", company.getName());
+      session.createQuery(criteria).executeUpdate();
       transaction.commit();
       session.close();
     } catch (Exception e) {

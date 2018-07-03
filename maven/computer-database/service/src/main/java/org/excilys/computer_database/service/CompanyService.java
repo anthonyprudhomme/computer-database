@@ -44,12 +44,34 @@ public class CompanyService {
   public ArrayList<Company> getCompaniesAtPage(int numberOfItemPerPage, int page) {
     return companyDao.getCompaniesAtPage(numberOfItemPerPage, page);
   }
+  
   /**
    * Delete the company matching the given id and its related computers.
    * @param idToDelete The id of the company to delete
    */
   public void deleteCompany(int idToDelete) {
     companyDao.deleteCompany(idToDelete);
+  }
+  
+  /**
+   * Create the company matching the given id.
+   * @param company the company to create
+   */
+  public void createCompany(Company company) {
+    companyDao.createCompany(company);
+  }
+  
+  /**
+   * Update the company matching the given id.
+   * @param company the company to update
+   */
+  public void updateCompany(Company company) {
+    companyDao.updateCompany(company);
+  }
+
+  public ArrayList<Company> getCompaniesWithParams(Integer currentPage, Integer numberOfItemPerPage, String search,
+      String orderBy, String ascOrDesc) {
+    return companyDao.getCompaniesWithParams(currentPage, numberOfItemPerPage, search, orderBy, ascOrDesc);
   }
 
 }

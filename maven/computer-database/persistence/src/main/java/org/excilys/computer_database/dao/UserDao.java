@@ -17,4 +17,10 @@ public interface UserDao {
 
 
   Optional<User> createUser(String username, String password);
+
+
+  void deleteUser(String username);
+
+
+  void updateUser(User currentUser);
 }

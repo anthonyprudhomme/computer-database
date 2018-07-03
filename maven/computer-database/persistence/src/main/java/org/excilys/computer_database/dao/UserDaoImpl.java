@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
 
 import org.excilys.computer_database.model.Role;
@@ -57,6 +59,7 @@ public class UserDaoImpl implements UserDao {
   public Optional<User> createUser(String username, String password) {
     String encryptedPassword = passwordEncoder.encode(password); 
     User user = new User(username, encryptedPassword);
+    
     user.addRole(new Role("ROLE_USER"));
     Transaction transaction = null;
     try (Session session = sessionFactory.getCurrentSession()) {
@@ -73,6 +76,48 @@ public class UserDaoImpl implements UserDao {
       return Optional.empty();
     }
     
+  }
+
+  @Override
+  public void deleteUser(String username) {
+    Transaction transaction = null;
+    try (Session session = sessionFactory.getCurrentSession()) {
+      transaction = session.beginTransaction();
+      CriteriaBuilder builder = session.getCriteriaBuilder();
+      CriteriaDelete<User> criteria = builder.createCriteriaDelete(User.class);
+      Root<User> root = criteria.from(User.class);
+      criteria.where(builder.equal(root.get("username"), username));
+      session.createQuery(criteria).executeUpdate();
+      transaction.commit();
+      session.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+      if (transaction != null) {
+        transaction.rollback();
+      }
+    }
+  }
+
+  @Override
+  public void updateUser(User user) {
+    Transaction transaction = null;
+    try (Session session = sessionFactory.getCurrentSession()) {
+      transaction = session.beginTransaction();
+      CriteriaBuilder builder = session.getCriteriaBuilder();
+      CriteriaUpdate<User> criteria = builder.createCriteriaUpdate(User.class);
+      criteria.from(User.class);
+      Root<User> root = criteria.from(User.class);
+      criteria.where(builder.equal(root.get("username"), user.getUsername()));
+      criteria.set("password", user.getPassword());
+      session.createQuery(criteria).executeUpdate();
+      transaction.commit();
+      session.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+      if (transaction != null) {
+        transaction.rollback();
+      }
+    }
   }
 
 }
