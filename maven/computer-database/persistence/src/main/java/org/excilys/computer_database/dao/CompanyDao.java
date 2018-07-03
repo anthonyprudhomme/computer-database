@@ -7,7 +7,7 @@ import org.excilys.computer_database.model.Company;
 import org.springframework.stereotype.Repository;
 
 
-@Repository("companyDao")
+@Repository
 public interface CompanyDao {
   /**
    * @return list of companies

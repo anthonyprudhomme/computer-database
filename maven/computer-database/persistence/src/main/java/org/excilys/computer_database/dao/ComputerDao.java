@@ -7,7 +7,7 @@ import org.excilys.computer_database.model.Computer;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-@Repository("computerDao")
+@Repository
 @Transactional
 public interface ComputerDao {
   /**

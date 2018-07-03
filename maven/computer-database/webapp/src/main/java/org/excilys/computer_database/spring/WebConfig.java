@@ -21,7 +21,7 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
-@Import(PersistenceConfig.class)
+@Import(value = { SpringSecurityConfig.class, PersistenceConfig.class })
 @ComponentScan(basePackages = {"org.excilys.computer_database.controllers"})
 public class WebConfig implements WebMvcConfigurer {
 

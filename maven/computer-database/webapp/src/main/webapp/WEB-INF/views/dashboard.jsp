@@ -30,6 +30,13 @@
 				href="${pageContext.request.contextPath}/computers"> Application
 				- <spring:message code="dashboard.cdb" />
 			</a>
+			<c:url value="/logout" var="logoutUrl" />
+			<form id="logout" action="${logoutUrl}" method="post" >
+			  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+			</form>
+			<c:if test="${pageContext.request.userPrincipal.name != null}">
+				<a class="navbar-brand" href="javascript:document.getElementById('logout').submit()">Logout</a>
+			</c:if>
 			<div style="float:right">
 				<a class="navbar-brand"
 					href="${pageContext.request.contextPath}/computers?lang=en">English

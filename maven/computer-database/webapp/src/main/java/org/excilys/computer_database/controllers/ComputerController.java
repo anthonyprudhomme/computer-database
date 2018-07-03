@@ -14,6 +14,7 @@ import org.excilys.computer_database.service.ComputerService;
 import org.excilys.computer_database.validator.ComputerFormValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -69,6 +70,7 @@ public class ComputerController {
    * @param ascOrDesc ascOrDesc
    * @return the modelAndView object
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(COMPUTER_URL)
   public ModelAndView showComputers(Integer currentPage, Integer numberOfItemPerPage, String search, String orderBy, String ascOrDesc) {
     logger.debug("showComputers");
@@ -80,6 +82,7 @@ public class ComputerController {
    * Add computer page handling.
    * @return the modelAndView object
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(COMPUTER_URL + "/add")
   public ModelAndView addComputer() {
     logger.debug("addComputer");
@@ -93,6 +96,7 @@ public class ComputerController {
    * @param id id of the computer
    * @return the modelAndView object
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(COMPUTER_URL + "/{id}/update")
   public ModelAndView editComputer(@PathVariable("id") int id) {
     logger.debug("editComputer");
@@ -110,6 +114,7 @@ public class ComputerController {
    * @param selection list of ids
    * @return the modelAndView object
    */
+  @PreAuthorize("hasRole('USER')")
   @PostMapping(COMPUTER_URL + "/delete")
   public ModelAndView deleteComputer(String selection) {
     logger.debug("deleteComputer:" + selection);
@@ -126,6 +131,7 @@ public class ComputerController {
    * @param redirectAttributes the redirecting attributes
    * @return the modelAndView object
    */
+  @PreAuthorize("hasRole('USER')")
   @PostMapping(COMPUTER_URL + "/create")
   public ModelAndView saveComputer(@ModelAttribute("computerForm") @Validated ComputerDto computerForm,
       BindingResult result, Model model,
@@ -161,6 +167,7 @@ public class ComputerController {
    * @param redirectAttributes the redirecting attributes
    * @return the modelAndView object
    */
+  @PreAuthorize("hasRole('USER')")
   @PostMapping(COMPUTER_URL + "/update")
   public ModelAndView updateComputer(@ModelAttribute("computerForm") @Validated ComputerDto computerForm,
       BindingResult result, Model model,

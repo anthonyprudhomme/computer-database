@@ -15,5 +15,7 @@
 
     <mapping class="org.excilys.computer_database.model.Computer" />
     <mapping class="org.excilys.computer_database.model.Company" />
+    <mapping class="org.excilys.computer_database.model.User" />
+    <mapping class="org.excilys.computer_database.model.Role" />
 </session-factory>
 </hibernate-configuration>

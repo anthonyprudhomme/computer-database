@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
     "org.excilys.computer_database.ui",
 	"org.excilys.computer_database.validator"})
 public class PersistenceConfig {
+ 
   
   /**
    * Get the session factory.
