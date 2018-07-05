@@ -39,7 +39,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     http.sessionManagement().maximumSessions(1).expiredUrl("/loginPage");
     http.csrf().disable();
     http.authorizeRequests()
-      .antMatchers("/computers").access("hasRole('USER')")
+      .antMatchers("/").access("hasRole('USER')")
       .and()
         .httpBasic()
       .and()

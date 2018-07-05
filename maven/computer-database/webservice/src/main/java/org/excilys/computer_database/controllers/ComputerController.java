@@ -64,6 +64,24 @@ public class ComputerController {
     computers.forEach(computer -> computerDtos.add(new ComputerDto(computer)));
     return new ResponseEntity<ArrayList<ComputerDto>>(computerDtos, HttpStatus.OK);
   }
+  
+  /**
+   * Get a computer with given id.
+   * @param id of the computer
+   * @return the computer
+   */
+  @PreAuthorize("hasRole('USER')")
+  @GetMapping(path = "/{id}")
+  public ResponseEntity<ComputerDto> getComputer(@PathVariable("id") long id) {
+    logger.debug("List Computers");
+    Optional<Computer> computer = computerService.getComputerDetails((int)id);
+    if (computer.isPresent()) {
+      ComputerDto computerDto = new ComputerDto(computer.get());
+      return new ResponseEntity<ComputerDto>(computerDto, HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+  }
 
   /**
    * Delete computer.
@@ -127,6 +145,17 @@ public class ComputerController {
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+  }
+
+  /**
+   * Count the number of computers.
+   * @return the number of computers
+   */
+  @PreAuthorize("hasRole('USER')")
+  @GetMapping(path = "/count")
+  public ResponseEntity<Integer> countComputers() {
+    logger.debug("Count Computers");
+    return new ResponseEntity<Integer>(computerService.countComputers(), HttpStatus.OK);
   }
 
   /**

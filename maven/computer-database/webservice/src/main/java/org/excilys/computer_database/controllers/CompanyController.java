@@ -107,5 +107,34 @@ public class CompanyController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
   }
+  
+  /**
+   * Get a company with given id.
+   * @param id of the company
+   * @return the company
+   */
+  @PreAuthorize("hasRole('USER')")
+  @GetMapping(path = "/{id}")
+  public ResponseEntity<CompanyDto> getCompany(@PathVariable("id") long id) {
+    logger.debug("List Computers");
+    Optional<Company> company = companyService.getCompany((int)id);
+    if (company.isPresent()) {
+      CompanyDto companyDto = new CompanyDto(company.get());
+      return new ResponseEntity<CompanyDto>(companyDto, HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+  }
+  
+  /**
+   * Count the number of companies.
+   * @return the number of companies
+   */
+  @PreAuthorize("hasRole('USER')")
+  @GetMapping(path = "/count")
+  public ResponseEntity<Integer> countCompanies() {
+    logger.debug("Count Computers");
+    return new ResponseEntity<Integer>(companyService.countCompanies(), HttpStatus.OK);
+  }
 
 }
